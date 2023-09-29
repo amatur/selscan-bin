@@ -1,0 +1,603 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 27.29     91.65    91.65 368434421     0.00     0.00  bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::finalize_target_vector(bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::set_operation, unsigned int)
+ 12.48    133.58    41.92 4376971059     0.00     0.00  bm::bit_in<bm::decoder>::gamma()
+ 10.90    170.20    36.62 368434421     0.00     0.00  bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool)
+  9.11    200.81    30.61 644224577     0.00     0.00  unsigned int bm::bit_block_calc_count_range<false, false>(unsigned int const*, unsigned int, unsigned int)
+  6.24    221.78    20.97  6054375     0.00     0.00  bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_SUB_AB(unsigned int*, unsigned int*)
+  5.58    240.51    18.74 108115060     0.00     0.00  unsigned int bm::gap_buff_count_op<unsigned short, bm::and_func>(unsigned short const*, unsigned short const*)
+  3.92    253.68    13.17  6056702     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::optimize_gap_convert_bit_block(unsigned int, unsigned int, unsigned int*, unsigned int)
+  3.35    264.94    11.26 193749848     0.00     0.00  unsigned int bm::gap_set_array<unsigned short>(unsigned short*, unsigned short const*, unsigned int)
+  3.35    276.20    11.26 108115060     0.00     0.00  unsigned int bm::gap_buff_count_op<unsigned short, bm::sub_func>(unsigned short const*, unsigned short const*)
+  2.89    285.91     9.71 107697800     0.00     0.00  void bm::gap_buff_op<unsigned short, bm::and_func>(unsigned short*, unsigned short const*, unsigned int, unsigned short const*, unsigned int, unsigned int&)
+  2.42    294.03     8.12 193749848     0.00     0.00  bm::deseriaizer_base<bm::decoder, unsigned int>::read_id_list(bm::decoder&, unsigned int, unsigned short*)
+  1.44    298.86     4.83  4200246     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_all_zero(unsigned int, unsigned int)
+  1.36    303.43     4.57  6057831     0.00     0.00  bm::bit_block_change64(unsigned int const*, unsigned int)
+  1.19    307.42     3.99    20000     0.20     0.20  bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long)
+  1.15    311.28     3.86 368434421     0.00     0.00  bm::serial_stream_iterator<bm::decoder, unsigned int>::serial_stream_iterator(unsigned char const*)
+  1.02    314.72     3.44 116542576     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation)
+  0.90    317.74     3.02 349676478     0.00     0.00  bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&)
+  0.81    320.47     2.73 233114947     0.00     0.00  bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*)
+  0.70    322.83     2.36  6054375     0.00     0.00  bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_AND(unsigned int*, unsigned int*)
+  0.69    325.14     2.31 736279393     0.00     0.00  bm::serial_stream_iterator<bm::decoder, unsigned int>::next()
+  0.61    327.17     2.04 592073841     0.00     0.00  unsigned int bm::gap_add_value<unsigned short>(unsigned short*, unsigned int)
+  0.48    328.78     1.61                             readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.47    330.37     1.59  5633041     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::deoptimize_block(unsigned int, unsigned int, bool)
+  0.27    331.28     0.91  6607190     0.00     0.00  void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*, unsigned int)
+  0.23    332.05     0.77 122815740     0.00     0.00  bvenumerate(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+  0.18    332.67     0.62  3869678     0.00     0.00  bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_SUB(unsigned int*, unsigned int*)
+  0.14    333.16     0.49 107697800     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::assign_gap(unsigned int, unsigned int, unsigned short const*, unsigned int, unsigned int*, unsigned short*)
+  0.12    333.57     0.41  8135569     0.00     0.00  void bm::gap_sub_to_bitset<unsigned short>(unsigned int*, unsigned short const*)
+  0.12    333.97     0.41 116542573     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, unsigned int const*, bool, bm::operation)
+  0.09    334.28     0.31  2187039     0.00     0.00  bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_AND(unsigned int*, unsigned int*)
+  0.09    334.57     0.29  8423455     0.00     0.00  unsigned int bm::gap_bitset_and_count<unsigned short>(unsigned int const*, unsigned short const*)
+  0.08    334.83     0.26                             bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::count() const
+  0.05    335.00     0.17 105928065     0.00     0.00  bm::gap_operation_sub(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&)
+  0.04    335.15     0.15  6210782     0.00     0.00  frame_dummy
+  0.04    335.29     0.14                             bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::process_id_list(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, bm::set_operation)
+  0.04    335.42     0.13   155078     0.00     0.00  void bm::gap_and_to_bitset<unsigned short>(unsigned int*, unsigned short const*)
+  0.03    335.53     0.11                             bm::bit_in<bm::decoder>::bic_decode_u16_cm(unsigned short*, unsigned int, unsigned short, unsigned short)
+  0.01    335.57     0.05                             bm::deseriaizer_base<bm::decoder, unsigned int>::read_bic_sb_arr(bm::decoder&, unsigned int, unsigned int*, unsigned int*)
+  0.01    335.61     0.04                             bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::zero_block(unsigned int, unsigned int)
+  0.01    335.65     0.04        1    35.00    35.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned int)
+  0.01    335.68     0.03   209114     0.00     0.00  unsigned int bm::gap_bit_count_unr<unsigned short>(unsigned short const*)
+  0.01    335.70     0.03                             bm::gap_operation_or(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&)
+  0.01    335.73     0.03                             void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*)
+  0.01    335.75     0.02        1    20.00    20.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int*)
+  0.01    335.77     0.02                             unsigned int bm::gap_bitset_xor_count<unsigned short>(unsigned int const*, unsigned short const*)
+  0.01    335.79     0.02                             bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_XOR(unsigned int*, unsigned int*)
+  0.00    335.80     0.02  1769735     0.00     0.00  bm::gap_operation_and(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&)
+  0.00    335.81     0.01   754955     0.00     0.00  bm::bit_out<bm::encoder>::gamma(unsigned int)
+  0.00    335.82     0.01   420020     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::reserve_top_blocks(unsigned int)
+  0.00    335.83     0.01    22728     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int, unsigned int*, bool)
+  0.00    335.84     0.01    19968     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::check_allocate_block(unsigned int, unsigned int, int, int*, bool)
+  0.00    335.85     0.01                             bm::gap_operation_xor(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&)
+  0.00    335.86     0.01                             bm::decoder_little_endian::get_32(unsigned int*, unsigned int)
+  0.00    335.86     0.00    95149     0.00     0.00  void std::vector<unsigned int, std::allocator<unsigned int> >::_M_realloc_insert<unsigned int>(__gnu_cxx::__normal_iterator<unsigned int*, std::vector<unsigned int, std::allocator<unsigned int> > >, unsigned int&&)
+  0.00    335.86     0.00    19968     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_block(unsigned int const*, unsigned int, unsigned int, unsigned int)
+  0.00    335.86     0.00    19968     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_sorted(unsigned int const*, unsigned int, bool)
+  0.00    335.86     0.00    18854     0.00     0.00  bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_gap_block(unsigned short const*, bm::encoder&)
+  0.00    335.86     0.00    18318     0.00     0.00  bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_array(unsigned short const*, unsigned int, bm::encoder&, bool)
+  0.00    335.86     0.00    18298     0.00     0.00  unsigned short bm::gap_convert_to_arr<unsigned short, unsigned short>(unsigned short*, unsigned short const*, unsigned int, bool)
+  0.00    335.86     0.00     6401     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_or(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&)
+  0.00    335.86     0.00     6400     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_block_or(unsigned int, unsigned int, unsigned int*, unsigned int const*)
+  0.00    335.86     0.00     3027     0.00     0.00  bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_ASSIGN(unsigned int*, unsigned int*)
+  0.00    335.86     0.00     2760     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clone_gap_block(unsigned short const*, bool&)
+  0.00    335.86     0.00     1114     0.00     0.00  bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::find_bit_best_encoding(unsigned int const*)
+  0.00    335.86     0.00     1114     0.00     0.00  bm::bit_count_min_unroll(unsigned int const*, unsigned int const*)
+  0.00    335.86     0.00     1009     0.00     0.00  bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_bit_interval(unsigned int const*, bm::encoder&, unsigned int)
+  0.00    335.86     0.00      556     0.00     0.00  bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_block(unsigned short const*, bm::encoder&)
+  0.00    335.86     0.00      105     0.00     0.00  unsigned int bm::bit_block_convert_to_arr<unsigned short>(unsigned short*, unsigned int const*, bool)
+  0.00    335.86     0.00       32     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::calc_stat(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::statistics*) const
+  0.00    335.86     0.00       10     0.00     0.00  bm::byte_buffer<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned long, bool)
+  0.00    335.86     0.00        2     0.00     0.00  bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::deserializer()
+  0.00    335.86     0.00        2     0.00     0.00  bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::~deserializer()
+  0.00    335.86     0.00        2     0.00     0.00  bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::~blocks_manager()
+  0.00    335.86     0.00        2     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clear_range_no_check(unsigned int, unsigned int)
+  0.00    335.86     0.00        1     0.00     0.00  _GLOBAL__sub_I_N
+  0.00    335.86     0.00        1     0.00     0.00  bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::~serializer()
+  0.00    335.86     0.00        1     0.00     0.00  bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::deserializer()
+  0.00    335.86     0.00        1     0.00     0.00  bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::~deserializer()
+  0.00    335.86     0.00        1     0.00     0.00  bm::operation_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, unsigned char const*, bm::set_operation, bool)
+  0.00    335.86     0.00        1     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::invert()
+  0.00    335.86     0.00        1     0.00     0.00  bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_range(unsigned int, unsigned int, bool)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.00% of 335.86 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     99.8    1.61  333.55                 readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+               24.41  192.16 245618680/368434421     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+                0.77  109.58 122815740/122815740     bvenumerate(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [3]
+                3.99    0.01   20000/20000       bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+                2.57    0.00 245618680/368434421     bm::serial_stream_iterator<bm::decoder, unsigned int>::serial_stream_iterator(unsigned char const*) [23]
+                0.04    0.00       1/1           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned int) [41]
+                0.00    0.02   19968/19968       bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_sorted(unsigned int const*, unsigned int, bool) [50]
+                0.00    0.00    6401/6401        bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_or(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&) [59]
+                0.00    0.00       1/1           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::invert() [63]
+                0.00    0.00       1/1           bm::operation_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, unsigned char const*, bm::set_operation, bool) [65]
+                0.00    0.00       2/6210782     frame_dummy [35]
+                0.00    0.00   95149/95149       void std::vector<unsigned int, std::allocator<unsigned int> >::_M_realloc_insert<unsigned int>(__gnu_cxx::__normal_iterator<unsigned int*, std::vector<unsigned int, std::allocator<unsigned int> > >, unsigned int&&) [72]
+                0.00    0.00      32/32          bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::calc_stat(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::statistics*) const [79]
+                0.00    0.00       2/2           bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::deserializer() [81]
+                0.00    0.00       2/2           bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::~blocks_manager() [83]
+                0.00    0.00       2/2           bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::~deserializer() [82]
+                0.00    0.00       1/1           bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::deserializer() [86]
+                0.00    0.00       1/10          bm::byte_buffer<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned long, bool) [80]
+                0.00    0.00       1/1           bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::~serializer() [85]
+                0.00    0.00       1/1           bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::~deserializer() [87]
+-----------------------------------------------
+                0.00    0.00       1/368434421     bm::operation_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, unsigned char const*, bm::set_operation, bool) [65]
+               12.21   96.08 122815740/368434421     bvenumerate(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [3]
+               24.41  192.16 245618680/368434421     readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[2]     96.7   36.62  288.24 368434421         bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+               91.65    4.86 368434421/368434421     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::finalize_target_vector(bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::set_operation, unsigned int) [4]
+                3.02   63.34 349676478/349676478     bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&) [5]
+                2.73   60.89 233114947/233114947     bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*) [6]
+               20.97    0.00 6054375/6054375     bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_SUB_AB(unsigned int*, unsigned int*) [10]
+                0.41   14.44 116542573/116542573     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, unsigned int const*, bool, bm::operation) [13]
+               13.17    0.00 6056702/6056702     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::optimize_gap_convert_bit_block(unsigned int, unsigned int, unsigned int*, unsigned int) [15]
+                4.57    0.00 6056717/6057831     bm::bit_block_change64(unsigned int const*, unsigned int) [21]
+                1.59    0.91 5633041/5633041     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::deoptimize_block(unsigned int, unsigned int, bool) [24]
+                2.36    0.00 6054375/6054375     bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_AND(unsigned int*, unsigned int*) [25]
+                2.31    0.00 736279393/736279393     bm::serial_stream_iterator<bm::decoder, unsigned int>::next() [26]
+                0.62    0.00 3869678/3869678     bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_SUB(unsigned int*, unsigned int*) [29]
+                0.31    0.00 2187039/2187039     bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_AND(unsigned int*, unsigned int*) [32]
+                0.08    0.00  554126/6607190     void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*, unsigned int) [28]
+                0.01    0.00  554126/6210782     frame_dummy [35]
+                0.00    0.00    3027/3027        bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_ASSIGN(unsigned int*, unsigned int*) [74]
+-----------------------------------------------
+                0.77  109.58 122815740/122815740     readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[3]     32.9    0.77  109.58 122815740         bvenumerate(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [3]
+               12.21   96.08 122815740/368434421     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+                1.29    0.00 122815740/368434421     bm::serial_stream_iterator<bm::decoder, unsigned int>::serial_stream_iterator(unsigned char const*) [23]
+-----------------------------------------------
+               91.65    4.86 368434421/368434421     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[4]     28.7   91.65    4.86 368434421         bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::finalize_target_vector(bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::set_operation, unsigned int) [4]
+                4.83    0.00 4200244/4200246     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_all_zero(unsigned int, unsigned int) [20]
+                0.03    0.00  190259/209114      unsigned int bm::gap_bit_count_unr<unsigned short>(unsigned short const*) [42]
+-----------------------------------------------
+                3.02   63.34 349676478/349676478     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[5]     19.8    3.02   63.34 349676478         bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&) [5]
+                8.12   18.53 193749848/193749848     bm::deseriaizer_base<bm::decoder, unsigned int>::read_id_list(bm::decoder&, unsigned int, unsigned short*) [9]
+               23.39    0.00 2441953203/4376971059     bm::bit_in<bm::decoder>::gamma() [7]
+               11.26    0.00 193749848/193749848     unsigned int bm::gap_set_array<unsigned short>(unsigned short*, unsigned short const*, unsigned int) [16]
+                2.04    0.00 592073841/592073841     unsigned int bm::gap_add_value<unsigned short>(unsigned short*, unsigned int) [27]
+-----------------------------------------------
+                2.73   60.89 233114947/233114947     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[6]     18.9    2.73   60.89 233114947         bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*) [6]
+               18.74    0.00 108115060/108115060     unsigned int bm::gap_buff_count_op<unsigned short, bm::and_func>(unsigned short const*, unsigned short const*) [11]
+               15.50    0.00 326247965/644224577     unsigned int bm::bit_block_calc_count_range<false, false>(unsigned int const*, unsigned int, unsigned int) [8]
+                0.29   15.11 8423455/8423455     unsigned int bm::gap_bitset_and_count<unsigned short>(unsigned int const*, unsigned short const*) [12]
+               11.26    0.00 108115060/108115060     unsigned int bm::gap_buff_count_op<unsigned short, bm::sub_func>(unsigned short const*, unsigned short const*) [17]
+                0.00    0.00       1/209114      unsigned int bm::gap_bit_count_unr<unsigned short>(unsigned short const*) [42]
+-----------------------------------------------
+               18.53    0.00 1935017856/4376971059     bm::deseriaizer_base<bm::decoder, unsigned int>::read_id_list(bm::decoder&, unsigned int, unsigned short*) [9]
+               23.39    0.00 2441953203/4376971059     bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&) [5]
+[7]     12.5   41.92    0.00 4376971059         bm::bit_in<bm::decoder>::gamma() [7]
+-----------------------------------------------
+               15.11    0.00 317976612/644224577     unsigned int bm::gap_bitset_and_count<unsigned short>(unsigned int const*, unsigned short const*) [12]
+               15.50    0.00 326247965/644224577     bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*) [6]
+[8]      9.1   30.61    0.00 644224577         unsigned int bm::bit_block_calc_count_range<false, false>(unsigned int const*, unsigned int, unsigned int) [8]
+-----------------------------------------------
+                8.12   18.53 193749848/193749848     bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&) [5]
+[9]      7.9    8.12   18.53 193749848         bm::deseriaizer_base<bm::decoder, unsigned int>::read_id_list(bm::decoder&, unsigned int, unsigned short*) [9]
+               18.53    0.00 1935017856/4376971059     bm::bit_in<bm::decoder>::gamma() [7]
+-----------------------------------------------
+               20.97    0.00 6054375/6054375     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[10]     6.2   20.97    0.00 6054375         bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_SUB_AB(unsigned int*, unsigned int*) [10]
+-----------------------------------------------
+               18.74    0.00 108115060/108115060     bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*) [6]
+[11]     5.6   18.74    0.00 108115060         unsigned int bm::gap_buff_count_op<unsigned short, bm::and_func>(unsigned short const*, unsigned short const*) [11]
+-----------------------------------------------
+                0.29   15.11 8423455/8423455     bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*) [6]
+[12]     4.6    0.29   15.11 8423455         unsigned int bm::gap_bitset_and_count<unsigned short>(unsigned int const*, unsigned short const*) [12]
+               15.11    0.00 317976612/644224577     unsigned int bm::bit_block_calc_count_range<false, false>(unsigned int const*, unsigned int, unsigned int) [8]
+-----------------------------------------------
+                0.41   14.44 116542573/116542573     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[13]     4.4    0.41   14.44 116542573         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, unsigned int const*, bool, bm::operation) [13]
+                3.44   11.00 116542573/116542576     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+-----------------------------------------------
+                0.00    0.00       3/116542576     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clear_range_no_check(unsigned int, unsigned int) [62]
+                3.44   11.00 116542573/116542576     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, unsigned int const*, bool, bm::operation) [13]
+[14]     4.3    3.44   11.00 116542576         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+                0.17    9.55 105928065/105928065     bm::gap_operation_sub(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [18]
+                0.49    0.00 107697800/107697800     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::assign_gap(unsigned int, unsigned int, unsigned short const*, unsigned int, unsigned int*, unsigned short*) [30]
+                0.41    0.00 8135569/8135569     void bm::gap_sub_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [31]
+                0.02    0.16 1769735/1769735     bm::gap_operation_and(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [34]
+                0.13    0.00  155078/155078      void bm::gap_and_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [37]
+                0.06    0.00  420023/6607190     void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*, unsigned int) [28]
+                0.02    0.00       1/1           bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int*) [45]
+                0.01    0.00  420020/420020      bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::reserve_top_blocks(unsigned int) [52]
+                0.00    0.00       5/6210782     frame_dummy [35]
+-----------------------------------------------
+               13.17    0.00 6056702/6056702     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[15]     3.9   13.17    0.00 6056702         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::optimize_gap_convert_bit_block(unsigned int, unsigned int, unsigned int*, unsigned int) [15]
+-----------------------------------------------
+               11.26    0.00 193749848/193749848     bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&) [5]
+[16]     3.4   11.26    0.00 193749848         unsigned int bm::gap_set_array<unsigned short>(unsigned short*, unsigned short const*, unsigned int) [16]
+-----------------------------------------------
+               11.26    0.00 108115060/108115060     bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*) [6]
+[17]     3.4   11.26    0.00 108115060         unsigned int bm::gap_buff_count_op<unsigned short, bm::sub_func>(unsigned short const*, unsigned short const*) [17]
+-----------------------------------------------
+                0.17    9.55 105928065/105928065     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+[18]     2.9    0.17    9.55 105928065         bm::gap_operation_sub(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [18]
+                9.55    0.00 105928065/107697800     void bm::gap_buff_op<unsigned short, bm::and_func>(unsigned short*, unsigned short const*, unsigned int, unsigned short const*, unsigned int, unsigned int&) [19]
+-----------------------------------------------
+                0.16    0.00 1769735/107697800     bm::gap_operation_and(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [34]
+                9.55    0.00 105928065/107697800     bm::gap_operation_sub(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [18]
+[19]     2.9    9.71    0.00 107697800         void bm::gap_buff_op<unsigned short, bm::and_func>(unsigned short*, unsigned short const*, unsigned int, unsigned short const*, unsigned int, unsigned int&) [19]
+-----------------------------------------------
+                0.00    0.00       2/4200246     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clear_range_no_check(unsigned int, unsigned int) [62]
+                4.83    0.00 4200244/4200246     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::finalize_target_vector(bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::set_operation, unsigned int) [4]
+[20]     1.4    4.83    0.00 4200246         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_all_zero(unsigned int, unsigned int) [20]
+-----------------------------------------------
+                0.00    0.00    1114/6057831     bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::find_bit_best_encoding(unsigned int const*) [61]
+                4.57    0.00 6056717/6057831     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[21]     1.4    4.57    0.00 6057831         bm::bit_block_change64(unsigned int const*, unsigned int) [21]
+-----------------------------------------------
+                3.99    0.01   20000/20000       readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[22]     1.2    3.99    0.01   20000         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+                0.00    0.01   18318/18318       bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_array(unsigned short const*, unsigned int, bm::encoder&, bool) [55]
+                0.00    0.00   18854/18854       bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_gap_block(unsigned short const*, bm::encoder&) [57]
+                0.00    0.00     556/556         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_block(unsigned short const*, bm::encoder&) [58]
+                0.00    0.00    1114/1114        bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::find_bit_best_encoding(unsigned int const*) [61]
+                0.00    0.00    1009/1009        bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_bit_interval(unsigned int const*, bm::encoder&, unsigned int) [77]
+                0.00    0.00     105/105         unsigned int bm::bit_block_convert_to_arr<unsigned short>(unsigned short*, unsigned int const*, bool) [78]
+-----------------------------------------------
+                0.00    0.00       1/368434421     bm::operation_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, unsigned char const*, bm::set_operation, bool) [65]
+                1.29    0.00 122815740/368434421     bvenumerate(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [3]
+                2.57    0.00 245618680/368434421     readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[23]     1.1    3.86    0.00 368434421         bm::serial_stream_iterator<bm::decoder, unsigned int>::serial_stream_iterator(unsigned char const*) [23]
+-----------------------------------------------
+                1.59    0.91 5633041/5633041     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[24]     0.7    1.59    0.91 5633041         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::deoptimize_block(unsigned int, unsigned int, bool) [24]
+                0.78    0.00 5633041/6607190     void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*, unsigned int) [28]
+                0.14    0.00 5633041/6210782     frame_dummy [35]
+-----------------------------------------------
+                2.36    0.00 6054375/6054375     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[25]     0.7    2.36    0.00 6054375         bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_AND(unsigned int*, unsigned int*) [25]
+-----------------------------------------------
+                2.31    0.00 736279393/736279393     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[26]     0.7    2.31    0.00 736279393         bm::serial_stream_iterator<bm::decoder, unsigned int>::next() [26]
+-----------------------------------------------
+                2.04    0.00 592073841/592073841     bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&) [5]
+[27]     0.6    2.04    0.00 592073841         unsigned int bm::gap_add_value<unsigned short>(unsigned short*, unsigned int) [27]
+-----------------------------------------------
+                0.06    0.00  420023/6607190     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+                0.08    0.00  554126/6607190     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+                0.78    0.00 5633041/6607190     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::deoptimize_block(unsigned int, unsigned int, bool) [24]
+[28]     0.3    0.91    0.00 6607190         void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*, unsigned int) [28]
+-----------------------------------------------
+                0.62    0.00 3869678/3869678     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[29]     0.2    0.62    0.00 3869678         bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_SUB(unsigned int*, unsigned int*) [29]
+-----------------------------------------------
+                0.49    0.00 107697800/107697800     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+[30]     0.1    0.49    0.00 107697800         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::assign_gap(unsigned int, unsigned int, unsigned short const*, unsigned int, unsigned int*, unsigned short*) [30]
+-----------------------------------------------
+                0.41    0.00 8135569/8135569     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+[31]     0.1    0.41    0.00 8135569         void bm::gap_sub_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [31]
+-----------------------------------------------
+                0.31    0.00 2187039/2187039     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[32]     0.1    0.31    0.00 2187039         bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_AND(unsigned int*, unsigned int*) [32]
+-----------------------------------------------
+                                                 <spontaneous>
+[33]     0.1    0.26    0.00                 bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::count() const [33]
+-----------------------------------------------
+                0.02    0.16 1769735/1769735     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+[34]     0.1    0.02    0.16 1769735         bm::gap_operation_and(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [34]
+                0.16    0.00 1769735/107697800     void bm::gap_buff_op<unsigned short, bm::and_func>(unsigned short*, unsigned short const*, unsigned int, unsigned short const*, unsigned int, unsigned int&) [19]
+-----------------------------------------------
+                0.00    0.00       2/6210782     readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+                0.00    0.00       5/6210782     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+                0.00    0.00    3640/6210782     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_block_or(unsigned int, unsigned int, unsigned int*, unsigned int const*) [60]
+                0.00    0.00   19968/6210782     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::check_allocate_block(unsigned int, unsigned int, int, int*, bool) [48]
+                0.01    0.00  554126/6210782     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+                0.14    0.00 5633041/6210782     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::deoptimize_block(unsigned int, unsigned int, bool) [24]
+[35]     0.0    0.15    0.00 6210782         frame_dummy [35]
+-----------------------------------------------
+                                                 <spontaneous>
+[36]     0.0    0.14    0.00                 bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::process_id_list(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, bm::set_operation) [36]
+-----------------------------------------------
+                0.13    0.00  155078/155078      bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+[37]     0.0    0.13    0.00  155078         void bm::gap_and_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [37]
+-----------------------------------------------
+                                                 <spontaneous>
+[38]     0.0    0.11    0.00                 bm::bit_in<bm::decoder>::bic_decode_u16_cm(unsigned short*, unsigned int, unsigned short, unsigned short) [38]
+-----------------------------------------------
+                                                 <spontaneous>
+[39]     0.0    0.05    0.00                 bm::deseriaizer_base<bm::decoder, unsigned int>::read_bic_sb_arr(bm::decoder&, unsigned int, unsigned int*, unsigned int*) [39]
+-----------------------------------------------
+                                                 <spontaneous>
+[40]     0.0    0.04    0.00                 bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::zero_block(unsigned int, unsigned int) [40]
+-----------------------------------------------
+                0.04    0.00       1/1           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[41]     0.0    0.04    0.00       1         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned int) [41]
+                0.00    0.00       1/1           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_range(unsigned int, unsigned int, bool) [64]
+-----------------------------------------------
+                0.00    0.00       1/209114      bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*) [6]
+                0.00    0.00   18854/209114      bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_gap_block(unsigned short const*, bm::encoder&) [57]
+                0.03    0.00  190259/209114      bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::finalize_target_vector(bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::set_operation, unsigned int) [4]
+[42]     0.0    0.03    0.00  209114         unsigned int bm::gap_bit_count_unr<unsigned short>(unsigned short const*) [42]
+-----------------------------------------------
+                                                 <spontaneous>
+[43]     0.0    0.03    0.00                 bm::gap_operation_or(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [43]
+-----------------------------------------------
+                                                 <spontaneous>
+[44]     0.0    0.03    0.00                 void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [44]
+-----------------------------------------------
+                0.02    0.00       1/1           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+[45]     0.0    0.02    0.00       1         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int*) [45]
+-----------------------------------------------
+                                                 <spontaneous>
+[46]     0.0    0.02    0.00                 unsigned int bm::gap_bitset_xor_count<unsigned short>(unsigned int const*, unsigned short const*) [46]
+-----------------------------------------------
+                                                 <spontaneous>
+[47]     0.0    0.02    0.00                 bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_XOR(unsigned int*, unsigned int*) [47]
+-----------------------------------------------
+                0.01    0.01   19968/19968       bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_block(unsigned int const*, unsigned int, unsigned int, unsigned int) [49]
+[48]     0.0    0.01    0.01   19968         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::check_allocate_block(unsigned int, unsigned int, int, int*, bool) [48]
+                0.01    0.00   19968/22728       bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int, unsigned int*, bool) [53]
+                0.00    0.00   19968/6210782     frame_dummy [35]
+-----------------------------------------------
+                0.00    0.02   19968/19968       bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_sorted(unsigned int const*, unsigned int, bool) [50]
+[49]     0.0    0.00    0.02   19968         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_block(unsigned int const*, unsigned int, unsigned int, unsigned int) [49]
+                0.01    0.01   19968/19968       bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::check_allocate_block(unsigned int, unsigned int, int, int*, bool) [48]
+-----------------------------------------------
+                0.00    0.02   19968/19968       readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[50]     0.0    0.00    0.02   19968         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_sorted(unsigned int const*, unsigned int, bool) [50]
+                0.00    0.02   19968/19968       bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_block(unsigned int const*, unsigned int, unsigned int, unsigned int) [49]
+-----------------------------------------------
+                0.00    0.00  129675/754955      bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_block(unsigned short const*, bm::encoder&) [58]
+                0.01    0.00  625280/754955      bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_array(unsigned short const*, unsigned int, bm::encoder&, bool) [55]
+[51]     0.0    0.01    0.00  754955         bm::bit_out<bm::encoder>::gamma(unsigned int) [51]
+-----------------------------------------------
+                0.01    0.00  420020/420020      bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+[52]     0.0    0.01    0.00  420020         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::reserve_top_blocks(unsigned int) [52]
+-----------------------------------------------
+                0.00    0.00    2760/22728       bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_block_or(unsigned int, unsigned int, unsigned int*, unsigned int const*) [60]
+                0.01    0.00   19968/22728       bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::check_allocate_block(unsigned int, unsigned int, int, int*, bool) [48]
+[53]     0.0    0.01    0.00   22728         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int, unsigned int*, bool) [53]
+-----------------------------------------------
+                                                 <spontaneous>
+[54]     0.0    0.01    0.00                 bm::gap_operation_xor(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [54]
+-----------------------------------------------
+                0.00    0.01   18318/18318       bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+[55]     0.0    0.00    0.01   18318         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_array(unsigned short const*, unsigned int, bm::encoder&, bool) [55]
+                0.01    0.00  625280/754955      bm::bit_out<bm::encoder>::gamma(unsigned int) [51]
+-----------------------------------------------
+                                                 <spontaneous>
+[56]     0.0    0.01    0.00                 bm::decoder_little_endian::get_32(unsigned int*, unsigned int) [56]
+-----------------------------------------------
+                0.00    0.00   18854/18854       bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+[57]     0.0    0.00    0.00   18854         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_gap_block(unsigned short const*, bm::encoder&) [57]
+                0.00    0.00   18854/209114      unsigned int bm::gap_bit_count_unr<unsigned short>(unsigned short const*) [42]
+                0.00    0.00   18298/18298       unsigned short bm::gap_convert_to_arr<unsigned short, unsigned short>(unsigned short*, unsigned short const*, unsigned int, bool) [73]
+-----------------------------------------------
+                0.00    0.00     556/556         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+[58]     0.0    0.00    0.00     556         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_block(unsigned short const*, bm::encoder&) [58]
+                0.00    0.00  129675/754955      bm::bit_out<bm::encoder>::gamma(unsigned int) [51]
+-----------------------------------------------
+                0.00    0.00    6401/6401        readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[59]     0.0    0.00    0.00    6401         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_or(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&) [59]
+                0.00    0.00    6400/6400        bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_block_or(unsigned int, unsigned int, unsigned int*, unsigned int const*) [60]
+-----------------------------------------------
+                0.00    0.00    6400/6400        bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_or(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&) [59]
+[60]     0.0    0.00    0.00    6400         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_block_or(unsigned int, unsigned int, unsigned int*, unsigned int const*) [60]
+                0.00    0.00    2760/22728       bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int, unsigned int*, bool) [53]
+                0.00    0.00    3640/6210782     frame_dummy [35]
+                0.00    0.00    2760/2760        bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clone_gap_block(unsigned short const*, bool&) [75]
+-----------------------------------------------
+                0.00    0.00    1114/1114        bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+[61]     0.0    0.00    0.00    1114         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::find_bit_best_encoding(unsigned int const*) [61]
+                0.00    0.00    1114/6057831     bm::bit_block_change64(unsigned int const*, unsigned int) [21]
+                0.00    0.00    1114/1114        bm::bit_count_min_unroll(unsigned int const*, unsigned int const*) [76]
+-----------------------------------------------
+                0.00    0.00       1/2           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_range(unsigned int, unsigned int, bool) [64]
+                0.00    0.00       1/2           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::invert() [63]
+[62]     0.0    0.00    0.00       2         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clear_range_no_check(unsigned int, unsigned int) [62]
+                0.00    0.00       2/4200246     bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_all_zero(unsigned int, unsigned int) [20]
+                0.00    0.00       3/116542576     bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation) [14]
+-----------------------------------------------
+                0.00    0.00       1/1           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[63]     0.0    0.00    0.00       1         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::invert() [63]
+                0.00    0.00       1/2           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clear_range_no_check(unsigned int, unsigned int) [62]
+-----------------------------------------------
+                0.00    0.00       1/1           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned int) [41]
+[64]     0.0    0.00    0.00       1         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_range(unsigned int, unsigned int, bool) [64]
+                0.00    0.00       1/2           bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clear_range_no_check(unsigned int, unsigned int) [62]
+-----------------------------------------------
+                0.00    0.00       1/1           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[65]     0.0    0.00    0.00       1         bm::operation_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, unsigned char const*, bm::set_operation, bool) [65]
+                0.00    0.00       1/368434421     bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+                0.00    0.00       1/368434421     bm::serial_stream_iterator<bm::decoder, unsigned int>::serial_stream_iterator(unsigned char const*) [23]
+-----------------------------------------------
+                0.00    0.00   95149/95149       readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[72]     0.0    0.00    0.00   95149         void std::vector<unsigned int, std::allocator<unsigned int> >::_M_realloc_insert<unsigned int>(__gnu_cxx::__normal_iterator<unsigned int*, std::vector<unsigned int, std::allocator<unsigned int> > >, unsigned int&&) [72]
+-----------------------------------------------
+                0.00    0.00   18298/18298       bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_gap_block(unsigned short const*, bm::encoder&) [57]
+[73]     0.0    0.00    0.00   18298         unsigned short bm::gap_convert_to_arr<unsigned short, unsigned short>(unsigned short*, unsigned short const*, unsigned int, bool) [73]
+-----------------------------------------------
+                0.00    0.00    3027/3027        bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [2]
+[74]     0.0    0.00    0.00    3027         bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_ASSIGN(unsigned int*, unsigned int*) [74]
+-----------------------------------------------
+                0.00    0.00    2760/2760        bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_block_or(unsigned int, unsigned int, unsigned int*, unsigned int const*) [60]
+[75]     0.0    0.00    0.00    2760         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clone_gap_block(unsigned short const*, bool&) [75]
+-----------------------------------------------
+                0.00    0.00    1114/1114        bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::find_bit_best_encoding(unsigned int const*) [61]
+[76]     0.0    0.00    0.00    1114         bm::bit_count_min_unroll(unsigned int const*, unsigned int const*) [76]
+-----------------------------------------------
+                0.00    0.00    1009/1009        bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+[77]     0.0    0.00    0.00    1009         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_bit_interval(unsigned int const*, bm::encoder&, unsigned int) [77]
+-----------------------------------------------
+                0.00    0.00     105/105         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [22]
+[78]     0.0    0.00    0.00     105         unsigned int bm::bit_block_convert_to_arr<unsigned short>(unsigned short*, unsigned int const*, bool) [78]
+-----------------------------------------------
+                0.00    0.00      32/32          readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[79]     0.0    0.00    0.00      32         bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::calc_stat(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::statistics*) const [79]
+-----------------------------------------------
+                0.00    0.00       1/10          readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+                0.00    0.00       3/10          bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::deserializer() [86]
+                0.00    0.00       6/10          bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::deserializer() [81]
+[80]     0.0    0.00    0.00      10         bm::byte_buffer<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned long, bool) [80]
+-----------------------------------------------
+                0.00    0.00       2/2           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[81]     0.0    0.00    0.00       2         bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::deserializer() [81]
+                0.00    0.00       6/10          bm::byte_buffer<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned long, bool) [80]
+-----------------------------------------------
+                0.00    0.00       2/2           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[82]     0.0    0.00    0.00       2         bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::~deserializer() [82]
+-----------------------------------------------
+                0.00    0.00       2/2           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[83]     0.0    0.00    0.00       2         bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::~blocks_manager() [83]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [232]
+[84]     0.0    0.00    0.00       1         _GLOBAL__sub_I_N [84]
+-----------------------------------------------
+                0.00    0.00       1/1           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[85]     0.0    0.00    0.00       1         bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::~serializer() [85]
+-----------------------------------------------
+                0.00    0.00       1/1           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[86]     0.0    0.00    0.00       1         bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::deserializer() [86]
+                0.00    0.00       3/10          bm::byte_buffer<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned long, bool) [80]
+-----------------------------------------------
+                0.00    0.00       1/1           readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [1]
+[87]     0.0    0.00    0.00       1         bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::~deserializer() [87]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [84] _GLOBAL__sub_I_N       [53] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int, unsigned int*, bool) [29] bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_SUB(unsigned int*, unsigned int*)
+   [3] bvenumerate(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [83] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::~blocks_manager() [74] bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_ASSIGN(unsigned int*, unsigned int*)
+   [1] readMatrixFromFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [9] bm::deseriaizer_base<bm::decoder, unsigned int>::read_id_list(bm::decoder&, unsigned int, unsigned short*) [25] bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_AND(unsigned int*, unsigned int*)
+  [55] bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_array(unsigned short const*, unsigned int, bm::encoder&, bool) [5] bm::deseriaizer_base<bm::decoder, unsigned int>::read_gap_block(bm::decoder&, unsigned int, unsigned short*, unsigned short&) [47] bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_XOR(unsigned int*, unsigned int*)
+  [58] bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::gamma_gap_block(unsigned short const*, bm::encoder&) [39] bm::deseriaizer_base<bm::decoder, unsigned int>::read_bic_sb_arr(bm::decoder&, unsigned int, unsigned int*, unsigned int*) [10] bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_COUNT_SUB_AB(unsigned int*, unsigned int*)
+  [57] bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_gap_block(unsigned short const*, bm::encoder&) [43] bm::gap_operation_or(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [26] bm::serial_stream_iterator<bm::decoder, unsigned int>::next()
+  [77] bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::encode_bit_interval(unsigned int const*, bm::encoder&, unsigned int) [44] void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [23] bm::serial_stream_iterator<bm::decoder, unsigned int>::serial_stream_iterator(unsigned char const*)
+  [61] bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::find_bit_best_encoding(unsigned int const*) [28] void bm::gap_add_to_bitset<unsigned short>(unsigned int*, unsigned short const*, unsigned int) [78] unsigned int bm::bit_block_convert_to_arr<unsigned short>(unsigned short*, unsigned int const*, bool)
+  [22] bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::serialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&, unsigned char*, unsigned long) [37] void bm::gap_and_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [8] unsigned int bm::bit_block_calc_count_range<false, false>(unsigned int const*, unsigned int, unsigned int)
+  [85] bm::serializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::~serializer() [42] unsigned int bm::gap_bit_count_unr<unsigned short>(unsigned short const*) [6] bm::combine_count_operation_with_block(unsigned int const*, unsigned int const*, bm::distance_metric_descriptor*, bm::distance_metric_descriptor*)
+  [80] bm::byte_buffer<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned long, bool) [11] unsigned int bm::gap_buff_count_op<unsigned short, bm::and_func>(unsigned short const*, unsigned short const*) [38] bm::bit_in<bm::decoder>::bic_decode_u16_cm(unsigned short*, unsigned int, unsigned short, unsigned short)
+  [19] void bm::gap_buff_op<unsigned short, bm::and_func>(unsigned short*, unsigned short const*, unsigned int, unsigned short const*, unsigned int, unsigned int&) [17] unsigned int bm::gap_buff_count_op<unsigned short, bm::sub_func>(unsigned short const*, unsigned short const*) [7] bm::bit_in<bm::decoder>::gamma()
+  [86] bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::deserializer() [34] bm::gap_operation_and(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [51] bm::bit_out<bm::encoder>::gamma(unsigned int)
+  [87] bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder_little_endian>::~deserializer() [18] bm::gap_operation_sub(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [49] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_block(unsigned int const*, unsigned int, unsigned int, unsigned int)
+  [81] bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::deserializer() [54] bm::gap_operation_xor(unsigned short const*, unsigned short const*, unsigned short*, unsigned int&) [50] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::import_sorted(unsigned int const*, unsigned int, bool)
+  [82] bm::deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::decoder>::~deserializer() [31] void bm::gap_sub_to_bitset<unsigned short>(unsigned int*, unsigned short const*) [62] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clear_range_no_check(unsigned int, unsigned int)
+  [27] unsigned int bm::gap_add_value<unsigned short>(unsigned short*, unsigned int) [21] bm::bit_block_change64(unsigned int const*, unsigned int) [59] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_or(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > const&)
+  [16] unsigned int bm::gap_set_array<unsigned short>(unsigned short*, unsigned short const*, unsigned int) [73] unsigned short bm::gap_convert_to_arr<unsigned short, unsigned short>(unsigned short*, unsigned short const*, unsigned int, bool) [60] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_block_or(unsigned int, unsigned int, unsigned int*, unsigned int const*)
+  [30] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::assign_gap(unsigned int, unsigned int, unsigned short const*, unsigned int, unsigned int*, unsigned short*) [76] bm::bit_count_min_unroll(unsigned int const*, unsigned int const*) [13] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, unsigned int const*, bool, bm::operation)
+  [40] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::zero_block(unsigned int, unsigned int) [12] unsigned int bm::gap_bitset_and_count<unsigned short>(unsigned int const*, unsigned short const*) [14] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::combine_operation_with_block(unsigned int, bool, unsigned int*, unsigned int const*, bool, bm::operation)
+  [20] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_all_zero(unsigned int, unsigned int) [46] unsigned int bm::gap_bitset_xor_count<unsigned short>(unsigned int const*, unsigned short const*) [63] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::invert()
+  [75] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::clone_gap_block(unsigned short const*, bool&) [56] bm::decoder_little_endian::get_32(unsigned int*, unsigned int) [41] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::resize(unsigned int)
+  [24] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::deoptimize_block(unsigned int, unsigned int, bool) [2] bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, unsigned int*, bm::set_operation, bool) [64] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_range(unsigned int, unsigned int, bool)
+  [52] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::reserve_top_blocks(unsigned int) [36] bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::process_id_list(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::serial_stream_iterator<bm::decoder, unsigned int>&, bm::set_operation) [33] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::count() const
+  [48] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::check_allocate_block(unsigned int, unsigned int, int, int*, bool) [4] bm::iterator_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >, bm::serial_stream_iterator<bm::decoder, unsigned int> >::finalize_target_vector(bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, bm::set_operation, unsigned int) [79] bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::calc_stat(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::statistics*) const
+  [15] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::optimize_gap_convert_bit_block(unsigned int, unsigned int, unsigned int*, unsigned int) [65] bm::operation_deserializer<bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > > >::deserialize(bm::bvector<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >&, unsigned char const*, bm::set_operation, bool) [72] void std::vector<unsigned int, std::allocator<unsigned int> >::_M_realloc_insert<unsigned int>(__gnu_cxx::__normal_iterator<unsigned int*, std::vector<unsigned int, std::allocator<unsigned int> > >, unsigned int&&)
+  [45] bm::blocks_manager<bm::mem_alloc<bm::block_allocator, bm::ptr_allocator, bm::alloc_pool<bm::block_allocator, bm::ptr_allocator> > >::set_block(unsigned int, unsigned int*) [32] bm::serial_stream_iterator<bm::decoder, unsigned int>::get_bit_block_AND(unsigned int*, unsigned int*) [35] frame_dummy
