@@ -27,25 +27,37 @@ using namespace std;
 // #define ADVANCED_N 4
 // #define ADVANCED_D 6404
 
+#define ADVANCED_N 6404
+#define ADVANCED_D 5000
+
 // #define ADVANCED_N 5
 // #define ADVANCED_D 5
 
 // #define ADVANCED_N 3
 // #define ADVANCED_D 6404
 
-#define ADVANCED_N 6404
-#define ADVANCED_D 20000
+// #define ADVANCED_N 6404
+// #define ADVANCED_D 20000
+
+// #define ADVANCED_N 6404
+// #define ADVANCED_D 5000
 std::vector<std::vector<unsigned int> > all_positions;
 float ehh0[ADVANCED_D];
 float ehh1[ADVANCED_D];
 
 
 
-int NUM_THREAD = 8;
+
+
+
+#define NUM_THREAD 16
+string logg[NUM_THREAD];
+
+map<int, vector<int> > map_per_thread[NUM_THREAD];
+
 int N = 0;
 int D = 0;
 
-int group_count[ADVANCED_D];
 
 void bvenumerate(bm::bvector<> bv, string msg=""){
      //bm::bvector<> bv = bvs[0];
@@ -121,7 +133,7 @@ void readMatrixMethod2(const std::string& filename){
     file.close();
 }
 
-void calc_EHH(int locus=0){
+void calc_EHH(map<int, vector<int> >& m, int locus=0, bool print=false){
     int ehh0_before_norm = 0;
     int ehh1_before_norm = 0;
     //ehh0[locus] = 0;
@@ -144,6 +156,7 @@ void calc_EHH(int locus=0){
 
     int totgc=0;
     vector<unsigned int> &v = all_positions[locus];
+
     if(v.size()==0){
         n_c0 = ADVANCED_N;
 
@@ -184,7 +197,7 @@ void calc_EHH(int locus=0){
     n_c0_squared_minus =  n_c0* n_c0 -  n_c0;
     
     for ( int i = locus+1; i<all_positions.size(); i++ ){
-        map<int, vector<int> > m;
+         //OPT IDEA: INSTEAD OF MAP JUST USE ARR OF VECTOR
         v = all_positions[i];
         for (int set_bit_pos : v){
             //cout<<set_bit_pos<<" ";
@@ -223,11 +236,19 @@ void calc_EHH(int locus=0){
         }
 
         //cout<<"GCC:"<<i<<" "<<totgc<<endl;
+        
         ehh1[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
         ehh0[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
 
-        cout<<"Iter "<<i<<": EHH1["<<locus<<"]="<<ehh1[locus]<<","<<ehh0[locus]<<endl;
-
+        if(n_c1_squared_minus==0){
+            ehh1[locus] = 0;
+        }
+        if(n_c0_squared_minus==0){
+            ehh0[locus] = 0;
+        }
+        if(print)
+            cout<<"Iter "<<i<<": EHH1["<<locus<<"]="<<ehh1[locus]<<","<<ehh0[locus]<<endl;
+        m.clear();
     }
     
     // for(int i = 0; i< ADVANCED_N; i++){
@@ -245,48 +266,205 @@ void calc_EHH(int locus=0){
     // }
 }
 
-void thread_ihs(int tid){
+void thread_ihs(int tid, map<int, vector<int> >& m){
     int elem_per_block = floor(ADVANCED_D/NUM_THREAD);
-    int start = tid*elem_per_block;
-    int end = start + elem_per_block;
+    // int start = tid*elem_per_block + 1;
+    // int end = start + elem_per_block -1 ;
+    int start = tid*elem_per_block ;
+    int end = start + elem_per_block  ;
     if(tid == NUM_THREAD-1 ){
-        end = NUM_THREAD-1;
+        end = ADVANCED_D;
     }
+
+    // for(int j = start; j< end; j++){
+    //     //cout<<j<<" ";
+    //     logg[tid]+=to_string(j)+" ";
+    // }
+    // logg[tid]+="\n";
+
+    ///*
     for(int j = start; j< end; j++){
-        calc_EHH(j);
+        //calc_EHH(m[tid], j);
+        int locus = j;
+        int ehh0_before_norm = 0;
+        int ehh1_before_norm = 0;
+        //ehh0[locus] = 0;
+        //ehh1[locus] = 0;
+        int n_c0= 0;
+        int n_c1=0;
+        int n_c0_squared_minus = 0;
+        int n_c1_squared_minus = 0;
+
+        int group_count[ADVANCED_N];
+        int group_id[ADVANCED_N];
+        bool isDerived[ADVANCED_N]; 
+
+        //will be vectorized
+        for(int i = 0; i<ADVANCED_N; i++){
+            group_count[i] = 0;
+            group_id[i] = 0;
+            isDerived[i] = false;
+        }
+
+        int totgc=0;
+        vector<unsigned int> v = all_positions[locus];
+
+        if(v.size()==0){
+            n_c0 = ADVANCED_N;
+
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+
+            ehh0_before_norm = n_c0*n_c0 - n_c0;
+        }else if (v.size()==ADVANCED_N){ // all set
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+            n_c1 = ADVANCED_N;
+            
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+            }
+            ehh1_before_norm = n_c1*n_c1 - n_c1;
+
+        }else{
+            group_count[1] = v.size();
+            group_count[0] = ADVANCED_N - v.size();
+            n_c1 = v.size();
+            n_c0 = ADVANCED_N - v.size();
+
+            for (int set_bit_pos : v){
+                group_id[set_bit_pos] = 1;
+            }
+            
+            totgc+=2;
+
+            ehh0_before_norm = n_c0*n_c0 - n_c0;
+
+            ehh1_before_norm = n_c1*n_c1 - n_c1;
+
+        }
+
+        
+        n_c1_squared_minus =  n_c1* n_c1 -  n_c1;
+        n_c0_squared_minus =  n_c0* n_c0 -  n_c0;
+        
+        for ( int i = locus+1; i<all_positions.size(); i++ ){
+            //OPT IDEA: INSTEAD OF MAP JUST USE ARR OF VECTOR
+            v = all_positions[i];
+            for (int set_bit_pos : v){
+                //cout<<set_bit_pos<<" ";
+                int old_group_id = group_id[set_bit_pos];
+                m[old_group_id].push_back(set_bit_pos);
+            }
+            //cout<<endl;
+            for (const auto &ele : m) {
+                int old_group_id = ele.first;
+                //cout<<"old id"<<old_group_id<<endl;
+                int newgroup_size = ele.second.size() ;
+                
+                if(group_count[old_group_id] == newgroup_size || newgroup_size == 0){
+                    continue;
+                }
+                
+                
+                for(int v: ele.second){
+                    group_id[v] = totgc;
+                }
+                
+                int del_update = -pow(group_count[old_group_id],2) + pow(newgroup_size,2) + pow(group_count[old_group_id] - newgroup_size,2);
+                group_count[old_group_id] -= newgroup_size;
+                group_count[totgc] += newgroup_size;
+                totgc+=1;
+
+                bool isDerivedGroup =  isDerived[ele.second[0]];
+                if(isDerivedGroup)// just check first element if it is derived or not, 
+                {
+                    ehh1_before_norm += del_update;
+                    
+                }else{
+                    ehh0_before_norm += del_update;
+                }
+                
+            }
+
+            //cout<<"GCC:"<<i<<" "<<totgc<<endl;
+            
+            ehh1[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
+            ehh0[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
+
+            if(n_c1_squared_minus==0){
+                ehh1[locus] = 0;
+            }
+            if(n_c0_squared_minus==0){
+                ehh0[locus] = 0;
+            }
+            // if(print)
+            //     cout<<"Iter "<<i<<": EHH1["<<locus<<"]="<<ehh1[locus]<<","<<ehh0[locus]<<endl;
+            //
+            //logg[tid]+="map size before"+to_string(m.size())+"\n";
+            //cout<< logg[tid];
+            m.clear();
+            //logg[tid]+="map size after"+to_string(m.size())+"\n";
+            //cout<< logg[tid];
+
+        }
+        
     }
-    cout<<"finishing thread #"<<tid<<endl;
+    //*/
+    
+    logg[tid]+="finishing thread #"+to_string(tid)+"\n";
+    cout<<"finishing thread #"+to_string(tid)+"\n";
 }
 
 float calc_iHS(){
-    float ihh1=0;
-    float ihh0=0;
 
-    int total_calc_to_be_done = ADVANCED_D;
+    bool thread_enabled = true;
+    if (thread_enabled)
+    {
+        int total_calc_to_be_done = ADVANCED_D;
 
-    std::thread * myThreads = new std::thread[NUM_THREAD];
-     for (int i = 0; i < NUM_THREAD; i++)
-    {
-      myThreads[i] = std::thread(thread_ihs, i);
+        std::thread *myThreads = new std::thread[NUM_THREAD];
+        for (int i = 0; i < NUM_THREAD; i++)
+        {
+            myThreads[i] = std::thread(thread_ihs, i, std::ref(map_per_thread[i]));
+        }
+        for (int i = 0; i < NUM_THREAD; i++)
+        // Join will block our main thread, and so the program won't exit until
+        // everyone comes home.
+        {
+            myThreads[i].join();
+        }
+        delete[] myThreads;
+        cout << "all threads finished. now calculating ihh..." << endl;
+    }else{
+        map<int, vector<int> > m;
+        #pragma clang loop unroll_count(8) // 
+        #pragma clang loop vectorize(assume_safety)
+        for(int i = 0 ; i< ADVANCED_D; i++){
+            calc_EHH(m, i);
+        }
     }
-  for (int i = 0; i < NUM_THREAD; i++)
-      // Join will block our main thread, and so the program won't exit until
-      // everyone comes home.
-    {
-      myThreads[i].join();
-    }
-  delete [] myThreads;
-  cout<<"all threads finished. now calculating ihh..."<<endl;
+
+    //THREADED
+
+   
   //sum all the ones with 0
   //sum all the ones with 1
+    double ihh1=0;
+    double ihh0=0;
     for (int i = 1; i < ADVANCED_D; i++){
-        ihh1 += (ehh1[i-1] + ehh1[i])*1; 
-        ihh0 += (ehh0[i-1] + ehh0[i])*1; 
+        //cout<<i<<" "<<(ehh1[i-1] + ehh1[i]) << " " <<(ehh0[i-1] + ehh0[i])<<endl;
+        ihh1 += (ehh1[i-1] + ehh1[i])*0.5; 
+        ihh0 += (ehh0[i-1] + ehh0[i])*0.5; 
     }
-
+    cout<<"ihh1, ihh0 = "<<ihh1<<" "<<ihh0<<endl;
+    for(int i =0; i< NUM_THREAD; i++){
+        cout<<logg[i]<<endl;
+    }
     return log(ihh1/ihh0);
 }
 void readMatrixHalfTime(const std::string& filename) {
+    int group_count[ADVANCED_D];
     bm::serializer<bm::bvector<> >::buffer sbuf[ADVANCED_D]; // declare serialization buffers
     bm::operation_deserializer<bm::bvector<> > od;
     std::ifstream file(filename);
@@ -441,6 +619,7 @@ void readMatrixHalfTime(const std::string& filename) {
 
 
 void readMatrixFromFile(const std::string& filename) {
+    int group_count[ADVANCED_D];
     bm::serializer<bm::bvector<> >::buffer sbuf[ADVANCED_D]; // declare serialization buffers
     
     bm::bvector<> allbvs[ADVANCED_D]; // declare serialization buffers
@@ -636,7 +815,10 @@ void readMatrixFromFile(const std::string& filename) {
     //     } 
     // }
     
-    string filename = "data/out20000.impute.hap";
+    string filename = "data/out5000.impute.hap";
+   // string filename = "data/out500.impute.hap";
+
+    //string filename = "data/out20000.impute.hap";
     //string filename ="data/out3.txt";
     //string filename ="test.hap";
 
@@ -645,8 +827,15 @@ void readMatrixFromFile(const std::string& filename) {
     // readMatrixFromFile("test.hap");
     
   readMatrixMethod2(filename); 
-  calc_EHH(0);
-  //cout<<"iHS="<<calc_iHS();
+  //calc_EHH(4, true);
+  //calc_EHH(5, true);
+  //calc_EHH(6, true);
+
+  //calc_EHH(7, true);
+
+
+//   calc_EHH(7504);
+  cout<<"iHS="<<calc_iHS();
 
 
     return 0;
