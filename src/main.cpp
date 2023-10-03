@@ -44,7 +44,8 @@ using namespace std;
 std::vector<std::vector<unsigned int> > all_positions;
 float ehh0[ADVANCED_D];
 float ehh1[ADVANCED_D];
-
+float ehh0_downstream[ADVANCED_D];
+float ehh1_downstream[ADVANCED_D];
 
 
 
@@ -54,6 +55,8 @@ float ehh1[ADVANCED_D];
 string logg[NUM_THREAD];
 
 map<int, vector<int> > map_per_thread[NUM_THREAD];
+map<int, vector<int> > map_downstream_per_thread[NUM_THREAD];
+
 
 int N = 0;
 int D = 0;
@@ -265,27 +268,7 @@ void calc_EHH(map<int, vector<int> >& m, int locus=0, bool print=false){
     //     cout<<"GID["<<i<<"]="<<group_id[i]<<endl;
     // }
 }
-
-void thread_ihs(int tid, map<int, vector<int> >& m){
-    int elem_per_block = floor(ADVANCED_D/NUM_THREAD);
-    // int start = tid*elem_per_block + 1;
-    // int end = start + elem_per_block -1 ;
-    int start = tid*elem_per_block ;
-    int end = start + elem_per_block  ;
-    if(tid == NUM_THREAD-1 ){
-        end = ADVANCED_D;
-    }
-
-    // for(int j = start; j< end; j++){
-    //     //cout<<j<<" ";
-    //     logg[tid]+=to_string(j)+" ";
-    // }
-    // logg[tid]+="\n";
-
-    ///*
-    for(int j = start; j< end; j++){
-        //calc_EHH(m[tid], j);
-        int locus = j;
+void calc_EHH2(int locus, map<int, vector<int> > & m){
         int ehh0_before_norm = 0;
         int ehh1_before_norm = 0;
         //ehh0[locus] = 0;
@@ -408,7 +391,163 @@ void thread_ihs(int tid, map<int, vector<int> >& m){
             //cout<< logg[tid];
 
         }
+    }
+
+    void calc_EHH_downstream(int locus, map<int, vector<int> > & m){
+        if(locus == 0){
+            ehh1_downstream[0] = 0;
+            ehh0_downstream[locus] = 0;
+            return;
+        }
+        int ehh0_before_norm = 0;
+        int ehh1_before_norm = 0;
+        //ehh0[locus] = 0;
+        //ehh1[locus] = 0;
+        int n_c0= 0;
+        int n_c1=0;
+        int n_c0_squared_minus = 0;
+        int n_c1_squared_minus = 0;
+
+        int group_count[ADVANCED_N];
+        int group_id[ADVANCED_N];
+        bool isDerived[ADVANCED_N]; 
+
+        //will be vectorized
+        for(int i = 0; i<ADVANCED_N; i++){
+            group_count[i] = 0;
+            group_id[i] = 0;
+            isDerived[i] = false;
+        }
+
+        int totgc=0;
+        vector<unsigned int> v = all_positions[locus];
+
+        if(v.size()==0){
+            n_c0 = ADVANCED_N;
+
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+
+            ehh0_before_norm = n_c0*n_c0 - n_c0;
+        }else if (v.size()==ADVANCED_N){ // all set
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+            n_c1 = ADVANCED_N;
+            
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+            }
+            ehh1_before_norm = n_c1*n_c1 - n_c1;
+
+        }else{
+            group_count[1] = v.size();
+            group_count[0] = ADVANCED_N - v.size();
+            n_c1 = v.size();
+            n_c0 = ADVANCED_N - v.size();
+
+            for (int set_bit_pos : v){
+                group_id[set_bit_pos] = 1;
+            }
+            
+            totgc+=2;
+
+            ehh0_before_norm = n_c0*n_c0 - n_c0;
+
+            ehh1_before_norm = n_c1*n_c1 - n_c1;
+
+        }
+
         
+        n_c1_squared_minus =  n_c1* n_c1 -  n_c1;
+        n_c0_squared_minus =  n_c0* n_c0 -  n_c0;
+        
+        for ( int i = locus-1; i>=0; i-- ){
+            //OPT IDEA: INSTEAD OF MAP JUST USE ARR OF VECTOR
+            v = all_positions[i];
+            for (int set_bit_pos : v){
+                //cout<<set_bit_pos<<" ";
+                int old_group_id = group_id[set_bit_pos];
+                m[old_group_id].push_back(set_bit_pos);
+            }
+            //cout<<endl;
+            for (const auto &ele : m) {
+                int old_group_id = ele.first;
+                //cout<<"old id"<<old_group_id<<endl;
+                int newgroup_size = ele.second.size() ;
+                
+                if(group_count[old_group_id] == newgroup_size || newgroup_size == 0){
+                    continue;
+                }
+                
+                
+                for(int v: ele.second){
+                    group_id[v] = totgc;
+                }
+                
+                int del_update = -pow(group_count[old_group_id],2) + pow(newgroup_size,2) + pow(group_count[old_group_id] - newgroup_size,2);
+                group_count[old_group_id] -= newgroup_size;
+                group_count[totgc] += newgroup_size;
+                totgc+=1;
+
+                bool isDerivedGroup =  isDerived[ele.second[0]];
+                if(isDerivedGroup)// just check first element if it is derived or not, 
+                {
+                    ehh1_before_norm += del_update;
+                    
+                }else{
+                    ehh0_before_norm += del_update;
+                }
+                
+            }
+
+            //cout<<"GCC:"<<i<<" "<<totgc<<endl;
+            
+            ehh1_downstream[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
+            ehh0_downstream[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
+
+            if(n_c1_squared_minus==0){
+                ehh1_downstream[locus] = 0;
+            }
+            if(n_c0_squared_minus==0){
+                ehh0_downstream[locus] = 0;
+            }
+            // if(print)
+            //     cout<<"Iter "<<i<<": EHH1["<<locus<<"]="<<ehh1[locus]<<","<<ehh0[locus]<<endl;
+            //
+            //logg[tid]+="map size before"+to_string(m.size())+"\n";
+            //cout<< logg[tid];
+            m.clear();
+            //logg[tid]+="map size after"+to_string(m.size())+"\n";
+            //cout<< logg[tid];
+
+        }
+    }
+void thread_ihs(int tid, map<int, vector<int> >& m){
+    int elem_per_block = floor(ADVANCED_D/NUM_THREAD);
+    // int start = tid*elem_per_block + 1;
+    // int end = start + elem_per_block -1 ;
+    int start = tid*elem_per_block ;
+    int end = start + elem_per_block  ;
+    if(tid == NUM_THREAD-1 ){
+        end = ADVANCED_D;
+    }
+
+    // for(int j = start; j< end; j++){
+    //     //cout<<j<<" ";
+    //     logg[tid]+=to_string(j)+" ";
+    // }
+    // logg[tid]+="\n";
+
+    ///*
+    // #pragma omp parallel 
+    for(int j = start; j< end; j++){
+        // #pragma omp task 
+        calc_EHH2(j, m);
+        // #pragma omp task 
+        //calc_EHH_downstream(j, m);
+    }
+    for(int j = start; j< end; j++){
+        calc_EHH_downstream(j, m);
     }
     //*/
     
@@ -454,8 +593,8 @@ float calc_iHS(){
     double ihh0=0;
     for (int i = 1; i < ADVANCED_D; i++){
         //cout<<i<<" "<<(ehh1[i-1] + ehh1[i]) << " " <<(ehh0[i-1] + ehh0[i])<<endl;
-        ihh1 += (ehh1[i-1] + ehh1[i])*0.5; 
-        ihh0 += (ehh0[i-1] + ehh0[i])*0.5; 
+        ihh1 += (ehh1[i-1]+ehh1_downstream[i-1] + ehh1[i]+ehh1_downstream[i])*0.5; 
+        ihh0 += (ehh0[i-1]+ehh0_downstream[i-1] + ehh0[i]+ehh0_downstream[i])*0.5; 
     }
     cout<<"ihh1, ihh0 = "<<ihh1<<" "<<ihh0<<endl;
     for(int i =0; i< NUM_THREAD; i++){
