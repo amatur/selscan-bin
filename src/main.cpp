@@ -27,8 +27,22 @@ using namespace std;
 // #define ADVANCED_N 4
 // #define ADVANCED_D 6404
 
-#define ADVANCED_N 6404
+
+// #define FILENAME "data/out5000.imp#define FILENAME "data/out5000.impute.hap"
+// #define ADVANCED_N 6404
+// #define ADVANCED_D 5000ute.hap"
+// #define ADVANCED_N 6404
+// #define ADVANCED_D 5000
+
+
+#define FILENAME "/storage/home/aur1111/s/msdir/ms5k6k.hap2"
+#define ADVANCED_N 6000
 #define ADVANCED_D 5000
+
+
+// #define FILENAME "data/out500.impute.hap"
+// #define ADVANCED_N 6404
+// #define ADVANCED_D 500
 
 // #define ADVANCED_N 5
 // #define ADVANCED_D 5
@@ -47,15 +61,19 @@ float ehh1[ADVANCED_D];
 float ehh0_downstream[ADVANCED_D];
 float ehh1_downstream[ADVANCED_D];
 
+float iHH0[ADVANCED_D];
+float iHH1[ADVANCED_D];
+float iHH0_downstream[ADVANCED_D];
+float iHH1_downstream[ADVANCED_D];
 
 
 
 
-#define NUM_THREAD 16
+#define NUM_THREAD 20
 string logg[NUM_THREAD];
 
 map<int, vector<int> > map_per_thread[NUM_THREAD];
-map<int, vector<int> > map_downstream_per_thread[NUM_THREAD];
+map<int, vector<int> > mapd_per_thread[NUM_THREAD];
 
 
 int N = 0;
@@ -137,6 +155,11 @@ void readMatrixMethod2(const std::string& filename){
 }
 
 void calc_EHH(map<int, vector<int> >& m, int locus=0, bool print=false){
+    //calc IHH
+    iHH0[locus] = 0;
+    iHH1[locus] = 0;
+
+
     int ehh0_before_norm = 0;
     int ehh1_before_norm = 0;
     //ehh0[locus] = 0;
@@ -231,7 +254,6 @@ void calc_EHH(map<int, vector<int> >& m, int locus=0, bool print=false){
             if(isDerivedGroup)// just check first element if it is derived or not, 
             {
                 ehh1_before_norm += del_update;
-                
             }else{
                 ehh0_before_norm += del_update;
             }
@@ -239,10 +261,18 @@ void calc_EHH(map<int, vector<int> >& m, int locus=0, bool print=false){
         }
 
         //cout<<"GCC:"<<i<<" "<<totgc<<endl;
-        
+        if(n_c1_squared_minus!=0){
+        iHH1[locus] += (ehh1[locus] +  (1.0*ehh1_before_norm/n_c1_squared_minus))*0.5;
+        }
+
+        if(n_c0_squared_minus!=0){
+        iHH0[locus] += (ehh0[locus] +  (1.0*ehh0_before_norm/n_c0_squared_minus))*0.5;
+        }
+
         ehh1[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
         ehh0[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
 
+                
         if(n_c1_squared_minus==0){
             ehh1[locus] = 0;
         }
@@ -269,6 +299,12 @@ void calc_EHH(map<int, vector<int> >& m, int locus=0, bool print=false){
     // }
 }
 void calc_EHH2(int locus, map<int, vector<int> > & m){
+        iHH0[locus] = 0;
+        iHH1[locus] = 0;
+        ehh1[locus] = 0;
+        ehh0[locus] = 0;
+
+
         int ehh0_before_norm = 0;
         int ehh1_before_norm = 0;
         //ehh0[locus] = 0;
@@ -362,18 +398,37 @@ void calc_EHH2(int locus, map<int, vector<int> > & m){
                 bool isDerivedGroup =  isDerived[ele.second[0]];
                 if(isDerivedGroup)// just check first element if it is derived or not, 
                 {
+                    //iHH1[locus]+=ehh1_before_norm;
                     ehh1_before_norm += del_update;
+                    //iHH1[locus]+=ehh1_before_norm;
                     
                 }else{
+                    //iHH0[locus]+=ehh0_before_norm;
                     ehh0_before_norm += del_update;
+                   // iHH0[locus]+=ehh0_before_norm;
+
                 }
                 
             }
 
             //cout<<"GCC:"<<i<<" "<<totgc<<endl;
-            
-            ehh1[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
-            ehh0[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
+            // iHH1[locus] += (ehh1[locus] +  (1.0*ehh1_before_norm/n_c1_squared_minus))*0.5;
+            // iHH0[locus] += (ehh0[locus] +  (1.0*ehh0_before_norm/n_c0_squared_minus))*0.5;
+
+            if(n_c1_squared_minus!=0){
+            iHH1[locus] += (ehh1[locus] + ehh1_before_norm) * 0.5/n_c1_squared_minus;
+            }
+            if(n_c0_squared_minus!=0){
+            iHH0[locus] += (ehh0[locus] + ehh0_before_norm) * 0.5/n_c0_squared_minus;
+            }
+
+
+
+            ehh1[locus] = ehh1_before_norm;
+            ehh0[locus] = ehh0_before_norm;
+
+            // ehh1[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
+            // ehh0[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
 
             if(n_c1_squared_minus==0){
                 ehh1[locus] = 0;
@@ -381,9 +436,9 @@ void calc_EHH2(int locus, map<int, vector<int> > & m){
             if(n_c0_squared_minus==0){
                 ehh0[locus] = 0;
             }
-            // if(print)
-            //     cout<<"Iter "<<i<<": EHH1["<<locus<<"]="<<ehh1[locus]<<","<<ehh0[locus]<<endl;
-            //
+            if(false)
+                cout<<"Iter "<<i<<": EHH1["<<locus<<"]="<<ehh1[locus]*1.0/n_c1_squared_minus<<","<<ehh0[locus]*1.0/n_c0_squared_minus<<endl;
+            
             //logg[tid]+="map size before"+to_string(m.size())+"\n";
             //cout<< logg[tid];
             m.clear();
@@ -394,9 +449,14 @@ void calc_EHH2(int locus, map<int, vector<int> > & m){
     }
 
     void calc_EHH_downstream(int locus, map<int, vector<int> > & m){
+        iHH1_downstream[locus] = 0;
+        iHH0_downstream[locus] = 0;
+        ehh1_downstream[locus] = 0;
+        ehh0_downstream[locus] = 0;
+
         if(locus == 0){
             ehh1_downstream[0] = 0;
-            ehh0_downstream[locus] = 0;
+            ehh0_downstream[0] = 0;
             return;
         }
         int ehh0_before_norm = 0;
@@ -492,18 +552,38 @@ void calc_EHH2(int locus, map<int, vector<int> > & m){
                 bool isDerivedGroup =  isDerived[ele.second[0]];
                 if(isDerivedGroup)// just check first element if it is derived or not, 
                 {
+                    //iHH1_downstream[locus] += ehh1_before_norm;
                     ehh1_before_norm += del_update;
+                    //iHH1_downstream[locus] += ehh1_before_norm;
                     
                 }else{
+                    //iHH0_downstream[locus] += ehh0_before_norm;
                     ehh0_before_norm += del_update;
+                    //iHH0_downstream[locus] += ehh0_before_norm;
+
                 }
                 
             }
 
             //cout<<"GCC:"<<i<<" "<<totgc<<endl;
-            
-            ehh1_downstream[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
-            ehh0_downstream[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
+            // iHH1_downstream[locus] += (ehh1_downstream[locus] +  (1.0*ehh1_before_norm/n_c1_squared_minus))*0.5;
+            // iHH0_downstream[locus] += (ehh0_downstream[locus] +  (1.0*ehh0_before_norm/n_c0_squared_minus))*0.5;
+            // iHH1_downstream[locus] *= 0.5/n_c1_squared_minus;
+            // iHH0_downstream[locus] *= 0.5/n_c0_squared_minus;
+
+            // ehh1_downstream[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
+            // ehh0_downstream[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
+
+
+            if(n_c1_squared_minus!=0){
+            iHH1_downstream[locus] += (ehh1_downstream[locus] + ehh1_before_norm) * 0.5/n_c1_squared_minus;
+            }
+            if(n_c0_squared_minus!=0){
+            iHH0_downstream[locus] += (ehh0_downstream[locus] + ehh0_before_norm) * 0.5/n_c0_squared_minus;
+            }
+            ehh1_downstream[locus] = ehh1_before_norm;
+            ehh0_downstream[locus] = ehh0_before_norm;
+
 
             if(n_c1_squared_minus==0){
                 ehh1_downstream[locus] = 0;
@@ -522,7 +602,7 @@ void calc_EHH2(int locus, map<int, vector<int> > & m){
 
         }
     }
-void thread_ihs(int tid, map<int, vector<int> >& m){
+void thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md){
     int elem_per_block = floor(ADVANCED_D/NUM_THREAD);
     // int start = tid*elem_per_block + 1;
     // int end = start + elem_per_block -1 ;
@@ -539,17 +619,17 @@ void thread_ihs(int tid, map<int, vector<int> >& m){
     // logg[tid]+="\n";
 
     ///*
-    // #pragma omp parallel 
+    //#pragma omp parallel 
     for(int j = start; j< end; j++){
-        // #pragma omp task 
+        //#pragma omp task 
         calc_EHH2(j, m);
-        // #pragma omp task 
-        //calc_EHH_downstream(j, m);
+        //#pragma omp task 
+        calc_EHH_downstream(j, md);
     }
-    for(int j = start; j< end; j++){
-        calc_EHH_downstream(j, m);
-    }
-    //*/
+    // for(int j = start; j< end; j++){
+    //     calc_EHH_downstream(j, m);
+    // }
+    //*/thread_ihs
     
     logg[tid]+="finishing thread #"+to_string(tid)+"\n";
     cout<<"finishing thread #"+to_string(tid)+"\n";
@@ -565,7 +645,7 @@ float calc_iHS(){
         std::thread *myThreads = new std::thread[NUM_THREAD];
         for (int i = 0; i < NUM_THREAD; i++)
         {
-            myThreads[i] = std::thread(thread_ihs, i, std::ref(map_per_thread[i]));
+            myThreads[i] = std::thread(thread_ihs, i, std::ref(map_per_thread[i]),  std::ref(mapd_per_thread[i]));
         }
         for (int i = 0; i < NUM_THREAD; i++)
         // Join will block our main thread, and so the program won't exit until
@@ -589,17 +669,20 @@ float calc_iHS(){
    
   //sum all the ones with 0
   //sum all the ones with 1
-    double ihh1=0;
-    double ihh0=0;
+    float ihh1=0;
+    float ihh0=0;
     for (int i = 1; i < ADVANCED_D; i++){
         //cout<<i<<" "<<(ehh1[i-1] + ehh1[i]) << " " <<(ehh0[i-1] + ehh0[i])<<endl;
-        ihh1 += (ehh1[i-1]+ehh1_downstream[i-1] + ehh1[i]+ehh1_downstream[i])*0.5; 
-        ihh0 += (ehh0[i-1]+ehh0_downstream[i-1] + ehh0[i]+ehh0_downstream[i])*0.5; 
+        // ihh1 += (ehh1[i-1]+ehh1_downstream[i-1] + ehh1[i]+ehh1_downstream[i])*0.5; 
+        // ihh0 += (ehh0[i-1]+ehh0_downstream[i-1] + ehh0[i]+ehh0_downstream[i])*0.5; 
+        ihh1 = iHH1[i] + iHH1_downstream[i] ;
+        ihh0 = iHH0[i] + iHH0_downstream[i] ;
+        cout<<i << " ihh1 "<<ihh1<<" ihh0 "<<ihh0<<endl;
     }
-    cout<<"ihh1, ihh0 = "<<ihh1<<" "<<ihh0<<endl;
-    for(int i =0; i< NUM_THREAD; i++){
-        cout<<logg[i]<<endl;
-    }
+    //cout<<"ihh1, ihh0 = "<<ihh1<<" "<<ihh0<<endl;
+    // for(int i =0; i< NUM_THREAD; i++){
+    //     cout<<logg[i]<<endl;
+    // }
     return log(ihh1/ihh0);
 }
 void readMatrixHalfTime(const std::string& filename) {
@@ -954,7 +1037,7 @@ void readMatrixFromFile(const std::string& filename) {
     //     } 
     // }
     
-    string filename = "data/out5000.impute.hap";
+    string filename = FILENAME;
    // string filename = "data/out500.impute.hap";
 
     //string filename = "data/out20000.impute.hap";
@@ -974,7 +1057,8 @@ void readMatrixFromFile(const std::string& filename) {
 
 
 //   calc_EHH(7504);
-  cout<<"iHS="<<calc_iHS();
+    float ihs = calc_iHS();
+  cout<<"iHS="<<ihs;
 
 
     return 0;
