@@ -35,9 +35,13 @@ using namespace std;
 // #define ADVANCED_D 5000
 
 
-#define FILENAME "/storage/home/aur1111/s/msdir/ms5k6k.hap2"
-#define ADVANCED_N 6000
-#define ADVANCED_D 5000
+#define FILENAME "/storage/home/aur1111/s/dataset/out20000.impute.hap"
+#define ADVANCED_N 6404
+#define ADVANCED_D 20000
+
+// #define FILENAME "/storage/home/aur1111/s/msdir/ms5k6k.hap2"
+// #define ADVANCED_N 6000
+// #define ADVANCED_D 5000
 
 
 // #define FILENAME "data/out500.impute.hap"
@@ -67,9 +71,9 @@ float iHH0_downstream[ADVANCED_D];
 float iHH1_downstream[ADVANCED_D];
 
 
+double start_time=0;
 
-
-#define NUM_THREAD 20
+#define NUM_THREAD 8
 string logg[NUM_THREAD];
 
 map<int, vector<int> > map_per_thread[NUM_THREAD];
@@ -79,7 +83,9 @@ map<int, vector<int> > mapd_per_thread[NUM_THREAD];
 int N = 0;
 int D = 0;
 
-
+double readTimer() {
+    return clock() / (double) CLOCKS_PER_SEC;
+}
 void bvenumerate(bm::bvector<> bv, string msg=""){
      //bm::bvector<> bv = bvs[0];
      std::cout<<msg<<" ";
@@ -631,8 +637,9 @@ void thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md){
     // }
     //*/thread_ihs
     
-    logg[tid]+="finishing thread #"+to_string(tid)+"\n";
-    cout<<"finishing thread #"+to_string(tid)+"\n";
+    logg[tid]+="finishing thread #"+to_string(tid)+"\n"; 
+    
+    cout<<"finishing thread # "+to_string(tid)+" at "+to_string(readTimer())+"\n";
 }
 
 float calc_iHS(){
@@ -1026,6 +1033,7 @@ void readMatrixFromFile(const std::string& filename) {
 
   int main(int argc, char **argv)
   {   
+    start_time = readTimer();
     vector<string> args(argv + 1, argv + argc);
     // string filename;
     // for (auto i = args.begin(); i != args.end(); ++i) {
@@ -1058,9 +1066,9 @@ void readMatrixFromFile(const std::string& filename) {
 
 //   calc_EHH(7504);
     float ihs = calc_iHS();
-  cout<<"iHS="<<ihs;
+    cout<<"iHS="<<ihs<<endl;
 
-
+    cout<<"Finish time:"<<to_string(readTimer())<<endl;
     return 0;
 }
 
