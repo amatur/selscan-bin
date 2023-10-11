@@ -384,6 +384,7 @@ void calc_EHH2(int locus, map<int, vector<int> > & m){
             n_c0 = ADVANCED_N - v.size();
 
             for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
                 group_id[set_bit_pos] = 1;
             }
             
@@ -539,6 +540,7 @@ void calc_EHH2(int locus, map<int, vector<int> > & m){
 
             for (int set_bit_pos : v){
                 group_id[set_bit_pos] = 1;
+                isDerived[set_bit_pos] = true;
             }
             
             totgc+=2;
@@ -720,12 +722,15 @@ float calc_iHS(){
 }
 
 
-void calc_nSL(int locus, map<int, vector<int> > & m){
 
+void calc_nSL_upstream(int locus, map<int, vector<int> > & m){
+        if(locus >= ADVANCED_N){
+            return;
+        }
         //if group_count[location] == 1 already unique
         //stop when totgc = N
-        nsl0[locus] = 0;
-        nsl1[locus] = 0;
+        //nsl0[locus] = 0;
+        //nsl1[locus] = 0;
         
         int n_c0= 0;
         int n_c1=0;
@@ -781,176 +786,52 @@ void calc_nSL(int locus, map<int, vector<int> > & m){
         n_c1_squared_minus =  n_c1* n_c1 -  n_c1;
         n_c0_squared_minus =  n_c0* n_c0 -  n_c0;
         
-        bool left_extreme = false;
-        bool right_extreme = false;
-        if(locus == 0){
-            left_extreme = true;
-        }
-        if(locus == ADVANCED_D-1 ){
-            right_extreme = true;
-        }
 
         print_a<bool>(isDerived, "derived");
-
         print_a(group_count, "GC");
         print_a(group_id, "GID");
 
         for ( int i = locus+1; i<ADVANCED_D; i++ ){
-            
-           
-            int neg_i = 2 * locus - i;
-           
 
-            int n11 = 0;
-            int n10 = 0;
-            int n00 = 0;
-            int n01 = 0;
-            
-            vector<unsigned int> ancestral_right1;
-            vector<unsigned int> derived_right1;
-            vector<unsigned int> ancestral_left1;
-            vector<unsigned int> derived_left1;
-
-            if(not right_extreme){
-                for(unsigned int ii : all_positions[i]){
-                    if(isDerived[ii]){
-                        derived_right1.push_back(ii);
-                    }else{
-                        ancestral_right1.push_back(ii);
-                    }
-                }
+            for (int set_bit_pos : all_positions[i])
+            {
+                int old_group_id = group_id[set_bit_pos];
+                m[old_group_id].push_back(set_bit_pos);
             }
 
+            for (const auto &ele : m)
+            {
+                int old_group_id = ele.first;
+                int newgroup_size = ele.second.size();
 
-            
-            if (not left_extreme){
-                for(unsigned int ii :  all_positions[neg_i]){
-                    if(isDerived[ii]){
-                        derived_left1.push_back(ii);
-                    }else{
-                        ancestral_left1.push_back(ii);
-                    }
-                }
-            }
-
-
-
-            print_v(derived_left1, "DL1");
-            print_v(derived_right1, "DR1");
-
-            print_v(ancestral_left1, "AL1");
-            print_v(ancestral_right1, "AR1");
-
-            //ancestral
-            
-            if(left_extreme){
-                n11 = ancestral_right1.size();
-                n10 = n_c0 - n11;
-                n01 = 0;
-                n00 = 0;
-                nsl0[locus] +=  n10*n11*(i);
-
-            }else if(right_extreme){
-                n11 = ancestral_left1.size();
-                n01 = n_c0 - n11;
-                n10 = 0;
-                n00 = 0;
-                nsl0[locus] +=  n01*n11*(i);
-            }else{
-                n11 = countIntersectFromSortedLists(ancestral_right1, ancestral_left1);
-                n10 = ancestral_left1.size() - n11;
-                n01 = ancestral_right1.size() - n11;
-                n00 = n_c0 - ancestral_right1.size() - n10;
-                nsl0[locus] += n00*(i+1)*(n10 + n01) + n00*(i)*n11 + n01*n10*(i) + n01*n11*(i+1) + n10*n11*(i+1);
-
-            }
-            
-            std::cout<<"at "<<i<<" n11,n10,n01,n00="<<n11<<","<<n10<<","<<n01<<","<<n00<<endl;
-            
-           
-            //derived
-            if(left_extreme){
-                n11 = derived_right1.size();
-                n10 = n_c1 - n11;
-                n01 = 0;
-                n00 = 0;
-                nsl1[locus] +=  n10*n11*(i);
-
-            }else if(right_extreme){
-                n11 = derived_left1.size();
-                n01 = n_c1 - n11;
-                n10 = 0;
-                n00 = 0;
-                nsl1[locus] +=  n01*n11*(i);
-
-            }else{
-                n11 = countIntersectFromSortedLists(derived_right1, derived_left1);
-                n10 = derived_left1.size() - n11;
-                n01 = derived_right1.size() - n11;
-                n00 = n_c1 - derived_right1.size() - n10;
-                nsl1[locus] += n00*(i+1)*(n10 + n01) + n00*(i)*n11 + n01*n10*(i) + n01*n11*(i+1) + n10*n11*(i+1);
-
-            }
-            std::cout<<"at "<<i<<" n11,n10,n01,n00="<<n11<<","<<n10<<","<<n01<<","<<n00<<endl;
-            
-
-
-            if(not right_extreme){
-                for (int set_bit_pos : all_positions[i])
+                if (group_count[old_group_id] == newgroup_size || newgroup_size == 0)
                 {
-                    int old_group_id = group_id[set_bit_pos];
-                    m[old_group_id].push_back(set_bit_pos);
+                    continue;
                 }
 
-                for (const auto &ele : m)
+                for (int v : ele.second)
                 {
-                    int old_group_id = ele.first;
-                    int newgroup_size = ele.second.size();
-
-                    if (group_count[old_group_id] == newgroup_size || newgroup_size == 0)
-                    {
-                        continue;
-                    }
-
-                    for (int v : ele.second)
-                    {
-                        group_id[v] = totgc;
-                    }
-
-                    group_count[old_group_id] -= newgroup_size;
-                    group_count[totgc] += newgroup_size;
-                    totgc += 1;
+                    group_id[v] = totgc;
                 }
-                m.clear();
+
+                int del_update = 0;
+                del_update=  (group_count[old_group_id]-newgroup_size) * newgroup_size * (i-locus);
+                
+                group_count[old_group_id] -= newgroup_size;
+                
+                bool isDerivedGroup =  isDerived[ele.second[0]];
+                
+                if(isDerivedGroup)// just check first element if it is derived or not, 
+                {
+                    nsl1[locus] += del_update;
+                }else{
+                    nsl0[locus] += del_update;
+                }
+                group_count[totgc] += newgroup_size;
+                totgc += 1;
             }
-           
-
-            if (not left_extreme){
-
-                for (int set_bit_pos : all_positions[neg_i]){
-                    int old_group_id = group_id[set_bit_pos];
-                    m[old_group_id].push_back(set_bit_pos);
-                }
-
-                for (const auto &ele : m) {
-                    int old_group_id = ele.first;
-                    int newgroup_size = ele.second.size() ;
-                    
-                    if(group_count[old_group_id] == newgroup_size || newgroup_size == 0){
-                        continue;
-                    }
-                    
-                    for(int v: ele.second){
-                        group_id[v] = totgc;
-                    }
-                    
-                    group_count[old_group_id] -= newgroup_size;
-                    group_count[totgc] += newgroup_size;
-                    totgc+=1;
-                }
-                m.clear();
-            }
-            
+            m.clear();
+        
 
             if(n_c1_squared_minus==0){
                 nsl1[locus] = 0;
@@ -960,7 +841,7 @@ void calc_nSL(int locus, map<int, vector<int> > & m){
             }
            
             
-            if(left_extreme and right_extreme){
+            if(i==ADVANCED_D-1){
                 set<int> derivedGroups;
                 for(int i: all_positions[locus]){
                     derivedGroups.insert(group_id[i]);
@@ -970,26 +851,18 @@ void calc_nSL(int locus, map<int, vector<int> > & m){
                     int count = group_count[k];
                     if(count > 1){ //TRY TO OPT
                         if(derivedGroups.count(k)){
-                           nsl1[locus]+=0.5*( count*count - count);
+                           nsl1[locus]+=0.5*count*(count - 1)*(i-locus+1);
                         }else{
-                           nsl0[locus]+=0.5*( count*count - count);
+                           nsl0[locus]+=0.5*count*(count - 1)*(i-locus+1);
                         }
                     }
                 }
             }
-             if(true)
-                std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]*2.0/n_c1_squared_minus<<","<<nsl0[locus]*2.0/n_c0_squared_minus<<endl;
+            // if(true)
+              //  std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]*2.0/n_c1_squared_minus<<","<<nsl0[locus]*2.0/n_c0_squared_minus<<endl;
              if(true)
                 std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]<<","<<nsl0[locus]<<endl;
 
-
-            if (i>=all_positions.size()-1){
-                right_extreme = true;
-            }
-            if (neg_i <= 0)
-            {
-                left_extreme = true;
-            }
 
             if(totgc==ADVANCED_N){
                 return;
@@ -997,6 +870,187 @@ void calc_nSL(int locus, map<int, vector<int> > & m){
         }
     }
 
+
+void calc_nSL_downstream(int locus, map<int, vector<int> > & m){
+    
+        //if group_count[location] == 1 already unique
+        //stop when totgc = N
+        
+        if(locus<=0) return;
+
+        //nsl0[locus] = 0;
+        //nsl1[locus] = 0;
+        
+        int n_c0= 0;
+        int n_c1=0;
+        int n_c0_squared_minus = 0;
+        int n_c1_squared_minus = 0;
+
+        int group_count[ADVANCED_N];
+        int group_id[ADVANCED_N];
+        bool isDerived[ADVANCED_N]; 
+
+        //will be vectorized
+        for(int i = 0; i<ADVANCED_N; i++){
+            group_count[i] = 0;
+            group_id[i] = 0;
+            isDerived[i] = false;
+        }
+
+        int totgc=0;
+        vector<unsigned int> v = all_positions[locus];
+
+        if(v.size()==0){
+            n_c0 = ADVANCED_N;
+
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+
+        }else if (v.size()==ADVANCED_N){ // all set
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+            n_c1 = ADVANCED_N;
+            
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+            }
+
+        }else{
+            group_count[1] = v.size();
+            group_count[0] = ADVANCED_N - v.size();
+            n_c1 = v.size();
+            n_c0 = ADVANCED_N - v.size();
+
+            for (int set_bit_pos : v){
+                group_id[set_bit_pos] = 1;
+                isDerived[set_bit_pos] = true;
+
+            }
+            
+            totgc+=2;
+
+        }
+
+        
+        n_c1_squared_minus =  n_c1* n_c1 -  n_c1;
+        n_c0_squared_minus =  n_c0* n_c0 -  n_c0;
+        
+
+        print_a<bool>(isDerived, "derived");
+        print_a(group_count, "GC");
+        print_a(group_id, "GID");
+
+        for ( int i = locus-1; i>=0; i-- ){
+
+            for (int set_bit_pos : all_positions[i])
+            {
+                int old_group_id = group_id[set_bit_pos];
+                m[old_group_id].push_back(set_bit_pos);
+            }
+
+            for (const auto &ele : m)
+            {
+                int old_group_id = ele.first;
+                int newgroup_size = ele.second.size();
+
+                if (group_count[old_group_id] == newgroup_size || newgroup_size == 0)
+                {
+                    continue;
+                }
+
+                for (int v : ele.second)
+                {
+                    group_id[v] = totgc;
+                }
+
+                int del_update = 0;
+                del_update=  (group_count[old_group_id]-newgroup_size) * newgroup_size * (locus-i);
+                
+                group_count[old_group_id] -= newgroup_size;
+                
+                bool isDerivedGroup =  isDerived[ele.second[0]];
+                
+                if(isDerivedGroup)// just check first element if it is derived or not, 
+                {
+                    nsl1[locus] += del_update;
+                }else{
+                    nsl0[locus] += del_update;
+                }
+                group_count[totgc] += newgroup_size;
+                totgc += 1;
+            }
+            m.clear();
+        
+
+            if(n_c1_squared_minus==0){
+                nsl1[locus] = 0;
+            }
+            if(n_c0_squared_minus==0){
+                nsl0[locus] = 0;
+            }
+           
+            
+            if(i==0){
+                set<int> derivedGroups;
+                for(int i: all_positions[locus]){
+                    derivedGroups.insert(group_id[i]);
+                }
+                //for all groups having a non-1 group count do nc2
+                for(int k = 0; k<totgc; k++){
+                    int count = group_count[k];
+                    if(count > 1){ //TRY TO OPT
+                        if(derivedGroups.count(k)){
+                           nsl1[locus]+=0.5*count*(count - 1)*(locus-i+1);
+                        }else{
+                           nsl0[locus]+=0.5*count*(count - 1)*(locus-i+1);
+                        }
+                    }
+                }
+            }
+            // if(true)
+              //  std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]*2.0/n_c1_squared_minus<<","<<nsl0[locus]*2.0/n_c0_squared_minus<<endl;
+             if(true)
+                std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]<<","<<nsl0[locus]<<endl;
+
+
+            if(totgc==ADVANCED_N){
+                return;
+            }
+        }
+    }
+
+void calc_nSL(int locus){
+        map<int, vector<int> > m;
+
+        nsl0[locus] = 0;
+        nsl1[locus] = 0;
+
+        calc_nSL_upstream(locus, m);
+        calc_nSL_downstream(locus, m);
+
+        float nsl_1 = 0.0;
+        float nsl_0 = 0.0;
+        
+        int numDerivedAtLocus = all_positions[locus].size();
+        int numAncestralAtLocus = ADVANCED_N - numDerivedAtLocus;2.0 / (numDerivedAtLocus*numDerivedAtLocus - numDerivedAtLocus);
+        int numDerivedPairs = (numDerivedAtLocus*numDerivedAtLocus - numDerivedAtLocus) / 2;
+        int numAncestralPairs = (numAncestralAtLocus*numAncestralAtLocus - numAncestralAtLocus) / 2;
+
+
+        if(numDerivedAtLocus>1){
+            nsl_1 = nsl1[locus] * 2.0 / (numDerivedAtLocus*numDerivedAtLocus - numDerivedAtLocus)  ;
+            if(locus!=0 and locus!=ADVANCED_D-1){
+                nsl_1 -= 1;
+            }
+        }
+        if(numAncestralAtLocus>1){
+            nsl_0 = nsl0[locus] * 2.0 / (numAncestralAtLocus*numAncestralAtLocus - numAncestralAtLocus)  ;
+            if(locus!=0 and locus!=ADVANCED_D-1){
+                nsl_0 -= 1;
+            }
+        }
+        std::cout<<" nsl1["<<locus<<"]="<<nsl_1<<",nsl0["<<locus<<"]="<<nsl_0<<endl;
+}
 
 
   int main(int argc, char **argv)
@@ -1053,8 +1107,8 @@ void calc_nSL(int locus, map<int, vector<int> > & m){
     // float ihs = calc_iHS();
     // cout<<"iHS="<<ihs<<endl;
 
-     map<int, vector<int> >  m;
-    calc_nSL(0, m);
+    
+    calc_nSL(1);
 
     cout<<"Finish time:"<<to_string(readTimer())<<endl;
     return 0;
