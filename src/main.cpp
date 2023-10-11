@@ -7,12 +7,11 @@
 #include <thread>                            
 #include <iostream>
 #include <algorithm>
-#include "bm.h"
+
 #include <fstream>
-#include "bmserial.h"
-#include "bmundef.h" 
-#include "bm.h"
-#include "bmaggregator.h"
+//#include "selscan.h"
+
+#include<set>
 #include "map"
 #include <cmath>
 
@@ -20,6 +19,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+
+#include "cxxopts.hpp"
 
 
 using namespace std;
@@ -35,9 +36,9 @@ using namespace std;
 // #define ADVANCED_D 5000
 
 
-#define FILENAME "/storage/home/aur1111/s/dataset/out20000.impute.hap"
-#define ADVANCED_N 6404
-#define ADVANCED_D 20000
+// #define FILENAME "/storage/home/aur1111/s/dataset/out20000.impute.hap"
+// #define ADVANCED_N 6404
+// #define ADVANCED_D 20000
 
 // #define FILENAME "/storage/home/aur1111/s/msdir/ms5k6k.hap2"
 // #define ADVANCED_N 6000
@@ -50,6 +51,12 @@ using namespace std;
 
 // #define ADVANCED_N 5
 // #define ADVANCED_D 5
+// #define FILENAME "test.hap"
+
+#define ADVANCED_N 4
+#define ADVANCED_D 6
+#define FILENAME "test4x6.hap"
+
 
 // #define ADVANCED_N 3
 // #define ADVANCED_D 6404
@@ -70,6 +77,9 @@ float iHH1[ADVANCED_D];
 float iHH0_downstream[ADVANCED_D];
 float iHH1_downstream[ADVANCED_D];
 
+long nsl0[ADVANCED_D];
+long nsl1[ADVANCED_D];
+
 
 double start_time=0;
 
@@ -86,31 +96,41 @@ int D = 0;
 double readTimer() {
     return clock() / (double) CLOCKS_PER_SEC;
 }
-void bvenumerate(bm::bvector<> bv, string msg=""){
-     //bm::bvector<> bv = bvs[0];
-     std::cout<<msg<<" ";
-    std::cout<<"Enumerating...";
-    bm::bvector<>::enumerator en = bv.first();
-    bm::bvector<>::enumerator en_end = bv.end();
+unsigned int countIntersectFromSortedLists(std::vector<unsigned>& a, std::vector<unsigned> & b){
+    int counter1 = 0;
+    int counter2 = 0;
+    int n11 = 0;
 
-    while (en < en_end)
-    {
-        std::cout << *en << " ";
-        ++en;  // pre-increment - fastest way to increment enumerator
+    while (true){
+        if(counter1 >= a.size() || counter2 >= b.size()){
+            return n11;
+        }
+        if (a[counter1] == b[counter2]){
+            ++n11;
+            counter1 += 1;
+            counter2 += 1;
+        }else if (a[counter1] < b[counter2]){
+            counter1 += 1;
+        }else{
+            counter2 += 1;
+        }   
+    }
+}
+
+template <typename T> void print_a(T* arr, string name="v"){
+    cout<<"vector: "<<name<<": ";
+    for (int i=0; i<ADVANCED_N ; i++){
+        cout<<arr[i]<<" ";
     }
     cout<<endl;
-    en = bv.first();
 }
-static
-void print_bvector(const bm::bvector<>& bv)
-{
-    bm::bvector<>::size_type cnt = 0;
-    bm::bvector<>::enumerator en = bv.first();
-    for (; en.valid() && cnt < 10; ++en, ++cnt)
-        cout << *en << ", ";
-    if (cnt == 10)
-        cout << " ...";
-    cout << "(size = "<< bv.size() << ")" << endl;
+
+void print_v(vector<unsigned int> v, string name="v"){
+    cout<<"vector: "<<name<<": ";
+    for (int i: v){
+        cout<<i<<" ";
+    }
+    cout<<endl;
 }
 
 //std::vector<std::vector<unsigned int> > &
@@ -124,7 +144,8 @@ void readMatrixMethod2(const std::string& filename){
     }
 
     std::string line;
-        while (std::getline(file, line)) {
+    while (std::getline(file, line)) {
+        cout<<line<<endl;
         std::vector<unsigned int> positions;
  
         std::istringstream rowStream(line);
@@ -304,6 +325,11 @@ void calc_EHH(map<int, vector<int> >& m, int locus=0, bool print=false){
     //     cout<<"GID["<<i<<"]="<<group_id[i]<<endl;
     // }
 }
+
+
+
+
+
 void calc_EHH2(int locus, map<int, vector<int> > & m){
         iHH0[locus] = 0;
         iHH1[locus] = 0;
@@ -692,349 +718,308 @@ float calc_iHS(){
     // }
     return log(ihh1/ihh0);
 }
-void readMatrixHalfTime(const std::string& filename) {
-    int group_count[ADVANCED_D];
-    bm::serializer<bm::bvector<> >::buffer sbuf[ADVANCED_D]; // declare serialization buffers
-    bm::operation_deserializer<bm::bvector<> > od;
-    std::ifstream file(filename);
-    BM_DECLARE_TEMP_BLOCK(tb)
-    bm::serializer<bm::bvector<> > bvs(tb);
-    bvs.set_compression_level(4);
- 
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filename << std::endl;
-        return;
-    }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        std::vector<unsigned int> positions;
-        bm::bvector<>   bv;    
-        std::istringstream rowStream(line);
-        char value;
-        int pos=0;
-        while (rowStream >> value) {        
-            if(value=='1'){
-                positions.push_back(pos++);
-            }else if(value=='0'){
-                pos++;
-            }   
-        }
 
-        if(pos!=ADVANCED_N){
-            cout<<"ERROR";
-            exit(2);
-        }
+void calc_nSL(int locus, map<int, vector<int> > & m){
 
-        if(N==0){
-            N = pos;
-        }
-
-        unsigned int* arr = new unsigned int[positions.size()];
-        copy(positions.begin(),positions.end(),arr);
-        // for(int i=0; i<positions.size();i++){
-        //     std::cout<<i<<" "<<arr[i]<<endl;
-        // }
-        if(positions.size()!=0){
-            bv.import_sorted(arr, positions.size(), true);
-        }
+        //if group_count[location] == 1 already unique
+        //stop when totgc = N
+        nsl0[locus] = 0;
+        nsl1[locus] = 0;
         
-        delete[] arr;
-        bm::bvector<>::statistics st;
-        bv.optimize(tb, bm::bvector<>::opt_compress, &st);
-            
-        bvs.serialize(bv, sbuf[D++], &st); // perform serialization
-    }
+        int n_c0= 0;
+        int n_c1=0;
+        int n_c0_squared_minus = 0;
+        int n_c1_squared_minus = 0;
 
-    file.close();
-    //------------------------------------------------------------
-    //done reading
+        int group_count[ADVANCED_N];
+        int group_id[ADVANCED_N];
+        bool isDerived[ADVANCED_N]; 
 
-    bm::bvector<> bv_results[ADVANCED_N];
-    // std::vector<std::unique_ptr<bm::bvector<> > > vect; //vect[i] entry gets free when u move to vect[i+1]
-    // for (unsigned i = 0; i < ADVANCED_N; ++i)
-    // {
-    //     //bv->set(ADVANCED_N-1);
-    //     //bvenumerate(std::move(bv));
-         
-    //     //plz dont delete
-    //     //bm::bvector<> bvnew(*vect[i].get());
-
-    //     bm::bvector<> bvnew;
-
-    //     bm::deserialize(bvnew, sbuf[i].data());
-
-    //     bv_results[i] = bvnew;
-    //     bvenumerate(bv_results[i], "bv_results");
-    //     std::unique_ptr<bm::bvector<> > bv(&bvnew);    
-    // // for (unsigned i = 0; i < vect.size(); ++i)
-    // // {
-    // //     vect[i] = (vect[i].get());
-    // // }
-
-    //     vect.push_back(std::move(bv));
-
-    //     bvenumerate(*vect[i].get());
-        
-    //     int cnt = od.deserialize(*vect[i].get(), sbuf[i].buf(), bm::set_COUNT_AND);
-    //     //bvenumerate(bv_results[x]);
-    //     std::cout<<"cnt: "<<cnt<<endl;
-
-    // }
-
-    group_count[0]=2;//assume 0 and 1
-
-    int cnt = od.deserialize(bv_results[0], sbuf[0].buf(), bm::set_COUNT_OR);
-    if(cnt==0 || cnt==N){
-        bm::deserialize(bv_results[0], sbuf[0].buf()); //actually deserailize
-        group_count[0]=1;
-        if(cnt == 0){
-            bv_results[0].resize(ADVANCED_N);
-            bv_results[0].invert();
+        //will be vectorized
+        for(int i = 0; i<ADVANCED_N; i++){
+            group_count[i] = 0;
+            group_id[i] = 0;
+            isDerived[i] = false;
         }
-    }else{
-         group_count[0]=2;
-         //needs checking
-         bv_results[1].bit_or(bv_results[0]);
-         bv_results[0].resize(ADVANCED_N);
-         bv_results[0].invert();
-    }
 
-    bm::bvector<> bvnew;
-    for(int i = 1 ; i< ADVANCED_D; i++){
-        group_count[i] = group_count[i-1];
-        //bm:: 
-       // bvt2.bit_or(bv1, bv2, bvect::opt_compress);
-       // bv_T.bit_sub(bv_results[i-1], bv_B, bm::bvector<>::opt_compress); // 3
-        for(int j = 0; j< group_count[i-1]; j++){
-            
-            //read from sbuf_result[j]
-            //perform and or with sbuf
-            //update sbuf_result
-            // update group count
-            //print count
-            
-            int countAND = od.deserialize(bv_results[j], sbuf[i].buf(), bm::set_COUNT_AND); //sure its not 0
-            int countSUB = od.deserialize(bv_results[j], sbuf[i].buf(), bm::set_COUNT_SUB_AB); //sure its not 0
+        int totgc=0;
+        vector<unsigned int> v = all_positions[locus];
 
-            if(countAND==0){
-                od.deserialize(bv_results[j], sbuf[i].buf(), tb, bm::set_SUB); //sure its not 0
-                // cout<<"bv"<<i<<","<<j<<endl;
-                // bvenumerate(bv_results[ j]);
-            }else if(countSUB==0){
-                od.deserialize(bv_results[j], sbuf[i].buf(), tb, bm::set_AND); //sure its not 0
-                // cout<<"bv"<<i<<","<<j<<endl;
-                // bvenumerate(bv_results[ j]);
+        if(v.size()==0){
+            n_c0 = ADVANCED_N;
+
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+
+        }else if (v.size()==ADVANCED_N){ // all set
+            group_count[0] = ADVANCED_N;
+            totgc+=1;
+            n_c1 = ADVANCED_N;
+            
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+            }
+
+        }else{
+            group_count[1] = v.size();
+            group_count[0] = ADVANCED_N - v.size();
+            n_c1 = v.size();
+            n_c0 = ADVANCED_N - v.size();
+
+            for (int set_bit_pos : v){
+                group_id[set_bit_pos] = 1;
+                isDerived[set_bit_pos] = true;
+
+            }
+            
+            totgc+=2;
+
+        }
+
+        
+        n_c1_squared_minus =  n_c1* n_c1 -  n_c1;
+        n_c0_squared_minus =  n_c0* n_c0 -  n_c0;
+        
+        bool left_extreme = false;
+        bool right_extreme = false;
+        if(locus == 0){
+            left_extreme = true;
+        }
+        if(locus == ADVANCED_D-1 ){
+            right_extreme = true;
+        }
+
+        print_a<bool>(isDerived, "derived");
+
+        print_a(group_count, "GC");
+        print_a(group_id, "GID");
+
+        for ( int i = locus+1; i<ADVANCED_D; i++ ){
+            
+           
+            int neg_i = 2 * locus - i;
+           
+
+            int n11 = 0;
+            int n10 = 0;
+            int n00 = 0;
+            int n01 = 0;
+            
+            vector<unsigned int> ancestral_right1;
+            vector<unsigned int> derived_right1;
+            vector<unsigned int> ancestral_left1;
+            vector<unsigned int> derived_left1;
+
+            if(not right_extreme){
+                for(unsigned int ii : all_positions[i]){
+                    if(isDerived[ii]){
+                        derived_right1.push_back(ii);
+                    }else{
+                        ancestral_right1.push_back(ii);
+                    }
+                }
+            }
+
+
+            
+            if (not left_extreme){
+                for(unsigned int ii :  all_positions[neg_i]){
+                    if(isDerived[ii]){
+                        derived_left1.push_back(ii);
+                    }else{
+                        ancestral_left1.push_back(ii);
+                    }
+                }
+            }
+
+
+
+            print_v(derived_left1, "DL1");
+            print_v(derived_right1, "DR1");
+
+            print_v(ancestral_left1, "AL1");
+            print_v(ancestral_right1, "AR1");
+
+            //ancestral
+            
+            if(left_extreme){
+                n11 = ancestral_right1.size();
+                n10 = n_c0 - n11;
+                n01 = 0;
+                n00 = 0;
+                nsl0[locus] +=  n10*n11*(i);
+
+            }else if(right_extreme){
+                n11 = ancestral_left1.size();
+                n01 = n_c0 - n11;
+                n10 = 0;
+                n00 = 0;
+                nsl0[locus] +=  n01*n11*(i);
             }else{
-                bv_results[ group_count[i] ].bit_or(bv_results[j]);
-                od.deserialize(bv_results[ group_count[i] ], sbuf[i].buf(), tb,bm::set_SUB); //sure its not 0
-                od.deserialize(bv_results[j], sbuf[i].buf(), tb, bm::set_AND); //sure its not 0
-                
-                // cout<<"bv"<<i<<","<<j<<endl;
-                // bvenumerate(bv_results[ j]);
-                // bvenumerate(bv_results[ group_count[i]]);
+                n11 = countIntersectFromSortedLists(ancestral_right1, ancestral_left1);
+                n10 = ancestral_left1.size() - n11;
+                n01 = ancestral_right1.size() - n11;
+                n00 = n_c0 - ancestral_right1.size() - n10;
+                nsl0[locus] += n00*(i+1)*(n10 + n01) + n00*(i)*n11 + n01*n10*(i) + n01*n11*(i+1) + n10*n11*(i+1);
 
-                group_count[i]++;
-                //IDEA-OPT
+            }
+            
+            std::cout<<"at "<<i<<" n11,n10,n01,n00="<<n11<<","<<n10<<","<<n01<<","<<n00<<endl;
+            
+           
+            //derived
+            if(left_extreme){
+                n11 = derived_right1.size();
+                n10 = n_c1 - n11;
+                n01 = 0;
+                n00 = 0;
+                nsl1[locus] +=  n10*n11*(i);
+
+            }else if(right_extreme){
+                n11 = derived_left1.size();
+                n01 = n_c1 - n11;
+                n10 = 0;
+                n00 = 0;
+                nsl1[locus] +=  n01*n11*(i);
+
+            }else{
+                n11 = countIntersectFromSortedLists(derived_right1, derived_left1);
+                n10 = derived_left1.size() - n11;
+                n01 = derived_right1.size() - n11;
+                n00 = n_c1 - derived_right1.size() - n10;
+                nsl1[locus] += n00*(i+1)*(n10 + n01) + n00*(i)*n11 + n01*n10*(i) + n01*n11*(i+1) + n10*n11*(i+1);
+
+            }
+            std::cout<<"at "<<i<<" n11,n10,n01,n00="<<n11<<","<<n10<<","<<n01<<","<<n00<<endl;
+            
+
+
+            if(not right_extreme){
+                for (int set_bit_pos : all_positions[i])
+                {
+                    int old_group_id = group_id[set_bit_pos];
+                    m[old_group_id].push_back(set_bit_pos);
+                }
+
+                for (const auto &ele : m)
+                {
+                    int old_group_id = ele.first;
+                    int newgroup_size = ele.second.size();
+
+                    if (group_count[old_group_id] == newgroup_size || newgroup_size == 0)
+                    {
+                        continue;
+                    }
+
+                    for (int v : ele.second)
+                    {
+                        group_id[v] = totgc;
+                    }
+
+                    group_count[old_group_id] -= newgroup_size;
+                    group_count[totgc] += newgroup_size;
+                    totgc += 1;
+                }
+                m.clear();
             }
            
-        }
-        //cout<<"GC["<<i<<"]"<<group_count[i]<<endl;
-    }
-    for(int i = 0; i< ADVANCED_N; i++){
-        cout<<"GC["<<i<<"]="<<group_count[i]<<endl;
-    }
-}
 
+            if (not left_extreme){
 
-void readMatrixFromFile(const std::string& filename) {
-    int group_count[ADVANCED_D];
-    bm::serializer<bm::bvector<> >::buffer sbuf[ADVANCED_D]; // declare serialization buffers
-    
-    bm::bvector<> allbvs[ADVANCED_D]; // declare serialization buffers
-    
-    bm::operation_deserializer<bm::bvector<> > od;
-    std::ifstream file(filename);
-    BM_DECLARE_TEMP_BLOCK(tb)
-    bm::serializer<bm::bvector<> > bvs(tb);
-    bvs.set_compression_level(4);
- 
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filename << std::endl;
-        return;
-    }
+                for (int set_bit_pos : all_positions[neg_i]){
+                    int old_group_id = group_id[set_bit_pos];
+                    m[old_group_id].push_back(set_bit_pos);
+                }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        std::vector<unsigned int> positions;
-        //bm::bvector<>   bv;    
-        std::istringstream rowStream(line);
-        char value;
-        int pos=0;
-        while (rowStream >> value) {        
-            if(value=='1'){
-                positions.push_back(pos++);
-            }else if(value=='0'){
-                pos++;
-            }   
-        }
-
-        if(pos!=ADVANCED_N){
-            cout<<"ERROR";
-            exit(2);
-        }
-
-        if(N==0){
-            N = pos;
-        }
-
-        unsigned int* arr = new unsigned int[positions.size()];
-        copy(positions.begin(),positions.end(),arr);
-        // for(int i=0; i<positions.size();i++){
-        //     std::cout<<i<<" "<<arr[i]<<endl;
-        // }
-        if(positions.size()!=0){
-            allbvs[D++].import_sorted(arr, positions.size(), true);
-        }
-        //bvenumerate(allbvs[D-1]);
-        
-        delete[] arr;
-        //bm::bvector<>::statistics st;
-        //bv.optimize(tb, bm::bvector<>::opt_compress, &st);
+                for (const auto &ele : m) {
+                    int old_group_id = ele.first;
+                    int newgroup_size = ele.second.size() ;
+                    
+                    if(group_count[old_group_id] == newgroup_size || newgroup_size == 0){
+                        continue;
+                    }
+                    
+                    for(int v: ele.second){
+                        group_id[v] = totgc;
+                    }
+                    
+                    group_count[old_group_id] -= newgroup_size;
+                    group_count[totgc] += newgroup_size;
+                    totgc+=1;
+                }
+                m.clear();
+            }
             
-        //bvs.serialize(bv, sbuf[D++], &st); // perform serialization
-    }
 
-
-    file.close();
-
-    //------------------------------------------------------------
-    //done reading
-
-    bm::bvector<> bv_results[ADVANCED_N];
-    // std::vector<std::unique_ptr<bm::bvector<> > > vect; //vect[i] entry gets free when u move to vect[i+1]
-    // for (unsigned i = 0; i < ADVANCED_N; ++i)
-    // {
-    //     //bv->set(ADVANCED_N-1);
-    //     //bvenumerate(std::move(bv));
-         
-    //     //plz dont delete
-    //     //bm::bvector<> bvnew(*vect[i].get());
-
-    //     bm::bvector<> bvnew;
-
-    //     bm::deserialize(bvnew, sbuf[i].data());
-
-    //     bv_results[i] = bvnew;
-    //     bvenumerate(bv_results[i], "bv_results");
-    //     std::unique_ptr<bm::bvector<> > bv(&bvnew);    
-    // // for (unsigned i = 0; i < vect.size(); ++i)
-    // // {
-    // //     vect[i] = (vect[i].get());
-    // // }
-
-    //     vect.push_back(std::move(bv));
-
-    //     bvenumerate(*vect[i].get());
-        
-    //     int cnt = od.deserialize(*vect[i].get(), sbuf[i].buf(), bm::set_COUNT_AND);
-    //     //bvenumerate(bv_results[x]);
-    //     std::cout<<"cnt: "<<cnt<<endl;
-
-    // }
-
-    group_count[0]=2;//assume 0 and 1
-
-    //int cnt = od.deserialize(bv_results[0], sbuf[0].buf(), bm::set_COUNT_OR);
-    bm::bvector<> bv_T;
-    bv_T.bit_or(bv_results[0], allbvs[0]);
-    int cnt =  bv_T.count();
-
-    if(cnt==0 || cnt==N){
-        //bm::deserialize(bv_results[0], sbuf[0].buf()); //actually deserailize
-        bv_results[0] =  allbvs[0];
-        group_count[0]=1;
-        if(cnt == 0){
-            bv_results[0].resize(ADVANCED_N);
-            bv_results[0].invert();
-        }
-    }else{
-         group_count[0]=2;
-         //needs checking
-         bv_results[1].bit_or(bv_results[0]);
-         bv_results[0].resize(ADVANCED_N);
-         bv_results[0].invert();
-    }
-
-    bm::bvector<> bvnew;
-    for(int i = 1 ; i< ADVANCED_D; i++){
-        group_count[i] = group_count[i-1];
-        //bm:: 
-       // bvt2.bit_or(bv1, bv2, bvect::opt_compress);
-       // bv_T.bit_sub(bv_results[i-1], bv_B, bm::bvector<>::opt_compress); // 3
-        for(int j = 0; j< group_count[i-1]; j++){
-            
-            //read from sbuf_result[j]
-            //perform and or with sbuf
-            //update sbuf_result
-            // update group count
-            //print count
-            
-            ////int countAND = od.deserialize(bv_results[j], sbuf[i].buf(), bm::set_COUNT_AND); //sure its not 0
-            ////int countSUB = od.deserialize(bv_results[j], sbuf[i].buf(), bm::set_COUNT_SUB_AB); //sure its not 0
-
-            bm::bvector<> bvAND;
-            bm::bvector<> bvSUB;
-
-            bvAND.bit_and(bv_results[j], allbvs[i]);
-            bvSUB.bit_sub(bv_results[j], allbvs[i]);
-
-            int countAND =  bvAND.count();
-            int countSUB =  bvSUB.count();
-
-
-
-            if(countAND==0){
-                bv_results[j] = bvSUB;
-                ////od.deserialize(bv_results[j], sbuf[i].buf(), tb, bm::set_SUB); //sure its not 0
-                // cout<<"bv"<<i<<","<<j<<endl;
-                // bvenumerate(bv_results[ j]);
-            }else if(countSUB==0){
-                bv_results[j] = bvAND;
-                
-                //od.deserialize(bv_results[j], sbuf[i].buf(), tb, bm::set_AND); //sure its not 0
-                // cout<<"bv"<<i<<","<<j<<endl;
-                // bvenumerate(bv_results[ j]);
-            }else{
-                bv_results[ group_count[i] ] = bvSUB;
-                bv_results[ j ] = bvAND;
-
-
-                ////bv_results[ group_count[i] ].bit_or(bv_results[j]);
-                ////od.deserialize(bv_results[ group_count[i] ], sbuf[i].buf(), tb,bm::set_SUB); //sure its not 0
-                ////od.deserialize(bv_results[j], sbuf[i].buf(), tb, bm::set_AND); //sure its not 0
-                
-                // cout<<"bv"<<i<<","<<j<<endl;
-                // bvenumerate(bv_results[ j]);
-                // bvenumerate(bv_results[ group_count[i]]);
-
-                group_count[i]++;
-                //IDEA-OPT
+            if(n_c1_squared_minus==0){
+                nsl1[locus] = 0;
+            }
+            if(n_c0_squared_minus==0){
+                nsl0[locus] = 0;
             }
            
+            
+            if(left_extreme and right_extreme){
+                set<int> derivedGroups;
+                for(int i: all_positions[locus]){
+                    derivedGroups.insert(group_id[i]);
+                }
+                //for all groups having a non-1 group count do nc2
+                for(int k = 0; k<totgc; k++){
+                    int count = group_count[k];
+                    if(count > 1){ //TRY TO OPT
+                        if(derivedGroups.count(k)){
+                           nsl1[locus]+=0.5*( count*count - count);
+                        }else{
+                           nsl0[locus]+=0.5*( count*count - count);
+                        }
+                    }
+                }
+            }
+             if(true)
+                std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]*2.0/n_c1_squared_minus<<","<<nsl0[locus]*2.0/n_c0_squared_minus<<endl;
+             if(true)
+                std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]<<","<<nsl0[locus]<<endl;
+
+
+            if (i>=all_positions.size()-1){
+                right_extreme = true;
+            }
+            if (neg_i <= 0)
+            {
+                left_extreme = true;
+            }
+
+            if(totgc==ADVANCED_N){
+                return;
+            }
         }
-        //cout<<"GC["<<i<<"]"<<group_count[i]<<endl;
     }
-    for(int i = 0; i< ADVANCED_N; i++){
-        cout<<"GC["<<i<<"]="<<group_count[i]<<endl;
-    }
-}
+
 
 
   int main(int argc, char **argv)
   {   
     start_time = readTimer();
     vector<string> args(argv + 1, argv + argc);
+
+
+    // cxxopts::Options options("Selscan 3.0", "[TODO] Program to calculate haplotype homozygosity");
+    // options.add_options()
+    // ("d,debug", "Enable debugging") // a bool parameter
+    // ("i,integer", "Int param", cxxopts::value<int>())
+    // ("f,file", "File name", cxxopts::value<std::string>())
+    // ("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
+    // ;
+
+    // auto result = options.parse(argc, argv);
+
+    // int x = result["opt"].as<int>();
+    // string xx = result["file"].as<string>();
+
+
+
     // string filename;
     // for (auto i = args.begin(); i != args.end(); ++i) {
     //     if (*i == "-h" || *i == "--help") {
@@ -1065,8 +1050,11 @@ void readMatrixFromFile(const std::string& filename) {
 
 
 //   calc_EHH(7504);
-    float ihs = calc_iHS();
-    cout<<"iHS="<<ihs<<endl;
+    // float ihs = calc_iHS();
+    // cout<<"iHS="<<ihs<<endl;
+
+     map<int, vector<int> >  m;
+    calc_nSL(0, m);
 
     cout<<"Finish time:"<<to_string(readTimer())<<endl;
     return 0;
