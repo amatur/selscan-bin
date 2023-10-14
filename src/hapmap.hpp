@@ -1,0 +1,60 @@
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include <cstdint>
+#include <vector>
+#include <string>
+#include <bitset>
+#include <fstream>
+#include <unordered_map>
+#include <map>
+#include "selscan.hpp"
+
+#ifndef HAPMAP_HPP
+#define HAPMAP_HPP
+
+#include <stdexcept>
+#include <iostream>
+
+class HapMap
+{
+public:
+//    HapMap();
+    // static std::size_t querySnpLength(const char* filename);
+    // double geneticPosition(std::size_t line) const;
+    // long long unsigned int physicalPosition(std::size_t line) const;
+    // void loadMap(const char* mapFileName);
+    // std::string lineToId(std::size_t line) const;
+    // std::size_t idToLine(const std::string& id) const;
+    bool loadHap(const char* filename, std::vector<std::vector<unsigned int> >& all_positions);
+    std::size_t numSnps() const { return m_numSnps; }
+    std::size_t numHaps() const { return m_numHaps; }    
+//    ~HapMap();
+
+protected:
+    // std::map<std::size_t, std::string> m_idMap;
+    // unsigned long long* m_physPos;
+    // double* m_genPos;
+    // std::map<std::size_t, std::string> m_idMap;
+    std::vector<unsigned int> monomorphic;
+    std::size_t m_numSnps;
+    std::size_t m_numHaps;
+    // std::size_t& ADVANCED_D =  m_numSnps;
+    // std::size_t& ADVANCED_N = m_numHaps;
+
+};
+
+#endif 
