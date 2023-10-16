@@ -27,7 +27,9 @@ public:
 	void exec();
 	~EHH();
 
-    std::string input_filename_hap = "test4x6.hap";
+	std::string input_filename_hap = "data/out500.impute.hap";
+
+    //std::string input_filename_hap = "test4x6.hap";
     std::string input_filename_map = "test4x6.map";
     std::string output_filename = "outfile";// <outfile>.nsl[.alt].out
 	//
@@ -54,6 +56,7 @@ protected:
 
 private:
     std::vector<std::vector<unsigned int> > all_positions;
+    std::vector<unsigned int> loc_map;
 	unsigned int ADVANCED_N;
 	unsigned int ADVANCED_D;
 

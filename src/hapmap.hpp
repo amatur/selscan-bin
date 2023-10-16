@@ -46,7 +46,7 @@ public:
     // void loadMap(const char* mapFileName);
     // std::string lineToId(std::size_t line) const;
     // std::size_t idToLine(const std::string& id) const;
-    bool loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions);
+    bool loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<unsigned int>& loc_map);
     bool loadHapMap(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry >& m);
     std::size_t numSnps() const { return m_numSnps; }
     std::size_t numHaps() const { return m_numHaps; }    

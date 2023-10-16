@@ -74,7 +74,7 @@ bool HapMap::loadHapMap(const char* filename, const char* mapfile, double minmaf
     m_numHaps = 0;
     unsigned int actual_snp_id = 0;
     while (std::getline(f, line)) {
-        if(DEBUG) std::cout<<line<<std::endl;
+        //if(DEBUG) std::cout<<line<<std::endl;
         std::vector<unsigned int> positions;
  
         std::istringstream rowStream(line);
@@ -131,7 +131,7 @@ bool HapMap::loadHapMap(const char* filename, const char* mapfile, double minmaf
     return true;
 }
 
-bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions)
+bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<unsigned int>& loc_map)
 {
     std::ifstream f(filename, std::ios::in );
     if (!f.good())
@@ -143,8 +143,9 @@ bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vecto
     std::string line;
     m_numSnps = 0;
     m_numHaps = 0;
+    unsigned int act_snp_count = 0;
     while (std::getline(f, line)) {
-        if(DEBUG) std::cout<<line<<std::endl;
+        //if(DEBUG) std::cout<<line<<std::endl;
         std::vector<unsigned int> positions;
  
         std::istringstream rowStream(line);
@@ -157,7 +158,6 @@ bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vecto
                 pos++;
             }   
         }
-
 
         if(m_numHaps==0){
             m_numHaps = pos;
@@ -174,17 +174,16 @@ bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vecto
             //this->monomorphic.push_back(m_numSnps);
         }
         double maf = positions.size()*1.0/m_numHaps ;
-        if(maf < minmaf || 1-maf < minmaf){
+        if(maf <= minmaf || 1-maf <= minmaf){
             //skip
             //std::cout<<"WARNING: skipping site" << std::endl;
 
         }else{
+            loc_map.push_back(act_snp_count);
             ++m_numSnps;
             all_positions.push_back(positions); //check if all 0
         }
-
-        
-        
+        act_snp_count++;
     }
     f.close();
     return true;

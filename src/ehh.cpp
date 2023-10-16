@@ -81,7 +81,7 @@ void EHH::cli_prepare(CLI::App * app) {
 void EHH::init(){
     HapMap hm;
     cout<<"Loading "<<input_filename_hap<<endl;
-	hm.loadHap(input_filename_hap.c_str(), min_maf,this->all_positions); //populate the hapmap
+	hm.loadHap(input_filename_hap.c_str(), min_maf,this->all_positions, this->loc_map); //populate the hapmap
 	this->ADVANCED_N = hm.numHaps();
 	this->ADVANCED_D = hm.numSnps();
 
@@ -109,11 +109,33 @@ void EHH::calc_EHH(int locus){
     //calc_EHH_downstream(locus, m);
     calc_EHH2(locus, m, true);
     //std::cout<<" ehh1["<<locus<<"]="<<ehh1[locus]<<",ehh0["<<locus<<"]="<<ehh0[locus]<<endl;
-
+    if(all_positions[locus].size()==0){
+        iHH1[locus] = 1;
+    }
+    if(all_positions[locus].size()==ADVANCED_N){ //iHH0[locus]==0
+        iHH0[locus] = 1;
+    }
+    if(all_positions[locus].size()==1){
+        if(locus -= 0 or locus == ADVANCED_D-1){
+            iHH1[locus] = 0.5;
+        }else{
+            iHH1[locus] = 1;
+        }
+    }
+    if(all_positions[locus].size()==ADVANCED_N-1){
+        if(locus == 0 or locus == ADVANCED_D-1){
+            iHH0[locus] = 0.5;
+        }else{
+            iHH0[locus] = 1;
+        }
+    }
 }
 
 void EHH::exec() {
 	this->init(); //initialize
+
+    cout<<"Number of valid loci: "<<ADVANCED_D<<endl;
+    cout<<"Number of hap: "<<ADVANCED_N<<endl;
     if(calc_all){
         //calc_all();
         calc_iHS();
@@ -186,8 +208,15 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
 
     if(downstream){
         if(!calc_all)
-            cout<<"Iter "<<locus<<": EHH1["<<locus<<","<<i<<"]="<<1<<","<<1<<endl;
+            cout<<"Iter "<<0<<": EHH1["<<locus<<","<<locus<<"]="<<1<<" "<<1<<endl;
         
+        if(n_c1_squared_minus!=0){
+            iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * 0.5/n_c1_squared_minus;
+            //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
+        }
+        if(n_c0_squared_minus!=0){
+            iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * 0.5/n_c0_squared_minus;
+        }
     }
     //centring
     // ehh1[locus] += 1;
@@ -205,12 +234,12 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         if(downstream){
             if (--i < 0) break;
             if (locus-i > max_extend){
-            //break;
+                //break;
             }
         }else{
             if (++i >= ADVANCED_D) break;
             if (i-locus > max_extend){
-            //break;
+                //break;
             }
         }
         if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
@@ -221,9 +250,16 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         v = all_positions[i];
         if(all_positions[i].size()==0 or all_positions[i].size()==ADVANCED_N){
             //cout<<"SKIPPING MONOMORPHIC SITE"<<endl;
-            if(!calc_all)
-                cout<<"Mono: Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/n_c1_squared_minus<<","<<curr_ehh0_before_norm*1.0/n_c0_squared_minus<<endl;
+            // if(!calc_all)
+            //     cout<<"Mono: Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/n_c1_squared_minus<<","<<curr_ehh0_before_norm*1.0/n_c0_squared_minus<<endl;
         
+            if(n_c1_squared_minus!=0){
+                iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * 0.5/n_c1_squared_minus;
+                //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
+            }
+            if(n_c0_squared_minus!=0){
+                iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * 0.5/n_c0_squared_minus;
+            }
             continue;
         }
 
@@ -252,24 +288,18 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
             bool isDerivedGroup =  isDerived[ele.second[0]];
             if(isDerivedGroup)// just check first element if it is derived or not, 
             {
-                //iHH1[locus]+=ehh1_before_norm;
                 ehh1_before_norm += del_update;
-                //iHH1[locus]+=ehh1_before_norm;
             }else{
-                //iHH0[locus]+=ehh0_before_norm;
                 ehh0_before_norm += del_update;
-                // iHH0[locus]+=ehh0_before_norm;
             }
             
         }
 
-        //cout<<"GCC:"<<i<<" "<<totgc<<endl;
-        // iHH1[locus] += (ehh1[locus] +  (1.0*ehh1_before_norm/n_c1_squared_minus))*0.5;
-        // iHH0[locus] += (ehh0[locus] +  (1.0*ehh0_before_norm/n_c0_squared_minus))*0.5;
-
         if(n_c1_squared_minus!=0){
             iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * 0.5/n_c1_squared_minus;
+            //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
         }
+
         if(n_c0_squared_minus!=0){
             iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * 0.5/n_c0_squared_minus;
         }
@@ -288,6 +318,7 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
             curr_ehh0_before_norm = 0;
         }
 
+
         if(!calc_all)
             cout<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/n_c1_squared_minus<<","<<curr_ehh0_before_norm*1.0/n_c0_squared_minus<<endl;
         
@@ -297,6 +328,7 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         //logg[tid]+="map size after"+to_string(m.size())+"\n";
         //cout<< logg[tid];
     }
+    
 
     // if(!calc_all){
     //     cout<<"EHH1["<<locus<<"]="<<ehh1[locus]*1.0/n_c1_squared_minus<<","<<ehh0[locus]*1.0/n_c0_squared_minus<<endl;
@@ -507,9 +539,10 @@ void EHH::thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >&
     //#pragma omp parallel 
     for(int j = start; j< end; j++){
         //#pragma omp task 
-        ehh_obj->calc_EHH2(j, m);
-        //#pragma omp task 
-        ehh_obj->calc_EHH2(j, md, true);
+        // ehh_obj->calc_EHH2(j, m);
+        // //#pragma omp task 
+        // ehh_obj->calc_EHH2(j, md, true);
+        ehh_obj->calc_EHH(j);
 
         //ehh_obj->calc_EHH_downstream(j, md);
     }
@@ -593,7 +626,7 @@ float EHH::calc_iHS(){
         
         
 
-        fprintf(out_fp, "%d %d %f %f %f %f\n", i, i, all_positions[i].size()*1.0/ADVANCED_N, ihh1, ihh0, log10(ihh1/ihh0));
+        fprintf(out_fp, "%d %d %f %f %f %f\n", loc_map[i], i, all_positions[i].size()*1.0/ADVANCED_N, ihh1, ihh0, log10(ihh1/ihh0));
         
         //cout<<i << " ihh1 "<<ihh1<<" ihh0 "<<ihh0<<endl;
     }

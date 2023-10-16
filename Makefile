@@ -1,6 +1,6 @@
 CC=g++
 # CFLAGS=-w -std=c++11 -O3  -ftree-vectorize -pthread
-CFLAGS= -O3 -pthread 
+CFLAGS= -O3 -pthread
 #-g
 SRC_DIR := ./src
 OBJ_DIR := ./
