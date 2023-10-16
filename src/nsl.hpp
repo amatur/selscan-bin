@@ -29,13 +29,14 @@ public:
 
     std::string input_filename_hap = "test4x6.hap";
     std::string input_filename_map = "test4x6.map";
-    std::string output_filename = "outfile";// <outfile>.nsl[.alt].out
+    std::string output_filename = "outbin.nsl.out";// <outfile>.nsl[.alt].out
 
 private:
 	long* nsl0;
 	long* nsl1;
 	//
 	std::vector<std::vector<unsigned int> > all_positions;
+	std::vector<struct map_entry> mentries;
 	unsigned int ADVANCED_N;
 	unsigned int ADVANCED_D;
 	//
@@ -48,6 +49,8 @@ private:
 	bool keep_low_freq = false;
 	double min_maf = 0.05;
 	bool alt = false;
+
+	FILE *out_fp;
 
 protected:
 	void calc_nSL_upstream(int locus, map<int, vector<int> > & m);

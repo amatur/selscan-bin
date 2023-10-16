@@ -41,10 +41,13 @@ public:
 	double min_maf = 0.05;
 	bool alt = false;
 
+	FILE* out_fp;
 
 protected:
-	void calc_EHH2(int locus, map<int, vector<int> > & m);
-	void calc_EHH_downstream(int locus, map<int, vector<int> > & m);
+	void calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream=false);
+	void calc_EHH(int locus);
+	
+	// void calc_EHH_downstream(int locus, map<int, vector<int> > & m);
     float calc_iHS();
     void static thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj);
 
@@ -54,15 +57,15 @@ private:
 	unsigned int ADVANCED_N;
 	unsigned int ADVANCED_D;
 
-    float* ehh0;
-    float* ehh1;
-    float* ehh0_downstream;
-    float* ehh1_downstream;
+    // float* ehh0;
+    // float* ehh1;
+    // float* ehh0_downstream;
+    // float* ehh1_downstream;
 
     float* iHH0;
     float* iHH1;
-    float* iHH0_downstream;
-    float* iHH1_downstream;
+    // float* iHH0_downstream;
+    // float* iHH1_downstream;
 
     string* logg;
 };

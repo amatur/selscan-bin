@@ -74,12 +74,27 @@ void NSL::cli_prepare(CLI::App * app) {
 	app->get_formatter()->column_width(10);
 }
 
+void NSL::init() {  
+    cout<<"v3.0.0"<<endl;
+    cout<<"Calculating nSL"<<endl;
+    cout<<"Input filename: "<<input_filename_hap<<endl;
+    cout<<"Map filename: "<<input_filename_map<<endl;
+    cout<<"Output file: "<<output_filename<<endl;
+    cout<<"Threads: "<<numThread<<endl;  
+    cout<<"Scale parameter: "<<20000<<endl;  
+    cout<<"Max gap parameter: "<<max_extend_nsl<<endl;  
+    cout<<"EHH cutoff value: "<<cutoff<<endl;  
+    cout<<"Phased: "<<"Yes"<<endl;  
+    cout<<"Alt flag set: "<<"No"<<endl;  
 
-void NSL::init() {
 	HapMap hm;
+    
+
     cout<<"Loading "<<input_filename_hap<<endl;
-	hm.loadHap(input_filename_hap.c_str(), this->all_positions); //populate the hapmap
-	this->ADVANCED_N = hm.numHaps();
+	//hm.loadHap(input_filename_hap.c_str(), min_maf, this->all_positions); //populate the hapmap
+	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
+	
+    this->ADVANCED_N = hm.numHaps();
 	this->ADVANCED_D = hm.numSnps();
 
 	nsl1 = new long[ADVANCED_D];
@@ -426,12 +441,22 @@ void NSL::calc_nSL(int locus){
 			nsl_0 -= 1;
 		}
 	}
-	std::cout<<" nsl1["<<locus<<"]="<<nsl_1<<",nsl0["<<locus<<"]="<<nsl_0<<endl;
+
+	//std::cout<<" nsl1["<<mentries[locus].locId<<"]="<<nsl_1<<",nsl0["<<mentries[locus].locId<<"]="<<nsl_0<<endl;
+
+    //< locusID > < physicalPos > < ’1 ’ freq > <sl1 > <sl0 > < unstandardized nSL >
+	//std::cout<<<< <<nsl_1<<",nsl0["<<mentries[locus].locId<<"]="<<nsl_0<<endl;
+    if(nsl_1==0){nsl_1+=1;};
+    if(nsl_0==0){nsl_0+=1;};
+
+    fprintf(out_fp, "%d %d %f %f %f %f\n",mentries[locus].locId, mentries[locus].phyPos, all_positions[locus].size() * 1.0/this->ADVANCED_N, nsl_1, nsl_0, log10(nsl_1/nsl_0)); 
 }
 
 void NSL::calc_nSL_all(){
+    out_fp = fopen("outbin.nsl.out","w");
     for(int i = 0; i<ADVANCED_D; i++){
         calc_nSL(i);
     }
+    fclose(out_fp);
 	//return;
 }

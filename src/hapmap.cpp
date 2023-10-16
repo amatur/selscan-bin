@@ -1,25 +1,10 @@
-/*
- * Hapbin: A fast binary implementation EHH, iHS, and XPEHH
- * Copyright (C) 2014  Colin MacLean <s0838159@sms.ed.ac.uk>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 
 #include "hapmap.hpp"
 #include <cassert>
 #include <cstdlib>
+#include <cstdint>
+#include <cstring>
+#include <iostream>
 
 // HapMap::HapMap()
 //     : m_numSnps{}
@@ -74,7 +59,79 @@
 // }
 
 
-bool HapMap::loadHap(const char* filename, std::vector<std::vector<unsigned int> >& all_positions)
+bool HapMap::loadHapMap(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry>& mentries)
+{
+    //std::ifstream fmap(mapfile, std::ios::in );
+    std::ifstream f(filename, std::ios::in );
+    if (!f.good())
+    {
+        std::cerr << "ERROR: Cannot open file or file not found: " << filename << std::endl;
+        return false;
+    }
+ 
+    std::string line;
+    m_numSnps = 0;
+    m_numHaps = 0;
+    unsigned int actual_snp_id = 0;
+    while (std::getline(f, line)) {
+        if(DEBUG) std::cout<<line<<std::endl;
+        std::vector<unsigned int> positions;
+ 
+        std::istringstream rowStream(line);
+        char value;
+        int pos=0;
+        while (rowStream >> value) {        
+            if(value=='1'){
+                positions.push_back(pos++);
+            }else if(value=='0'){
+                pos++;
+            }   
+        }
+
+
+        if(m_numHaps==0){
+            m_numHaps = pos;
+        }else{
+            if(pos!=m_numHaps){ //integrity check: all lines must be of same length
+                std::cerr<<"ERROR: site"<<m_numSnps<<" has incorrect number of haplotypes."<<std::endl;
+                exit(2);
+            }
+        }
+
+        if(positions.size()==0 or positions.size()==m_numHaps){
+            //This implies site is monomorphic
+            std::cout<<"WARNING: monomorphic site"<< m_numSnps << std::endl;
+            //this->monomorphic.push_back(m_numSnps);
+        }
+        double maf = positions.size()*1.0/m_numHaps ;
+        std::cout<<"Loc: "<<actual_snp_id<<"1 freq: "<<maf<<std::endl;
+        if(maf < minmaf || 1-maf < minmaf){
+            //skip
+            std::cout<<"WARNING: skipping site" << actual_snp_id<< std::endl;
+
+        }else{
+            ++m_numSnps;
+            all_positions.push_back(positions); //check if all 0
+            struct map_entry mentry;
+            mentry.genPos = actual_snp_id;
+            mentry.phyPos = actual_snp_id;
+            mentry.locId = actual_snp_id;
+            mentries.push_back(mentry);
+
+        }
+        ++actual_snp_id;
+    }
+    
+    // mentries_arr = new struct map_entry[m_numSnps];
+    // for(int k = 0; k<m_numSnps; k++){
+    //     mentries_arr[k] = mentries[k];
+    // }
+    //std::memcpy(mentries_arr, mentries.data(), sizeof(struct map_entry)*m_numSnps);
+    f.close();
+    return true;
+}
+
+bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions)
 {
     std::ifstream f(filename, std::ios::in );
     if (!f.good())
@@ -113,11 +170,21 @@ bool HapMap::loadHap(const char* filename, std::vector<std::vector<unsigned int>
 
         if(positions.size()==0 or positions.size()==m_numHaps){
             //This implies site is monomorphic
-            std::cout<<"WARNING: monomorphic site"<< m_numSnps << std::endl;
+            //std::cout<<"WARNING: monomorphic site"<< m_numSnps << std::endl;
             //this->monomorphic.push_back(m_numSnps);
         }
-        ++m_numSnps;
-        all_positions.push_back(positions); //check if all 0
+        double maf = positions.size()*1.0/m_numHaps ;
+        if(maf < minmaf || 1-maf < minmaf){
+            //skip
+            //std::cout<<"WARNING: skipping site" << std::endl;
+
+        }else{
+            ++m_numSnps;
+            all_positions.push_back(positions); //check if all 0
+        }
+
+        
+        
     }
     f.close();
     return true;

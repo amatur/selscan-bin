@@ -29,6 +29,13 @@
 #include <stdexcept>
 #include <iostream>
 
+
+struct map_entry {
+  int locId;  
+  int phyPos;
+  int genPos;
+};
+
 class HapMap
 {
 public:
@@ -39,7 +46,8 @@ public:
     // void loadMap(const char* mapFileName);
     // std::string lineToId(std::size_t line) const;
     // std::size_t idToLine(const std::string& id) const;
-    bool loadHap(const char* filename, std::vector<std::vector<unsigned int> >& all_positions);
+    bool loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions);
+    bool loadHapMap(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry >& m);
     std::size_t numSnps() const { return m_numSnps; }
     std::size_t numHaps() const { return m_numHaps; }    
 //    ~HapMap();
@@ -52,6 +60,8 @@ protected:
     std::vector<unsigned int> monomorphic;
     std::size_t m_numSnps;
     std::size_t m_numHaps;
+
+
     // std::size_t& ADVANCED_D =  m_numSnps;
     // std::size_t& ADVANCED_N = m_numHaps;
 
