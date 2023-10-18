@@ -1,3 +1,4 @@
+//need to add check if n^2 causes overflow
 // main.cpp
 // version 1:
 // sep 26

@@ -128,6 +128,7 @@ bool HapMap::loadHapMap(const char* filename, const char* mapfile, double minmaf
     // }
     //std::memcpy(mentries_arr, mentries.data(), sizeof(struct map_entry)*m_numSnps);
     f.close();
+    std::cout<<"Finished loading file."<<std::endl;
     return true;
 }
 
@@ -174,7 +175,7 @@ bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vecto
             //this->monomorphic.push_back(m_numSnps);
         }
         double maf = positions.size()*1.0/m_numHaps ;
-        if(maf <= minmaf || 1-maf <= minmaf){
+        if(maf < minmaf || 1-maf < minmaf){
             //skip
             //std::cout<<"WARNING: skipping site" << std::endl;
 
@@ -186,5 +187,7 @@ bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vecto
         act_snp_count++;
     }
     f.close();
+    std::cout<<"Finished loading file."<<std::endl;
+
     return true;
 }
