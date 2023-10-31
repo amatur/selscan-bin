@@ -29,6 +29,7 @@
 #include <stdexcept>
 #include <iostream>
 
+#include "gzstream.h"
 
 struct map_entry {
   int locId;  
@@ -48,10 +49,14 @@ public:
     // std::size_t idToLine(const std::string& id) const;
     bool loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<unsigned int>& loc_map);
     bool loadHapMap(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry >& m);
+    bool loadHapMapVCF(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry >& m);
+    
     std::size_t numSnps() const { return m_numSnps; }
     std::size_t numHaps() const { return m_numHaps; }    
 //    ~HapMap();
 
+private:
+  int countFields(const string&);
 protected:
     // std::map<std::size_t, std::string> m_idMap;
     // unsigned long long* m_physPos;

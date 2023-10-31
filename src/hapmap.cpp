@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-
+using namespace std;
 // HapMap::HapMap()
 //     : m_numSnps{}
 //     , m_numHaps{}
@@ -57,6 +57,191 @@
 //         abort();
 //     }
 // }
+
+
+
+
+int HapMap::countFields(const string &str)
+{
+    string::const_iterator it;
+    int result;
+    int numFields = 0;
+    int seenChar = 0;
+    for (it = str.begin() ; it < str.end(); it++)
+    {
+        result = isspace(*it);
+        if (result == 0 && seenChar == 0)
+        {
+            numFields++;
+            seenChar = 1;
+        }
+        else if (result != 0)
+        {
+            seenChar = 0;
+        }
+    }
+    return numFields;
+}
+
+bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry>& mentries)
+{
+    bool unphased = false;
+    igzstream fin;
+    std::cerr << "Opening " << filename << "...\n";
+    fin.open(filename);
+
+    if (fin.fail())
+    {
+        std::cerr << "ERROR: Failed to open " << filename << " for reading.\n";
+        throw 0;
+    }
+
+    int numMapCols = 9;
+    //int fileStart = fin.tellg();
+    std::string line;
+    int nloci = 0;
+    int previous_nhaps = -1;
+    int current_nhaps = 0;
+    //Counts number of haps (cols) and number of loci (rows)
+    //if any lines differ, send an error message and throw an exception
+    while (getline(fin, line))
+    {
+        if (line[0] == '#') {
+            continue;
+        }
+        //getline(fin,line);
+        //if(fin.eof()) break;
+        nloci++;
+        current_nhaps = countFields(line);
+        //cout << "nloci: " << current_nhaps << endl;
+        if (previous_nhaps < 0)
+        {
+            previous_nhaps = current_nhaps;
+            continue;
+        }
+        else if (previous_nhaps != current_nhaps)
+        {
+            cerr << "ERROR: line " << nloci << " of " << filename << " has " << current_nhaps
+                 << " fields, but the previous line has " << previous_nhaps << " fields.\n";
+            throw 0;
+        }
+        previous_nhaps = current_nhaps;
+    }
+
+    fin.clear(); // clear error flags
+    //fin.seekg(fileStart);
+    fin.close();
+
+    fin.open(filename);
+
+    if (fin.fail())
+    {
+        cerr << "ERROR: Failed to open " << filename << " for reading.\n";
+        throw 0;
+    }
+
+    int nhaps = unphased ? (current_nhaps - numMapCols) : (current_nhaps - numMapCols) * 2;
+    int nfields = (current_nhaps - numMapCols);
+    cerr << "Loading " << nhaps << " haplotypes and " << nloci << " loci...\n";
+
+    //  std::vector<unsigned int> positions;
+ 
+    //     std::istringstream rowStream(line);
+    //     char value;
+    //     int pos=0;
+    //     while (rowStream >> value) {        
+    //         if(value=='1'){
+    //             positions.push_back(pos++);
+    //         }else if(value=='0'){
+    //             pos++;
+    //         }   
+    //     }
+
+
+    string junk;
+    char allele1, allele2, separator;
+    bool skipLine = false;
+
+    for (int locus = 0; locus < nloci; locus++)
+    {
+        for (int i = 0; i < numMapCols; i++) {
+            fin >> junk;
+            if (i == 0 && junk[0] == '#') {
+                skipLine = true;
+                break;
+            }
+        }
+        if (skipLine) {
+            getline(fin, junk);
+            skipLine = false;
+            locus--;
+            continue;
+        }
+
+        std::vector<unsigned int> positions; // holds positions for this locus
+        
+        for (int field = 0; field < nfields; field++)
+        {
+            fin >> junk;
+            allele1 = junk[0];
+            separator = junk[1];
+            allele2 = junk[2];
+            if ( (allele1 != '0' && allele1 != '1') || (allele2 != '0' && allele2 != '1') )
+            {
+                cerr << "ERROR: Alleles must be coded 0/1 only.\n";
+                cerr << allele1 << " " << allele2 << endl;
+                throw 0;
+            }
+
+            //if(separator != '|'){
+            //    cerr << "ERROR:  Alleles must be coded 0/1 only.\n";
+            //    throw 0;
+            //}
+            if(unphased){
+            }
+            else{
+                // data->data[2 * field][locus] = allele1;
+                // data->data[2 * field + 1][locus] = allele2;
+                //TODO
+
+                if(allele1=='1'){
+                    positions.push_back(2 * field);
+                }
+                if(allele2=='1'){
+                    positions.push_back(2 * field + 1);
+                }
+            }
+        }
+
+        if(positions.size()==0 or positions.size()==m_numHaps){
+            //This implies site is monomorphic
+            std::cout<<"WARNING: monomorphic site"<< locus << std::endl;
+            //this->monomorphic.push_back(m_numSnps);
+        }
+        double maf = positions.size()*1.0/m_numHaps ;
+        std::cout<<"Loc: "<<locus<<"1 freq: "<<maf<<std::endl;
+        if(maf < minmaf || 1-maf < minmaf){
+            //skip
+            std::cout<<"WARNING: skipping site" << locus<< std::endl;
+
+        }else{
+            all_positions.push_back(positions); //check if all 0
+            struct map_entry mentry;
+            mentry.genPos = locus;
+            mentry.phyPos = locus;
+            mentry.locId = locus;
+            mentries.push_back(mentry);
+        }
+
+        
+    }
+
+    fin.close();
+    this-> m_numSnps = nloci;
+    this-> m_numHaps = nhaps;
+
+    return true;
+}
 
 
 bool HapMap::loadHapMap(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry>& mentries)

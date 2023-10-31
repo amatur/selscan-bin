@@ -26,6 +26,14 @@ res.ihh<-scan_hh_full(hap,discard_integration_at_border = FALSE)
 # 
 # res.ihs = ihh2ihs(res)
 
+col_a = (res.ihh[["POSITION"]])
+col_b = (res.ihh[["FREQ_D"]])
+col_c = (res.ihh[["IHH_D"]])
+col_d = (res.ihh[["IHH_A"]])
+col_e = log10(col_c/col_d)
+
+data_cols = data.frame(col_a, col_b, col_c, col_d, col_e)
+write.table(data_cols,file="out_ihh_20k_rehh",sep=" ",row.names=FALSE, col.names =FALSE)
 
 # 
 v=(res.ehh[["ehh"]][["EHH_A"]])

@@ -92,7 +92,7 @@ void NSL::init() {
 
     cout<<"Loading "<<input_filename_hap<<endl;
 	//hm.loadHap(input_filename_hap.c_str(), min_maf, this->all_positions); //populate the hapmap
-	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
+	hm.loadHapMapVCF(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
 	
     this->ADVANCED_N = hm.numHaps();
 	this->ADVANCED_D = hm.numSnps();

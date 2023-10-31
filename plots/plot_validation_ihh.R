@@ -1,3 +1,11 @@
+data_rehh <- read.table("/home/art/workspace/selscan-bin/data/rehh/out_ihh_20k_rehh", header = FALSE)
+data_rehh <- data.frame(
+  x = data_rehh[, 1],             # X-axis values
+  y1 = data_rehh[, 4],       # Y-axis values for the first line
+  y2 = data_rehh[, 5]        # Y-axis values for the second line
+)
+
+
 data_hapbin <- read.table("/home/art/workspace/hapbin_ihh", header = FALSE)
 data_hapbin <- data.frame(
   x = data_hapbin[, 1],             # X-axis values
@@ -57,6 +65,8 @@ lines(data_ihh_curr$x, data_ihh_curr$y1, col = "red", lty = 2, lwd = 2)
 # xy <- merge(data_nsl, data_hapbin, by.x = 1, by.y = 1, all.x = TRUE, all.y = TRUE)
 
 # lines(data_nsl$x, data_nsl$y1, col = "black", lty = 3, lwd = 2)
+lines(data_rehh$x, data_rehh$y1, col = "black", lty = 3, lwd = 2)
+
 
 # Add a legend
 legend("topleft", legend = c("Selscan iHH", "Selscan-NEW iHH", "Hapbin","Selscan-NEW nSL"), col = c("blue", "red", "magenta","black"), 
