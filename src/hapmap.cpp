@@ -61,7 +61,7 @@ using namespace std;
 
 
 
-int HapMap::countFields(const string &str)
+int HapMap::countFields(string& str)
 {
     string::const_iterator it;
     int result;

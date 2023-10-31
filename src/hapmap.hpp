@@ -30,6 +30,7 @@
 #include <iostream>
 
 #include "gzstream.h"
+using namespace std;
 
 struct map_entry {
   int locId;  
@@ -56,7 +57,7 @@ public:
 //    ~HapMap();
 
 private:
-  int countFields(const string&);
+    int countFields( string& s);
 protected:
     // std::map<std::size_t, std::string> m_idMap;
     // unsigned long long* m_physPos;
