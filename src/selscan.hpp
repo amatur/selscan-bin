@@ -18,7 +18,7 @@
 #ifndef SEL__H__INCLUDED__
 #define SEL__H__INCLUDED__
 
-#include "gzstream.h"
+
 
 class Selscan {
 public:

@@ -27,9 +27,9 @@ public:
 	void calc_nSL_all();
 	~NSL();
 
-    std::string input_filename_hap = "test4x6.hap";
-    std::string input_filename_map = "test4x6.map";
-    std::string output_filename = "outbin.nsl.out";// <outfile>.nsl[.alt].out
+    std::string input_filename_hap = "example/test4x6.hap";
+    std::string input_filename_map = "example/test4x6.map";
+    std::string output_filename = "example/outbin.nsl.out";// <outfile>.nsl[.alt].out
 
 private:
 	long* nsl0;

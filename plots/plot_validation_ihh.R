@@ -1,8 +1,8 @@
 data_rehh <- read.table("/home/art/workspace/selscan-bin/data/rehh/out_ihh_20k_rehh", header = FALSE)
 data_rehh <- data.frame(
   x = data_rehh[, 1],             # X-axis values
-  y1 = data_rehh[, 4],       # Y-axis values for the first line
-  y2 = data_rehh[, 5]        # Y-axis values for the second line
+  y1 = data_rehh[, 3],       # Y-axis values for the first line
+  y2 = data_rehh[, 4]        # Y-axis values for the second line
 )
 
 
@@ -53,21 +53,24 @@ data2 <- data.frame(
 )
 
 # Create a blank plot with appropriate axis limits
-plot(NULL, xlim = c(5200, 5400), ylim = range(data_ihh_curr$y1, data_ihh_curr$y2*2), 
+plot(NULL, xlim = c(5000, 6000), ylim = range(data_ihh_curr$y1, data_ihh_curr$y2), 
      xlab = "Locus", ylab = "iHH1", main = "Comparing iHH1 values (chr10: 20,000 sites, 6404 haps) ")
 #retained 1502
 
-lines(data_selscan$x, data_selscan$y1, col = "blue", lty = 1, lwd = 2)
-lines(data_ihh_curr$x, data_ihh_curr$y1, col = "red", lty = 2, lwd = 2)
-# lines(data_nsl$x, data_hapbin$y1.y, col = "magenta", lty = 3, lwd = 2)
+lines(data_selscan$x, data_selscan$y2, col = "blue", lty = 1, lwd = 2)
+lines(data_ihh_curr$x, data_ihh_curr$y2, col = "red", lty = 2, lwd = 2)
 # 
 
 # xy <- merge(data_nsl, data_hapbin, by.x = 1, by.y = 1, all.x = TRUE, all.y = TRUE)
-
+# lines(data_nsl$x, data_hapbin$y1.y, col = "magenta", lty = 3, lwd = 2)
+# 
 # lines(data_nsl$x, data_nsl$y1, col = "black", lty = 3, lwd = 2)
-lines(data_rehh$x, data_rehh$y1, col = "black", lty = 3, lwd = 2)
+lines(data_rehh$x, data_rehh$y2, col = "black", lty = 3, lwd = 2)
 
 
 # Add a legend
-legend("topleft", legend = c("Selscan iHH", "Selscan-NEW iHH", "Hapbin","Selscan-NEW nSL"), col = c("blue", "red", "magenta","black"), 
+legend("topleft", legend = c("Selscan iHH", "Selscan-NEW iHH", "Hapbin","Rehh2 iHH"), col = c("blue", "red", "magenta","black"), 
        lty = c(1, 2,3,4), cex=0.5,lwd = 2, title = "Tool name")
+# 
+# legend("topleft", legend = c("Selscan iHH", "Selscan-NEW iHH", "Hapbin","Selscan-NEW nSL"), col = c("blue", "red", "magenta","black"), 
+#        lty = c(1, 2,3,4), cex=0.5,lwd = 2, title = "Tool name")
