@@ -1,0 +1,34 @@
+/home/art/workspace/github/selscan/bin/linux/selscan --nsl --vcf /home/art/workspace/filezilla-sync/out.1000_100000_1.vcf --pmap --trunc-ok 
+v2.0.0
+Calculating  nSL.
+Input filename: /home/art/workspace/filezilla-sync/out.1000_100000_1.vcf
+Map filename: __mapfile
+Output file: outfile.nsl.out
+Threads: 1
+Scale parameter: 20000
+Max gap parameter: 200000
+EHH cutoff value: 0.05
+Phased: yes
+Alt flag set: no
+--skip-low-freq set. Removing all variants < 0.05.
+Removed 20 low frequency variants.
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 
+WARNING: Reached chromosome edge before EHH decayed below 0. 

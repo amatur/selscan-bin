@@ -8,7 +8,7 @@
 using namespace std;
 // HapMap::HapMap()
 //     : m_numSnps{}
-//     , m_numHaps{}
+//     , m_numHaps{}.vscode
 // {
 
 // }
@@ -60,6 +60,16 @@ using namespace std;
 
 
 
+void HapMap::print(){
+    for(int i = 0 ; i< this->m_numSnps; i++){
+        cout<<"Loc "<<i<<":";
+        for (unsigned int v : this->all_positions[i]){
+            cout<<v<<" ";
+        }
+        cout<<endl;
+    }
+    
+}
 
 int HapMap::countFields(string& str)
 {
@@ -83,7 +93,7 @@ int HapMap::countFields(string& str)
     return numFields;
 }
 
-bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry>& mentries)
+bool HapMap::loadVCF(const char* filename, double minmaf)
 {
     bool unphased = false;
     igzstream fin;
@@ -99,16 +109,19 @@ bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double min
     int numMapCols = 9;
     //int fileStart = fin.tellg();
     std::string line;
-    int nloci = 0;
+    uint64_t nloci = 0;
     int previous_nhaps = -1;
     int current_nhaps = 0;
     //Counts number of haps (cols) and number of loci (rows)
     //if any lines differ, send an error message and throw an exception
+
+
     while (getline(fin, line))
     {
         if (line[0] == '#') {
             continue;
         }
+
         //getline(fin,line);
         //if(fin.eof()) break;
         nloci++;
@@ -143,6 +156,9 @@ bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double min
     int nhaps = unphased ? (current_nhaps - numMapCols) : (current_nhaps - numMapCols) * 2;
     int nfields = (current_nhaps - numMapCols);
     cerr << "Loading " << nhaps << " haplotypes and " << nloci << " loci...\n";
+    m_numHaps = nhaps;
+    //m_numSnps = nloci; 
+
 
     //  std::vector<unsigned int> positions;
  
@@ -164,12 +180,20 @@ bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double min
 
     for (int locus = 0; locus < nloci; locus++)
     {
+        uint64_t physpos;
         for (int i = 0; i < numMapCols; i++) {
             fin >> junk;
             if (i == 0 && junk[0] == '#') {
                 skipLine = true;
                 break;
+            }else{
+                if(i==1){ //column for physpos //0 for chr //2 for id
+                    std::istringstream reader(junk);
+                    reader >> physpos;
+                    cout<<"PHYSPOS:"<<junk<<" "<<physpos<<endl;
+                }
             }
+            
         }
         if (skipLine) {
             getline(fin, junk);
@@ -177,6 +201,8 @@ bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double min
             locus--;
             continue;
         }
+
+        
 
         std::vector<unsigned int> positions; // holds positions for this locus
         
@@ -206,19 +232,25 @@ bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double min
 
                 if(allele1=='1'){
                     positions.push_back(2 * field);
+                    cout<<2 * field<<" ";
                 }
                 if(allele2=='1'){
                     positions.push_back(2 * field + 1);
+                    cout<<2 * field + 1<<" ";
                 }
             }
         }
-
+        cout<<endl;
         if(positions.size()==0 or positions.size()==m_numHaps){
             //This implies site is monomorphic
             std::cout<<"WARNING: monomorphic site"<< locus << std::endl;
             //this->monomorphic.push_back(m_numSnps);
         }
+        if(positions.size()==1 or positions.size()==m_numHaps-1){
+            std::cout<<"WARNING: MAC must be > 1 : site " << locus << std::endl;
+        }
         double maf = positions.size()*1.0/m_numHaps ;
+        cout<<maf<<" maf"<<endl;
         std::cout<<"Loc: "<<locus<<"1 freq: "<<maf<<std::endl;
         if(maf < minmaf || 1-maf < minmaf){
             //skip
@@ -227,30 +259,28 @@ bool HapMap::loadHapMapVCF(const char* filename, const char* mapfile, double min
         }else{
             all_positions.push_back(positions); //check if all 0
             struct map_entry mentry;
-            mentry.genPos = locus;
-            mentry.phyPos = locus;
+            mentry.genPos = physpos;
+            mentry.phyPos = physpos;
             mentry.locId = locus;
             mentries.push_back(mentry);
         }
-
-        
     }
 
     fin.close();
-    this-> m_numSnps = nloci;
-    this-> m_numHaps = nhaps;
+    this-> m_numSnps = all_positions.size();
+    cout<<"retaining "<<this-> m_numSnps <<endl;
+    // this-> m_numHaps = nhaps;
 
     return true;
 }
 
-
-bool HapMap::loadHapMap(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry>& mentries)
+bool HapMap::loadHapMap(const char* hapfile, const char* mapfile, double minmaf)
 {
     //std::ifstream fmap(mapfile, std::ios::in );
-    std::ifstream f(filename, std::ios::in );
+    std::ifstream f(hapfile, std::ios::in );
     if (!f.good())
     {
-        std::cerr << "ERROR: Cannot open file or file not found: " << filename << std::endl;
+        std::cerr << "ERROR: Cannot open file or file not found: " << hapfile << std::endl;
         return false;
     }
  

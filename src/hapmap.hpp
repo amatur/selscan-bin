@@ -49,11 +49,15 @@ public:
     // std::string lineToId(std::size_t line) const;
     // std::size_t idToLine(const std::string& id) const;
     bool loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<unsigned int>& loc_map);
-    bool loadHapMap(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry >& m);
-    bool loadHapMapVCF(const char* filename, const char* mapfile, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<struct map_entry >& m);
-    
+    bool loadHapMap(const char* filename, const char* mapfile, double minmaf);
+    bool loadVCF(const char* filename, double minmaf);
+    void print();
+
     std::size_t numSnps() const { return m_numSnps; }
     std::size_t numHaps() const { return m_numHaps; }    
+    
+    std::vector<struct map_entry> mentries; // hold additional info
+    std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
 //    ~HapMap();
 
 private:

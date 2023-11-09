@@ -4,6 +4,7 @@
 
 #include "CLI11.hpp"
 #include "selscan.hpp"
+#include "hapmap.hpp"
 // #include "utils.hpp"
 
 using namespace std;
@@ -35,10 +36,9 @@ private:
 	long* nsl0;
 	long* nsl1;
 	//
-	std::vector<std::vector<unsigned int> > all_positions;
-	std::vector<struct map_entry> mentries;
-	unsigned int ADVANCED_N;
-	unsigned int ADVANCED_D;
+	HapMap hm;
+	unsigned int numHaps;
+	unsigned int numSnps;
 	//
 	int numThread = 1;
 	unsigned int locus = 0;
@@ -58,7 +58,7 @@ protected:
 
 template <typename T> void print_a(T* arr, string name="v"){
     std::cout<<"vector: "<<name<<": ";
-    for (int i=0; i<ADVANCED_N ; i++){
+    for (int i=0; i<numHaps ; i++){
         std::cout<<arr[i]<<" ";
     }
     std::cout<<std::endl;

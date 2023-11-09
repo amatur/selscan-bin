@@ -1,6 +1,6 @@
 CC=g++
 # CFLAGS=-w -std=c++11 -O3  -ftree-vectorize -pthread
-CFLAGS= -O3 -pthread -m64 -mmmx -msse -msse2
+CFLAGS= -O0 -pthread -m64 -mmmx -msse -msse2 -g
 #-g
 SRC_DIR := ./src
 OBJ_DIR := ./

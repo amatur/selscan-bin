@@ -87,20 +87,29 @@ void NSL::init() {
     cout<<"Phased: "<<"Yes"<<endl;  
     cout<<"Alt flag set: "<<"No"<<endl;  
 
-	HapMap hm;
+    useVCF=true;
+    if(useVCF){
+        cout<<"Loading "<<input_filename_vcf<<endl;
+    	hm.loadVCF(input_filename_vcf.c_str(), min_maf); //populate the matrix
+    }else{
+        cout<<"Loading "<<input_filename_hap<<endl;
+    	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf); //populate the matrix
+    }
     
 
     cout<<"Loading "<<input_filename_hap<<endl;
 	//hm.loadHap(input_filename_hap.c_str(), min_maf, this->all_positions); //populate the hapmap
-	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
+	
+    
+    //hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
 	
     //hm.loadHapMapVCF(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
 	
-    this->ADVANCED_N = hm.numHaps();
-	this->ADVANCED_D = hm.numSnps();
+    this->numHaps = hm.numHaps();
+	this->numSnps = hm.numSnps();
 
-	nsl1 = new long[ADVANCED_D];
-	nsl0 = new long[ADVANCED_D];
+	nsl1 = new long[numSnps];
+	nsl0 = new long[numSnps];
 
     //calc_nSL(locus);
 }
@@ -115,7 +124,7 @@ void NSL::exec() {
 }
 
 void NSL::calc_nSL_upstream(int locus, map<int, vector<int> > & m){
-        if(locus >= ADVANCED_N){
+        if(locus >= numHaps){
             return;
         }
         //if group_count[location] == 1 already unique
@@ -128,30 +137,30 @@ void NSL::calc_nSL_upstream(int locus, map<int, vector<int> > & m){
         int n_c0_squared_minus = 0;
         int n_c1_squared_minus = 0;
 
-        int group_count[ADVANCED_N];
-        int group_id[ADVANCED_N];
-        bool isDerived[ADVANCED_N]; 
+        int group_count[numHaps];
+        int group_id[numHaps];
+        bool isDerived[numHaps]; 
 
         //will be vectorized
-        for(int i = 0; i<ADVANCED_N; i++){
+        for(int i = 0; i<numHaps; i++){
             group_count[i] = 0;
             group_id[i] = 0;
             isDerived[i] = false;
         }
 
         int totgc=0;
-        vector<unsigned int> v = all_positions[locus];
+        vector<unsigned int> v = hm.all_positions[locus];
 
         if(v.size()==0){
-            n_c0 = ADVANCED_N;
+            n_c0 = numHaps;
 
-            group_count[0] = ADVANCED_N;
+            group_count[0] = numHaps;
             totgc+=1;
 
-        }else if (v.size()==ADVANCED_N){ // all set
-            group_count[0] = ADVANCED_N;
+        }else if (v.size()==numHaps){ // all set
+            group_count[0] = numHaps;
             totgc+=1;
-            n_c1 = ADVANCED_N;
+            n_c1 = numHaps;
             
             for (int set_bit_pos : v){
                 isDerived[set_bit_pos] = true;
@@ -159,9 +168,9 @@ void NSL::calc_nSL_upstream(int locus, map<int, vector<int> > & m){
 
         }else{
             group_count[1] = v.size();
-            group_count[0] = ADVANCED_N - v.size();
+            group_count[0] = numHaps - v.size();
             n_c1 = v.size();
-            n_c0 = ADVANCED_N - v.size();
+            n_c0 = numHaps - v.size();
 
             for (int set_bit_pos : v){
                 group_id[set_bit_pos] = 1;
@@ -182,11 +191,11 @@ void NSL::calc_nSL_upstream(int locus, map<int, vector<int> > & m){
         //print_a(group_count, "GC");
         //print_a(group_id, "GID");
 
-        for ( int i = locus+1; i<ADVANCED_D; i++ ){
+        for ( int i = locus+1; i<numSnps; i++ ){
             if(i-locus > max_extend_nsl){
                 break;
             }
-            for (int set_bit_pos : all_positions[i])
+            for (int set_bit_pos : hm.all_positions[i])
             {
                 int old_group_id = group_id[set_bit_pos];
                 m[old_group_id].push_back(set_bit_pos);
@@ -234,9 +243,9 @@ void NSL::calc_nSL_upstream(int locus, map<int, vector<int> > & m){
             }
            
             
-            if(i==ADVANCED_D-1){
+            if(i==numSnps-1){
                 set<int> derivedGroups;
-                for(int i: all_positions[locus]){
+                for(int i: hm.all_positions[locus]){
                     derivedGroups.insert(group_id[i]);
                 }
                 //for all groups having a non-1 group count do nc2
@@ -256,7 +265,7 @@ void NSL::calc_nSL_upstream(int locus, map<int, vector<int> > & m){
             //std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]<<","<<nsl0[locus]<<endl;
 
 
-            if(totgc==ADVANCED_N){
+            if(totgc==numHaps){
                 return;
             }
         }
@@ -278,30 +287,30 @@ void NSL::calc_nSL_downstream(int locus, map<int, vector<int> > & m){
         int n_c0_squared_minus = 0;
         int n_c1_squared_minus = 0;
 
-        int group_count[ADVANCED_N];
-        int group_id[ADVANCED_N];
-        bool isDerived[ADVANCED_N]; 
+        int group_count[numHaps];
+        int group_id[numHaps];
+        bool isDerived[numHaps]; 
 
         //will be vectorized
-        for(int i = 0; i<ADVANCED_N; i++){
+        for(int i = 0; i<numHaps; i++){
             group_count[i] = 0;
             group_id[i] = 0;
             isDerived[i] = false;
         }
 
         int totgc=0;
-        vector<unsigned int> v = all_positions[locus];
+        vector<unsigned int> v = hm.all_positions[locus];
 
         if(v.size()==0){
-            n_c0 = ADVANCED_N;
+            n_c0 = numHaps;
 
-            group_count[0] = ADVANCED_N;
+            group_count[0] = numHaps;
             totgc+=1;
 
-        }else if (v.size()==ADVANCED_N){ // all set
-            group_count[0] = ADVANCED_N;
+        }else if (v.size()==numHaps){ // all set
+            group_count[0] = numHaps;
             totgc+=1;
-            n_c1 = ADVANCED_N;
+            n_c1 = numHaps;
             
             for (int set_bit_pos : v){
                 isDerived[set_bit_pos] = true;
@@ -309,9 +318,9 @@ void NSL::calc_nSL_downstream(int locus, map<int, vector<int> > & m){
 
         }else{
             group_count[1] = v.size();
-            group_count[0] = ADVANCED_N - v.size();
+            group_count[0] = numHaps - v.size();
             n_c1 = v.size();
-            n_c0 = ADVANCED_N - v.size();
+            n_c0 = numHaps - v.size();
 
             for (int set_bit_pos : v){
                 group_id[set_bit_pos] = 1;
@@ -336,7 +345,8 @@ void NSL::calc_nSL_downstream(int locus, map<int, vector<int> > & m){
             if(locus-i > max_extend_nsl){
                 break;
             }
-            for (int set_bit_pos : all_positions[i])
+
+            for (int set_bit_pos : hm.all_positions[i])
             {
                 int old_group_id = group_id[set_bit_pos];
                 m[old_group_id].push_back(set_bit_pos);
@@ -386,7 +396,7 @@ void NSL::calc_nSL_downstream(int locus, map<int, vector<int> > & m){
             
             if(i==0){
                 set<int> derivedGroups;
-                for(int i: all_positions[locus]){
+                for(int i: hm.all_positions[locus]){
                     derivedGroups.insert(group_id[i]);
                 }
                 //for all groups having a non-1 group count do nc2
@@ -406,14 +416,14 @@ void NSL::calc_nSL_downstream(int locus, map<int, vector<int> > & m){
             //std::cout<<"Iter "<<i<<": nsl[1,0]["<<locus<<"]="<<nsl1[locus]<<","<<nsl0[locus]<<endl;
 
 
-            if(totgc==ADVANCED_N){
+            if(totgc==numHaps){
                 return;
             }
         }
     }
 
 void NSL::calc_nSL(int locus){
-
+    out_fp = fopen(("outbin."+to_string(locus)+".out").c_str(),"w");
 	map<int, vector<int> > m;
 
 	nsl0[locus] = 0;
@@ -425,21 +435,21 @@ void NSL::calc_nSL(int locus){
 	float nsl_1 = 0.0;
 	float nsl_0 = 0.0;
 	
-	int numDerivedAtLocus = all_positions[locus].size();
-	int numAncestralAtLocus = ADVANCED_N - numDerivedAtLocus;2.0 / (numDerivedAtLocus*numDerivedAtLocus - numDerivedAtLocus);
+	int numDerivedAtLocus = hm.all_positions[locus].size();
+	int numAncestralAtLocus = numHaps - numDerivedAtLocus;2.0 / (numDerivedAtLocus*numDerivedAtLocus - numDerivedAtLocus);
 	int numDerivedPairs = (numDerivedAtLocus*numDerivedAtLocus - numDerivedAtLocus) / 2;
 	int numAncestralPairs = (numAncestralAtLocus*numAncestralAtLocus - numAncestralAtLocus) / 2;
 
 
 	if(numDerivedAtLocus>1){
 		nsl_1 = nsl1[locus] * 2.0 / (numDerivedAtLocus*numDerivedAtLocus - numDerivedAtLocus)  ;
-		if(locus!=0 and locus!=ADVANCED_D-1){
+		if(locus!=0 and locus!=numSnps-1){
 			nsl_1 -= 1;
 		}
 	}
 	if(numAncestralAtLocus>1){
 		nsl_0 = nsl0[locus] * 2.0 / (numAncestralAtLocus*numAncestralAtLocus - numAncestralAtLocus)  ;
-		if(locus!=0 and locus!=ADVANCED_D-1){
+		if(locus!=0 and locus!=numSnps-1){
 			nsl_0 -= 1;
 		}
 	}
@@ -451,12 +461,12 @@ void NSL::calc_nSL(int locus){
     if(nsl_1==0){nsl_1+=1;};
     if(nsl_0==0){nsl_0+=1;};
 
-    fprintf(out_fp, "%d %d %f %f %f %f\n",mentries[locus].locId, mentries[locus].phyPos, all_positions[locus].size() * 1.0/this->ADVANCED_N, nsl_1, nsl_0, log10(nsl_1/nsl_0)); 
+    fprintf(out_fp, "%d %d %f %f %f %f\n",hm.mentries[locus].locId, hm.mentries[locus].phyPos, hm.all_positions[locus].size() * 1.0/this->numHaps, nsl_1, nsl_0, log10(nsl_1/nsl_0)); 
 }
 
 void NSL::calc_nSL_all(){
     out_fp = fopen("outbin.nsl.out","w");
-    for(int i = 0; i<ADVANCED_D; i++){
+    for(int i = 0; i<numSnps; i++){
         calc_nSL(i);
     }
     fclose(out_fp);

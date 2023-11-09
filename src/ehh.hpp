@@ -8,6 +8,7 @@ using namespace std;
 
 #include "CLI11.hpp"
 #include "selscan.hpp"
+#include "hapmap.hpp"
 
 #ifndef EHH_H
 #define EHH_H
@@ -31,7 +32,7 @@ public:
 	//
 	int numThread = 1;
 	unsigned int locus = 0;
-	double cutoff = 0.05;
+	double cutoff = 0.9;
 	unsigned int max_extend = 20000000;
 	//flags
 	bool calc_all = false;
@@ -40,6 +41,9 @@ public:
 	bool alt = false;
 
 	FILE* out_fp;
+	uint64_t max_gap = 200000;
+	uint64_t gap_scale = 20000;
+
 
 protected:
 	void calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream=false);
@@ -48,12 +52,13 @@ protected:
     void static thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj);
 
 private:
-    std::vector<std::vector<unsigned int> > all_positions;
+	HapMap hm;
+    //std::vector<std::vector<unsigned int> > all_positions;
     std::vector<unsigned int> loc_map;
-	unsigned int ADVANCED_N;
-	unsigned int ADVANCED_D;
-    float* iHH0;
-    float* iHH1;
+	unsigned int numHaps;
+	unsigned int numSnps;
+    double* iHH0;
+    double* iHH1;
     string* logg;
 };
 

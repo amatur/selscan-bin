@@ -1,4 +1,5 @@
 #include "CLI11.hpp"
+#include "assert.h"
 #define DEBUG true
 #include<vector>
 
@@ -26,6 +27,10 @@ public:
 	virtual void cli_prepare(CLI::App * subapp) = 0;
 	virtual void exec() = 0;
 	virtual ~Selscan() {};
+
+	std::string input_filename_vcf = "/home/art/workspace/filezilla-sync/out.1000_100000_1.vcf";
+	
+	bool useVCF = false;
 };
 
 
