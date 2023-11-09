@@ -32,7 +32,7 @@ public:
 	//
 	int numThread = 1;
 	unsigned int locus = 0;
-	double cutoff = 0.9;
+	double cutoff = 0.05;
 	unsigned int max_extend = 20000000;
 	//flags
 	bool calc_all = false;

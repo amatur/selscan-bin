@@ -93,6 +93,10 @@ int HapMap::countFields(string& str)
     return numFields;
 }
 
+double HapMap::getMAF(int loc){
+    return all_positions[loc].size()*1.0/m_numHaps;
+}
+
 bool HapMap::loadVCF(const char* filename, double minmaf)
 {
     bool unphased = false;
@@ -190,7 +194,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 if(i==1){ //column for physpos //0 for chr //2 for id
                     std::istringstream reader(junk);
                     reader >> physpos;
-                    cout<<"PHYSPOS:"<<junk<<" "<<physpos<<endl;
+                    //cout<<"PHYSPOS:"<<junk<<" "<<physpos<<endl;
                 }
             }
             
@@ -232,15 +236,15 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
                 if(allele1=='1'){
                     positions.push_back(2 * field);
-                    cout<<2 * field<<" ";
+                    //cout<<2 * field<<" ";
                 }
                 if(allele2=='1'){
                     positions.push_back(2 * field + 1);
-                    cout<<2 * field + 1<<" ";
+                    //cout<<2 * field + 1<<" ";
                 }
             }
         }
-        cout<<endl;
+        //cout<<endl;
         if(positions.size()==0 or positions.size()==m_numHaps){
             //This implies site is monomorphic
             std::cout<<"WARNING: monomorphic site"<< locus << std::endl;
@@ -250,9 +254,10 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
             std::cout<<"WARNING: MAC must be > 1 : site " << locus << std::endl;
         }
         double maf = positions.size()*1.0/m_numHaps ;
-        cout<<maf<<" maf"<<endl;
-        std::cout<<"Loc: "<<locus<<"1 freq: "<<maf<<std::endl;
-        if(maf < minmaf || 1-maf < minmaf){
+        //cout<<maf<<" maf"<<endl;
+        //std::cout<<"Loc: "<<locus<<"1 freq: "<<maf<<std::endl;
+        if(maf < minmaf || 1-maf < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==1 || positions.size()==m_numHaps-1){
+        //if(positions.size()==0 or positions.size()==m_numHaps){
             //skip
             std::cout<<"WARNING: skipping site" << locus<< std::endl;
 

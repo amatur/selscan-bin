@@ -19,11 +19,7 @@ void EHH::cli_prepare(CLI::App * app) {
                                                                 "and one column per variant.\n"
                                                                 "Variants should be coded 0/1")->capture_default_str();
     group_opt->check(CLI::ExistingFile);
-    if(subapp->count("--vcf")>0){
-        useVCF = true;
-    }else{
-        useVCF = false;
-    }
+    
     
     group_opt = group_input->add_option("-p, --hap", input_filename_hap, "A hapfile with one row per haplotype, \n"
                                                                 "and one column per variant.\n"
@@ -84,10 +80,19 @@ void EHH::cli_prepare(CLI::App * app) {
 
     
 
+
 	app->get_formatter()->column_width(10);
+
+    if(subapp->count("--vcf")>0){
+        useVCF = true;
+    }else{
+        useVCF = false;
+    }
+
 }
 
 void EHH::init(){
+    useVCF=true;
     if(useVCF){
         cout<<"Loading "<<input_filename_vcf<<endl;
     	hm.loadVCF(input_filename_vcf.c_str(), min_maf); //populate the matrix
@@ -109,6 +114,11 @@ void EHH::calc_EHH(int locus){
     map<int, vector<int> > m;
     iHH0[locus] = 0;
     iHH1[locus] = 0;
+
+
+    // if(hm.getMAF(locus) < min_maf || 1-hm.getMAF(locus) < min_maf){
+    //     return;
+    // }
     // ehh1[locus] = 0;
     // ehh0[locus] = 0;
     calc_EHH2(locus, m, false); //upstream
@@ -375,7 +385,9 @@ void EHH::thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >&
 
     //#pragma omp parallel 
     for(int locus = start; locus< end; locus++){
-        ehh_obj->calc_EHH(locus);
+        
+            ehh_obj->calc_EHH(locus);
+        
         // ehh_obj->iHH0[locus] = 0;
         // ehh_obj->iHH1[locus] = 0;
         // ehh_obj->calc_EHH2(locus, m, false); //upstream
@@ -438,7 +450,9 @@ void EHH::calc_iHS(){
    
     out_fp = fopen(output_filename.c_str(),"w");
     for (int i = 0; i < numSnps; i++){
-        fprintf(out_fp, "%d %d %f %f %f %f\n", hm.mentries[i].phyPos, hm.mentries[i].locId, hm.all_positions[i].size()*1.0/numHaps, iHH1[i], iHH0[i], log10(iHH1[i]/ iHH0[i]));
+         if(hm.getMAF(i) >= min_maf && 1-hm.getMAF(i) >= min_maf){
+            fprintf(out_fp, "%d %d %f %f %f %f\n", hm.mentries[i].phyPos, hm.mentries[i].locId, hm.all_positions[i].size()*1.0/numHaps, iHH1[i], iHH0[i], log10(iHH1[i]/ iHH0[i]));
+         }
     }
     fclose(out_fp);
    
