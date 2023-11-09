@@ -263,7 +263,7 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         //if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
         if(curr_ehh1_before_norm*1.0/twice_num_pair(n_c1) < cutoff or curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)  < cutoff){
         
-            std::cout<<"breaking"<<endl;
+            //std::cout<<"breaking"<<endl;
             break;
         }
         int distance;

@@ -31,7 +31,7 @@ if (length(args)<2) {
   NUM_THREADS = as.integer(args[2])
 }
 
-hap <- data2haplohh(vcffile, verbose = TRUE,chr.name="1", min_maf=0.05, allele_coding = "01", polarize_vcf=F, )
+hap <- data2haplohh(vcffile, verbose = TRUE,chr.name="1", min_maf=0.05, allele_coding = "01", polarize_vcf=F,min)
 #recode.allele=T,
 
 #setwd("~/workspace/selscan-bin/data/rehh/")

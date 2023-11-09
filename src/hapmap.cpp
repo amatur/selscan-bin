@@ -247,11 +247,11 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         //cout<<endl;
         if(positions.size()==0 or positions.size()==m_numHaps){
             //This implies site is monomorphic
-            std::cout<<"WARNING: monomorphic site"<< locus << std::endl;
+            //std::cout<<"WARNING: monomorphic site"<< locus << std::endl;
             //this->monomorphic.push_back(m_numSnps);
         }
         if(positions.size()==1 or positions.size()==m_numHaps-1){
-            std::cout<<"WARNING: MAC must be > 1 : site " << locus << std::endl;
+            //std::cout<<"WARNING: MAC must be > 1 : site " << locus << std::endl;
         }
         double maf = positions.size()*1.0/m_numHaps ;
         //cout<<maf<<" maf"<<endl;
@@ -259,7 +259,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         if(maf < minmaf || 1-maf < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==1 || positions.size()==m_numHaps-1){
         //if(positions.size()==0 or positions.size()==m_numHaps){
             //skip
-            std::cout<<"WARNING: skipping site" << locus<< std::endl;
+            //std::cout<<"WARNING: skipping site" << locus<< std::endl;
 
         }else{
             all_positions.push_back(positions); //check if all 0
