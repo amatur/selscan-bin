@@ -432,7 +432,8 @@ void NSL::calc_nSL_downstream(int locus, map<int, vector<int> > & m){
     }
 
 void NSL::calc_nSL(int locus){
-    out_fp = fopen(("outbin."+to_string(locus)+".out").c_str(),"w");
+    if(!calc_all)
+        out_fp = fopen(("outbin."+to_string(locus)+".out").c_str(),"w");
 	map<int, vector<int> > m;
 
 	nsl0[locus] = 0;
@@ -470,7 +471,8 @@ void NSL::calc_nSL(int locus){
     if(nsl_1==0){nsl_1+=1;};
     if(nsl_0==0){nsl_0+=1;};
 
-    fprintf(out_fp, "%d %d %f %f %f %f\n",hm.mentries[locus].locId, hm.mentries[locus].phyPos, hm.all_positions[locus].size() * 1.0/this->numHaps, nsl_1, nsl_0, log10(nsl_1/nsl_0)); 
+    if(!calc_all)
+        fprintf(out_fp, "%d %d %f %f %f %f\n",hm.mentries[locus].locId, hm.mentries[locus].phyPos, hm.all_positions[locus].size() * 1.0/this->numHaps, nsl_1, nsl_0, log10(nsl_1/nsl_0)); 
 }
 
 void NSL::calc_nSL_all(){

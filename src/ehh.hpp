@@ -50,7 +50,8 @@ protected:
 	void calc_EHH(int locus);
     void calc_iHS();
     void static thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj);
-
+	inline unsigned int twice_num_pair(int n);
+	// inline unsigned int EHH::num_pair(int n);
 private:
 	HapMap hm;
     //std::vector<std::vector<unsigned int> > all_positions;
