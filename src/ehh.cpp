@@ -98,6 +98,8 @@ void EHH::init(){
     if(useVCF){
         cout<<"Loading VCF: "<<input_filename_vcf<<endl;
     	hm.loadVCF(input_filename_vcf.c_str(), min_maf); //populate the matrix
+        cout<<"Finished loading input at "+to_string(readTimer())+"\n";
+
     }else{
         cout<<"Loading HAP: "<<input_filename_hap<<endl;
     	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf); //populate the matrix
