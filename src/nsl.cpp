@@ -27,6 +27,14 @@ void NSL::cli_prepare(CLI::App * app) {
 	opt->check(CLI::ExistingFile);
 
 
+    opt = subapp->add_option("--vcf", input_filename_vcf, "A VCF file with one row per haplotype, \n"
+                                                                "and one column per variant.\n"
+                                                                "Variants should be coded 0/1")->capture_default_str();
+    opt->check(CLI::ExistingFile);
+    
+    
+
+
 	numThread = std::thread::hardware_concurrency(); //may return 0 when not able to detect
 	opt = subapp->add_option("-t, --threads", numThread, "The number of threads to spawn during the calculation. Partitions loci across threads. (by default uses all available cores)")->capture_default_str();
 	
@@ -77,6 +85,7 @@ void NSL::cli_prepare(CLI::App * app) {
 void NSL::init() {  
     cout<<"v3.0.0"<<endl;
     cout<<"Calculating nSL"<<endl;
+    cout<<"Input filename vcf: "<<input_filename_vcf<<endl;
     cout<<"Input filename: "<<input_filename_hap<<endl;
     cout<<"Map filename: "<<input_filename_map<<endl;
     cout<<"Output file: "<<output_filename<<endl;
