@@ -161,6 +161,22 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
     int nfields = (current_nhaps - numMapCols);
     cerr << "Loading " << nhaps << " haplotypes and " << nloci << " loci...\n";
     m_numHaps = nhaps;
+    //m_numSnps = nloci; 
+
+
+    //  std::vector<unsigned int> positions;
+ 
+    //     std::istringstream rowStream(line);
+    //     char value;
+    //     int pos=0;
+    //     while (rowStream >> value) {        
+    //         if(value=='1'){
+    //             positions.push_back(pos++);
+    //         }else if(value=='0'){
+    //             pos++;
+    //         }   
+    //     }
+
 
     string junk;
     char allele1, allele2, separator;
@@ -207,17 +223,28 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 throw 0;
             }
 
+            //if(separator != '|'){
+            //    cerr << "ERROR:  Alleles must be coded 0/1 only.\n";
+            //    throw 0;
+            //}
             if(unphased){
             }
             else{
+                // data->data[2 * field][locus] = allele1;
+                // data->data[2 * field + 1][locus] = allele2;
+                //TODO
+
                 if(allele1=='1'){
                     positions.push_back(2 * field);
+                    //cout<<2 * field<<" ";
                 }
                 if(allele2=='1'){
                     positions.push_back(2 * field + 1);
+                    //cout<<2 * field + 1<<" ";
                 }
             }
         }
+        //cout<<endl;
         if(positions.size()==0 or positions.size()==m_numHaps){
             //This implies site is monomorphic
             //std::cout<<"WARNING: monomorphic site"<< locus << std::endl;
@@ -229,7 +256,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         double maf = positions.size()*1.0/m_numHaps ;
         //cout<<maf<<" maf"<<endl;
         //std::cout<<"Loc: "<<locus<<"1 freq: "<<maf<<std::endl;
-        if(maf < minmaf || 1-maf < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==0 || positions.size()==m_numHaps){
+        if(maf < minmaf || 1-maf < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==1 || positions.size()==m_numHaps-1){
         //if(positions.size()==0 or positions.size()==m_numHaps){
             //skip
             //std::cout<<"WARNING: skipping site" << locus<< std::endl;
@@ -237,7 +264,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         }else{
             all_positions.push_back(positions); //check if all 0
             struct map_entry mentry;
-            mentry.genPos = physpos;
+            // mentry.genPos = physpos;
             mentry.phyPos = physpos;
             mentry.locId = locus;
             mentries.push_back(mentry);

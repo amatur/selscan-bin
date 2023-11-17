@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 #include <thread>
-
+#include <omp.h>
 using namespace std;
 
 #include "CLI11.hpp"
@@ -43,15 +43,14 @@ public:
 	FILE* out_fp;
 	uint64_t max_gap = 200000;
 	uint64_t gap_scale = 20000;
-
+	bool openmp_enabled = false;
 
 protected:
 	void calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream=false);
 	void calc_EHH(int locus);
     void calc_iHS();
     void static thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj);
-	inline unsigned int twice_num_pair(int n);
-	// inline unsigned int EHH::num_pair(int n);
+
 private:
 	HapMap hm;
     //std::vector<std::vector<unsigned int> > all_positions;

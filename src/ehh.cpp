@@ -2,6 +2,7 @@
 #include "benchmark.hpp"
 #include "hapmap.hpp"
 #include "utils.hpp"
+#include <omp.h>
 
 EHH::EHH(){
 }
@@ -15,40 +16,34 @@ void EHH::cli_prepare(CLI::App * app) {
 	this->subapp = app->add_subcommand("ehh", "Calculate EHH.");
 
     CLI::Option_group * group_input = subapp->add_option_group("Input: ");
-    
-    CLI::Option* opt_vcf = group_input->add_option("--vcf", input_filename_vcf, "A VCF file with one row per haplotype, \n"
+    CLI::Option* group_opt = group_input->add_option("--vcf", input_filename_vcf, "A VCF file with one row per haplotype, \n"
                                                                 "and one column per variant.\n"
                                                                 "Variants should be coded 0/1")->capture_default_str();
-    opt_vcf->check(CLI::ExistingFile);
+    group_opt->check(CLI::ExistingFile);
     
-    subapp->callback([&]() {
-        if(subapp->count("--vcf") > 0){
-            cout<<"Using VCF"<<endl;
-            useVCF = true;
-        }else{
-            cout<<"Using HAP"<<endl;
-            useVCF = false;
-        }
-    });
-
-
-    CLI::Option*  opt_hap = group_input->add_option("--hap", input_filename_hap, "A hapfile with one row per haplotype, \n"
+    
+    group_opt = group_input->add_option("-p, --hap", input_filename_hap, "A hapfile with one row per haplotype, \n"
                                                                 "and one column per variant.\n"
                                                                 "Variants should be coded 0/1")->capture_default_str();
-    opt_hap->check(CLI::ExistingFile);
-    group_input->require_option(1); 
+    group_opt->check(CLI::ExistingFile);
+    //group_input->require_option(1); 
 
-
-    CLI::Option * opt_map = subapp->add_option("--map", input_filename_map, "Input MAP file");
-	opt_hap->needs(opt_map);
-	opt_map->check(CLI::ExistingFile);
-
-
+    useVCF = true;
     CLI::Option * opt;
+	// opt = subapp->add_option("-p, --hap", input_filename_hap, "A hapfile with one row per haplotype, \n"
+    //                                                             "and one column per variant.\n"
+    //                                                             "Variants should be coded 0/1")->capture_default_str();
+	// //opt->required();
+	// opt->check(CLI::ExistingFile);
+
+
 	numThread = std::thread::hardware_concurrency(); //may return 0 when not able to detect
 	opt = subapp->add_option("-t, --threads", numThread, "The number of threads to spawn during the calculation. Partitions loci across threads. (by default uses all available cores)")->capture_default_str();
 	
-    
+    // CLI::Option * in_option2 = subapp->add_option("-m, --map", input_filename_map, "Input MAP file");
+	// in_option2->required();
+	// in_option2->check(CLI::ExistingFile);
+        
     CLI::Option_group * group=subapp->add_option_group("Set Locus/All");
     group->add_flag("--all", calc_all, "Calculate EHH for all loci.");
     CLI::Option* optt = group->add_option<unsigned int>("-l, --loc", locus, "Locus")->capture_default_str();
@@ -84,24 +79,27 @@ void EHH::cli_prepare(CLI::App * app) {
                                     "the sum of the squared haplotype frequencies in the \n"
                                     "observed data instead of using binomial coefficients.");
 
+    subapp->add_flag("--om", openmp_enabled, "Set this flag to use openmp thread");
+
+
+
 	app->get_formatter()->column_width(10);
 
-   
-
+    if(subapp->count("--vcf")>0){
+        useVCF = true;
+    }else{
+        useVCF = false;
+    }
 
 }
 
 void EHH::init(){
-    cout<<"Selscan 3.0"<<endl;
-    cout<<"Max Thread: "<<std::thread::hardware_concurrency()<<endl;
-
+    useVCF=true;
     if(useVCF){
-        cout<<"Loading VCF: "<<input_filename_vcf<<endl;
+        cout<<"Loading "<<input_filename_vcf<<endl;
     	hm.loadVCF(input_filename_vcf.c_str(), min_maf); //populate the matrix
-        cout<<"Finished loading input at "+to_string(readTimer())+"\n";
-
     }else{
-        cout<<"Loading HAP: "<<input_filename_hap<<endl;
+        cout<<"Loading "<<input_filename_hap<<endl;
     	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf); //populate the matrix
     }
 
@@ -119,8 +117,16 @@ void EHH::calc_EHH(int locus){
     iHH0[locus] = 0;
     iHH1[locus] = 0;
 
+
+    // if(hm.getMAF(locus) < min_maf || 1-hm.getMAF(locus) < min_maf){
+    //     return;
+    // }
+    // ehh1[locus] = 0;
+    // ehh0[locus] = 0;
     calc_EHH2(locus, m, false); //upstream
-    calc_EHH2(locus, m, true); //downstream
+    //calc_EHH_downstream(locus, m);
+    calc_EHH2(locus, m, true);
+    //std::cout<<" ehh1["<<locus<<"]="<<ehh1[locus]<<",ehh0["<<locus<<"]="<<ehh0[locus]<<endl;
     
     //handle all corner cases
     if(hm.all_positions[locus].size()==0){
@@ -156,17 +162,13 @@ void EHH::exec() {
     }
 }
 
-inline unsigned int EHH::twice_num_pair(int n){
-    if(alt){
-        return n*n;
-    }else{
-        return n*n - n;
-    }
+inline unsigned int twice_num_pair(int n){
+    return n*n - n;
 }
 
-// inline unsigned int EHH::num_pair(int n){
-//     return (n*n - n)/2;
-// }
+inline unsigned int num_pair(int n){
+    return (n*n - n)/2;
+}
 
 void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
     uint64_t ehh0_before_norm = 0;
@@ -321,10 +323,8 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
                 group_id[v] = totgc;
             }
             
-            //int del_update = -twice_num_pair(group_count[old_group_id]) + twice_num_pair(newgroup_size) + twice_num_pair(group_count[old_group_id] - newgroup_size);
+            int del_update = -twice_num_pair(group_count[old_group_id]) + twice_num_pair(newgroup_size) + twice_num_pair(group_count[old_group_id] - newgroup_size);
             group_count[old_group_id] -= newgroup_size;
-            int del_update = -2*(newgroup_size)*(group_count[old_group_id]);
-
             group_count[totgc] += newgroup_size;
             totgc+=1;
 
@@ -365,30 +365,58 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         if(!calc_all)
             std::cout<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/twice_num_pair(n_c1)<<","<<curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)<<endl;
         
+        //logg[tid]+="map size before"+to_string(m.size())+"\n";
+        //cout<< logg[tid];
         m.clear();
+        //logg[tid]+="map size after"+to_string(m.size())+"\n";
+        //cout<< logg[tid];
+        // if(gap_skip==true)
+        //     break;
     }
 }
 
 
-void EHH::thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj){
-    
 
-    /*
+void EHH::thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj){
     int elem_per_block = floor(ehh_obj->numSnps/ehh_obj->numThread);
     int start = tid*elem_per_block ;
     int end = start + elem_per_block  ;
     if(tid == ehh_obj->numThread-1 ){
         end = ehh_obj->numSnps;
     }
-    for(int locus = start; locus< end; locus++){
-        ehh_obj->calc_EHH(locus);
-    }
-    */
-    
-    for(int locus = tid; locus< ehh_obj->numSnps; locus = locus+ehh_obj->numThread){
-        ehh_obj->calc_EHH(locus);
-    }
 
+    //#pragma omp parallel 
+    for(int locus = start; locus< end; locus++){
+        
+            ehh_obj->calc_EHH(locus);
+        
+        // ehh_obj->iHH0[locus] = 0;
+        // ehh_obj->iHH1[locus] = 0;
+        // ehh_obj->calc_EHH2(locus, m, false); //upstream
+        // ehh_obj->calc_EHH2(locus, md, true);
+        // //std::cout<<" ehh1["<<locus<<"]="<<ehh1[locus]<<",ehh0["<<locus<<"]="<<ehh0[locus]<<endl;
+        // if(ehh_obj->all_positions[locus].size()==0){
+        //     ehh_obj->iHH1[locus] = 1;
+        // }
+        // if(ehh_obj->all_positions[locus].size()==ehh_obj->ADVANCED_N){ //iHH0[locus]==0
+        //     ehh_obj->iHH0[locus] = 1;
+        // }
+        // if(ehh_obj->all_positions[locus].size()==1){
+        //     if(locus -= 0 or locus == ehh_obj->ADVANCED_D-1){
+        //         ehh_obj->iHH1[locus] = 0.5;
+        //     }else{
+        //         ehh_obj->iHH1[locus] = 1;
+        //     }
+        // }
+        // if(ehh_obj->all_positions[locus].size()==ehh_obj->ADVANCED_N-1){
+        //     if(locus == 0 or locus == ehh_obj->ADVANCED_D-1){
+        //         ehh_obj->iHH0[locus] = 0.5;
+        //     }else{
+        //         ehh_obj->iHH0[locus] = 1;
+        //     }
+        // }
+    }
+    
     ehh_obj->logg[tid]+="finishing thread #"+to_string(tid)+"\n"; 
     cout<<"finishing thread # "+to_string(tid)+" at "+to_string(readTimer())+"\n";
 }
@@ -397,8 +425,7 @@ void EHH::calc_iHS(){
     std::map<int, std::vector<int> > map_per_thread[numThread];
     std::map<int, std::vector<int> > mapd_per_thread[numThread];
 
-    bool thread_enabled = true;
-    if (thread_enabled)
+    if (!openmp_enabled)
     {
         int total_calc_to_be_done = numSnps;
         std::thread *myThreads = new std::thread[numThread];
@@ -415,11 +442,19 @@ void EHH::calc_iHS(){
         delete[] myThreads;
         cout << "all threads finished. now calculating ihh..." << endl;
     }else{
-        #pragma clang loop unroll_count(8) // 
-        #pragma clang loop vectorize(assume_safety)
-        for(int i = 0 ; i< numSnps; i++){
-            calc_EHH(i);
+        // #pragma clang loop unroll_count(8) // 
+        // #pragma clang loop vectorize(assume_safety)
+        cout<<"open mp enabled. "<<omp_get_max_threads()<<"threads"<<endl;
+
+        #pragma omp parallel shared(hm)
+        {
+            #pragma omp for schedule(dynamic,10)
+            for(int i = 0 ; i< numSnps; i++){
+                calc_EHH(i);
+                //cout<<"open mp enabled. "<<omp_get_num_threads()<<"threads"<<endl;
+            }
         }
+         cout<<"finishing all threads # at "+to_string(readTimer())+"\n";
     }
    
     out_fp = fopen(output_filename.c_str(),"w");
