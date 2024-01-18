@@ -1,6 +1,7 @@
-CC=g++
+CC=g++-13
 # CFLAGS=-w -std=c++11 -O3  -ftree-vectorize -pthread
-CFLAGS= -Ofast -pthread -m64 -mmmx -msse -msse2 -ftree-vectorize -fopenmp
+# CFLAGS= -Ofast -pthread -m64 -mmmx -msse -msse2 -ftree-vectorize -fopenmp
+CFLAGS= -Ofast -pthread -m64  -ftree-vectorize -fopenmp
 #-g
 SRC_DIR := ./src
 OBJ_DIR := ./
@@ -10,7 +11,7 @@ LDFLAGS := -pthread
 
 
 #for osx systems
-CC = g++
+CC = g++-13
 G++FLAG = -Ofast -m64 -mmmx -msse -msse2 -fopenmp
 LINK_OPTS2 = -lpthread -lz -fopenmp
 I_PATH = -I../include
@@ -40,10 +41,10 @@ LINK_OPTS = $(L_PATH)/libgsl.a $(L_PATH)/libgslcblas.a
 all: make_directories selbin
 
 selbin: $(OBJ_FILES) 
-	g++ $(LDFLAGS) -o $@ $^ $(LINK_OPTS2)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LINK_OPTS2)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp src/CLI11.hpp
-	g++ $(CFLAGS) -c -o $@ $< $(I_PATH)
+	$(CC) $(CFLAGS) -c -o $@ $< $(I_PATH)
 # selbin: 
 # 	$(CC) $(CFLAGS) -o selbin  src/main.cpp src/nsl.cpp
 
