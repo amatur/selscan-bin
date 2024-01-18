@@ -97,6 +97,9 @@ double HapMap::getMAF(int loc){
     return all_positions[loc].size()*1.0/m_numHaps;
 }
 
+
+
+
 bool HapMap::loadVCF(const char* filename, double minmaf)
 {
     bool unphased = false;
@@ -253,16 +256,37 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         if(positions.size()==1 or positions.size()==m_numHaps-1){
             //std::cout<<"WARNING: MAC must be > 1 : site " << locus << std::endl;
         }
-        double maf = positions.size()*1.0/m_numHaps ;
+        double derived_af = positions.size()*1.0/m_numHaps ;
+        vector<unsigned int> copy_pos;
+
+        
         //cout<<maf<<" maf"<<endl;
         //std::cout<<"Loc: "<<locus<<"1 freq: "<<maf<<std::endl;
-        if(maf < minmaf || 1-maf < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==1 || positions.size()==m_numHaps-1){
+        if(derived_af < minmaf || 1-derived_af < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==1 || positions.size()==m_numHaps-1){
         //if(positions.size()==0 or positions.size()==m_numHaps){
             //skip
             //std::cout<<"WARNING: skipping site" << locus<< std::endl;
 
         }else{
-            all_positions.push_back(positions); //check if all 0
+            if(derived_af < 0.5){
+                int cnt = 0;
+                for(auto i = 0; i<m_numHaps; i++){
+                    auto curr = positions[cnt];
+                    if(i==curr){
+                        cnt++;
+                    }else{
+                        copy_pos.push_back(i);
+                    }
+                }
+                all_positions.push_back(copy_pos); 
+                mentry.flipped = true;
+
+            }else{
+                all_positions.push_back(positions); //check if all 0
+                mentry.flipped = false;
+
+
+            }
             struct map_entry mentry;
             // mentry.genPos = physpos;
             mentry.phyPos = physpos;

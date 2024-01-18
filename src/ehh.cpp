@@ -199,37 +199,69 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
     int totgc=0;
     vector<unsigned int> v = hm.all_positions[locus];
 
-    if(v.size()==0){
-        n_c0 = numHaps;
-        group_count[0] = numHaps;
-        totgc+=1;
-        ehh0_before_norm = twice_num_pair(n_c0);
-    }else if (v.size()==numHaps){ // all set
-        group_count[0] = numHaps;
-        totgc+=1;
-        n_c1 = numHaps;
-        
-        for (int set_bit_pos : v){
-            isDerived[set_bit_pos] = true;
-        }
-        ehh1_before_norm = twice_num_pair(n_c1);
+    if(hm.mentries[i].flipped){
+        if(v.size()==numHaps){
+            n_c0 = numHaps;
+            group_count[0] = numHaps;
+            totgc+=1;
+            ehh0_before_norm = twice_num_pair(n_c0);
+        }else if (v.size()==0){ // all set
+            group_count[0] = numHaps;
+            totgc+=1;
+            n_c1 = numHaps;
+            
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+            }
+            ehh1_before_norm = twice_num_pair(n_c1);
 
+        }else{
+            group_count[0] = v.size();
+            group_count[1] = numHaps - v.size();
+            n_c0 = v.size();
+            n_c1 = numHaps - v.size();
+
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+                group_id[set_bit_pos] = 1;
+            }
+            
+            totgc+=2;
+            ehh0_before_norm = twice_num_pair(n_c0);
+            ehh1_before_norm = twice_num_pair(n_c1);
+        }
     }else{
-        group_count[1] = v.size();
-        group_count[0] = numHaps - v.size();
-         n_c1 = v.size();
-        n_c0 = numHaps - v.size();
+        if(v.size()==0){
+            n_c0 = numHaps;
+            group_count[0] = numHaps;
+            totgc+=1;
+            ehh0_before_norm = twice_num_pair(n_c0);
+        }else if (v.size()==numHaps){ // all set
+            group_count[0] = numHaps;
+            totgc+=1;
+            n_c1 = numHaps;
+            
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+            }
+            ehh1_before_norm = twice_num_pair(n_c1);
 
-        for (int set_bit_pos : v){
-            isDerived[set_bit_pos] = true;
-            group_id[set_bit_pos] = 1;
+        }else{
+            group_count[1] = v.size();
+            group_count[0] = numHaps - v.size();
+            n_c1 = v.size();
+            n_c0 = numHaps - v.size();
+
+            for (int set_bit_pos : v){
+                isDerived[set_bit_pos] = true;
+                group_id[set_bit_pos] = 1;
+            }
+            
+            totgc+=2;
+            ehh0_before_norm = twice_num_pair(n_c0);
+            ehh1_before_norm = twice_num_pair(n_c1);
         }
-        
-        totgc+=2;
-        ehh0_before_norm = twice_num_pair(n_c0);
-        ehh1_before_norm = twice_num_pair(n_c1);
     }
-
 
     if(downstream){
         if(!calc_all)
@@ -328,7 +360,7 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
             group_count[totgc] += newgroup_size;
             totgc+=1;
 
-            bool isDerivedGroup =  isDerived[ele.second[0]]; // just check first element to know if it is derived. 
+            bool isDerivedGroup =  (isDerived[ele.second[0]] && !hm.mentries[ele.second[0]].flipped) || (!isDerived[ele.second[0]] && hm.mentries[ele.second[0]].flipped); // just check first element to know if it is derived. 
             if(isDerivedGroup)
             {
                 ehh1_before_norm += del_update;

@@ -36,6 +36,7 @@ struct map_entry {
   int locId;  
   int phyPos;
   int genPos;
+  bool flipped;
 };
 
 class HapMap
