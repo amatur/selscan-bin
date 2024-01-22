@@ -199,7 +199,7 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
     int totgc=0;
     vector<unsigned int> v = hm.all_positions[locus];
 
-    if(hm.mentries[i].flipped){
+    if(hm.mentries[locus].flipped){
         if(v.size()==numHaps){
             n_c0 = numHaps;
             group_count[0] = numHaps;

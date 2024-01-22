@@ -128,7 +128,7 @@ Selscan * parse_args(int argc, char** argv, vector<Selscan *> tools) {
 }              
 
 int main(int argc, char** argv) {
-	
+	cout<<"version: "<<VERSION_NAME<<endl;
 	// --- Prepare tools ---
 	vector<Selscan *> tools;
 	tools.push_back(new NSL());
