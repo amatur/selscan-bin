@@ -5,6 +5,9 @@
 // upstream only
 // dont store it at all
 // just store EHH values 
+
+
+#define VERSION_NAME "Zero-one"
 #include <thread>                            
 #include <iostream>
 #include <algorithm>

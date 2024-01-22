@@ -268,6 +268,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
             //std::cout<<"WARNING: skipping site" << locus<< std::endl;
 
         }else{
+            struct map_entry mentry;
             if(derived_af < 0.5){
                 int cnt = 0;
                 for(auto i = 0; i<m_numHaps; i++){
@@ -287,7 +288,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
 
             }
-            struct map_entry mentry;
+            
             // mentry.genPos = physpos;
             mentry.phyPos = physpos;
             mentry.locId = locus;
