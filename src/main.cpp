@@ -7,7 +7,6 @@
 // just store EHH values 
 
 
-#define VERSION_NAME "Zero-one"
 #include <thread>                            
 #include <iostream>
 #include <algorithm>
@@ -128,7 +127,7 @@ Selscan * parse_args(int argc, char** argv, vector<Selscan *> tools) {
 }              
 
 int main(int argc, char** argv) {
-	cout<<"version: "<<VERSION_NAME<<endl;
+	
 	// --- Prepare tools ---
 	vector<Selscan *> tools;
 	tools.push_back(new NSL());

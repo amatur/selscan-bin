@@ -13,7 +13,7 @@ EHH::~EHH(){
 }
 
 void EHH::cli_prepare(CLI::App * app) {
-	this->subapp = app->add_subcommand("ehh", "Calculate EHH.");
+	this->subapp = app->add_subcommand("ehh", "Calculate EHH. version ZERO-ONE.");
 
     CLI::Option_group * group_input = subapp->add_option_group("Input: ");
     CLI::Option* group_opt = group_input->add_option("--vcf", input_filename_vcf, "A VCF file with one row per haplotype, \n"
