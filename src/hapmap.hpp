@@ -60,7 +60,7 @@ public:
     std::vector<struct map_entry> mentries; // hold additional info
     std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
 //    ~HapMap();
-    double getMAF(int loc);
+    double get1F(int loc);
 
 private:
     int countFields( string& s);

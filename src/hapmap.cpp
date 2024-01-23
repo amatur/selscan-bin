@@ -93,9 +93,16 @@ int HapMap::countFields(string& str)
     return numFields;
 }
 
-double HapMap::getMAF(int loc){
-    return all_positions[loc].size()*1.0/m_numHaps;
+double HapMap::get1F(int loc){
+    if(mentries[loc].flipped){
+        return (m_numHaps-all_positions[loc].size())*1.0/m_numHaps;
+
+    }else{
+        return all_positions[loc].size()*1.0/m_numHaps;
+    }    
 }
+
+
 
 
 
@@ -256,7 +263,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         if(positions.size()==1 or positions.size()==m_numHaps-1){
             //std::cout<<"WARNING: MAC must be > 1 : site " << locus << std::endl;
         }
-        double derived_af = positions.size()*1.0/m_numHaps ;
+       double derived_af = positions.size()*1.0/m_numHaps ;
         vector<unsigned int> copy_pos;
 
         
@@ -269,10 +276,12 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
         }else{
             struct map_entry mentry;
+
+            //if(false){
             if(derived_af < 0.5){
                 int cnt = 0;
-                for(auto i = 0; i<m_numHaps; i++){
-                    auto curr = positions[cnt];
+                for(int i = 0; i<m_numHaps; i++){
+                    unsigned int curr = positions[cnt];
                     if(i==curr){
                         cnt++;
                     }else{
@@ -281,11 +290,12 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 }
                 all_positions.push_back(copy_pos); 
                 mentry.flipped = true;
+                
 
+             
             }else{
                 all_positions.push_back(positions); //check if all 0
                 mentry.flipped = false;
-
 
             }
             
