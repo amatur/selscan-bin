@@ -28,6 +28,7 @@
 #include "selscan.hpp"
 #include "nsl.hpp"
 #include "ehh.hpp"
+#include "feature.hpp"
 
 
 using namespace std;
@@ -130,9 +131,11 @@ int main(int argc, char** argv) {
 	
 	// --- Prepare tools ---
 	vector<Selscan *> tools;
-	tools.push_back(new NSL());
-	// tools.push_back(new IHS());
-	tools.push_back(new EHH());
+	tools.push_back(new Feature());
+
+	// tools.push_back(new NSL());
+	// // tools.push_back(new IHS());
+	// tools.push_back(new EHH());
 
 	// Get the one selected
 	Selscan * tool = parse_args(argc, argv, tools);

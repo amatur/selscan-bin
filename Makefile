@@ -1,7 +1,7 @@
 CC=g++-13
 # CFLAGS=-w -std=c++11 -O3  -ftree-vectorize -pthread
 # CFLAGS= -Ofast -pthread -m64 -mmmx -msse -msse2 -ftree-vectorize -fopenmp
-CFLAGS= -Ofast -pthread -m64  -ftree-vectorize -fopenmp
+CFLAGS= -Ofast -pthread -m64  -ftree-vectorize -fopenmp -g
 #-g
 SRC_DIR := ./src
 OBJ_DIR := ./
@@ -12,7 +12,7 @@ LDFLAGS := -pthread
 
 #for osx systems
 CC = g++-13
-G++FLAG = -Ofast -m64 -mmmx -msse -msse2 -fopenmp
+G++FLAG = -Ofast -m64 -mmmx -msse -msse2 -fopenmp -g
 LINK_OPTS2 = -lpthread -lz -fopenmp
 I_PATH = -I../include
 L_PATH = ../lib/osx

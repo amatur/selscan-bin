@@ -102,7 +102,7 @@ void NSL::init() {
     	hm.loadVCF(input_filename_vcf.c_str(), min_maf); //populate the matrix
     }else{
         cout<<"Loading "<<input_filename_hap<<endl;
-    	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf); //populate the matrix
+    	hm.loadHapMap(input_filename_hap.c_str(), min_maf); //populate the matrix
     }
     
 
@@ -110,9 +110,9 @@ void NSL::init() {
 	//hm.loadHap(input_filename_hap.c_str(), min_maf, this->all_positions); //populate the hapmap
 	
     
-    //hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
+    //hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, data); //populate the hapmap
 	
-    //hm.loadHapMapVCF(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, mentries); //populate the hapmap
+    //hm.loadHapMapVCF(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf, this->all_positions, data); //populate the hapmap
 	
     this->numHaps = hm.numHaps();
 	this->numSnps = hm.numSnps();
@@ -463,14 +463,14 @@ void NSL::calc_nSL(int locus){
 		}
 	}
 
-	//std::cout<<" nsl1["<<mentries[locus].locId<<"]="<<nsl_1<<",nsl0["<<mentries[locus].locId<<"]="<<nsl_0<<endl;
+	//std::cout<<" nsl1["<<data[locus].locId<<"]="<<nsl_1<<",nsl0["<<data[locus].locId<<"]="<<nsl_0<<endl;
 
     //< locusID > < physicalPos > < ’1 ’ freq > <sl1 > <sl0 > < unstandardized nSL >
-	//std::cout<<<< <<nsl_1<<",nsl0["<<mentries[locus].locId<<"]="<<nsl_0<<endl;
+	//std::cout<<<< <<nsl_1<<",nsl0["<<data[locus].locId<<"]="<<nsl_0<<endl;
     if(nsl_1==0){nsl_1+=1;};
     if(nsl_0==0){nsl_0+=1;};
 
-    fprintf(out_fp, "%d %d %f %f %f %f\n",hm.mentries[locus].locId, hm.mentries[locus].phyPos, hm.all_positions[locus].size() * 1.0/this->numHaps, nsl_1, nsl_0, log10(nsl_1/nsl_0)); 
+    fprintf(out_fp, "%d %d %f %f %f %f\n",hm.data[locus].locId, hm.data[locus].phyPos, hm.all_positions[locus].size() * 1.0/this->numHaps, nsl_1, nsl_0, log10(nsl_1/nsl_0)); 
 }
 
 void NSL::calc_nSL_all(){

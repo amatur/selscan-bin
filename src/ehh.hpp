@@ -46,7 +46,8 @@ public:
 	bool openmp_enabled = false;
 
 protected:
-	void calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream=false);
+	//void calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream=false);
+	void calc_EHH2(int locus, bool downstream=false);
 	void calc_EHH(int locus);
     void calc_iHS();
     void static thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj);
@@ -59,6 +60,8 @@ private:
 	unsigned int numSnps;
     double* iHH0;
     double* iHH1;
+    double* iHH2;
+
     string* logg;
 };
 

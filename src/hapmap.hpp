@@ -33,46 +33,50 @@
 using namespace std;
 
 struct map_entry {
+//string chr;
   int locId;  
   int phyPos;
   int genPos;
-  bool flipped;
+  bool flipped; // required for algorithm where 0 and 1 are flipped
 };
 
 class HapMap
 {
 public:
 //    HapMap();
-    // static std::size_t querySnpLength(const char* filename);
-    // double geneticPosition(std::size_t line) const;
-    // long long unsigned int physicalPosition(std::size_t line) const;
-    // void loadMap(const char* mapFileName);
-    // std::string lineToId(std::size_t line) const;
-    // std::size_t idToLine(const std::string& id) const;
+
     bool loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<unsigned int>& loc_map);
-    bool loadHapMap(const char* filename, const char* mapfile, double minmaf);
+    bool loadHapMap(const char* filename, double minmaf);
     bool loadVCF(const char* filename, double minmaf);
+    void readMapData(string filename, int expected_loci, bool USE_PMAP);
+
     void print();
 
     std::size_t numSnps() const { return m_numSnps; }
     std::size_t numHaps() const { return m_numHaps; }    
     
-    std::vector<struct map_entry> mentries; // hold additional info
+    std::vector<struct map_entry> data; // hold additional info
     std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
+    std::vector<std::vector<unsigned int> > all_positions_two; // hold the 0, 1 matrix in position form
+
 //    ~HapMap();
     double get1F(int loc);
+    bool flip_to_minor = false;
+    bool unphased = false;
+
 
 private:
     int countFields( string& s);
+    double getMAF(std::vector<unsigned int>& positions, std::vector<unsigned int>& positions_two);
+    double getMAF(std::vector<unsigned int>& positions);
+    inline bool skipLocus(std::vector<unsigned int>& positions);
+    inline bool skipLocus(unsigned int locus);
+
+    
 protected:
-    // std::map<std::size_t, std::string> m_idMap;
-    // unsigned long long* m_physPos;
-    // double* m_genPos;
-    // std::map<std::size_t, std::string> m_idMap;
-    std::vector<unsigned int> monomorphic;
     std::size_t m_numSnps;
     std::size_t m_numHaps;
-
+    double minmaf;
 
     // std::size_t& ADVANCED_D =  m_numSnps;
     // std::size_t& ADVANCED_N = m_numHaps;
