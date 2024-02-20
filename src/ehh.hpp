@@ -4,6 +4,10 @@
 #include <map>
 #include <thread>
 #include <omp.h>
+#include<mutex>
+
+
+#include<queue>
 using namespace std;
 
 #include "CLI11.hpp"
@@ -29,6 +33,8 @@ public:
     //std::string input_filename_hap = "test4x6.hap";
     std::string input_filename_map = "test4x6.map";
     std::string output_filename = "selbin.ihh.out";// <outfile>.nsl[.alt].out
+    std::string input_filename_mphb = "";
+	
 	//
 	int numThread = 1;
 	unsigned int locus = 0;
@@ -45,14 +51,25 @@ public:
 	uint64_t gap_scale = 20000;
 	bool openmp_enabled = false;
 
+	bool haplo_enabled = true;
+
 protected:
+	//void calc_EHH2(int locus, map<int, vector<int> > & m, map<int, priority_queue<pair<int, int>  > >* mphbs, bool downstream=false);
 	void calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream=false);
+	void calc_EHH2_v2(int locus, map<int, vector<int> > & m, bool downstream=false);
+
+	void calc_EHH(int locus, map<int, queue<pair<int, int> > >& outmap);
 	void calc_EHH(int locus);
+
     void calc_iHS();
     void static thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj);
-
+	void loadMPHB(string input_mphb_file, int numHaps, int numSnps, vector< map<int, priority_queue<pair<int, int>  > > > & mphbs); //vector< map<int, priority_queue<pair<int, int>  > > > & mphbs
+	void loadMPHB(string input_mphb_file, int numHaps, int numSnps, map< int, map <int, priority_queue<pair<int, int>  > > > & mphbs); //vector< map<int, priority_queue<pair<int, int>  > > > & mphbs
+	
+	std::mutex mtx;
 private:
 	HapMap hm;
+	vector< map<int, priority_queue<pair<int, int>  > > > mphbs;
     //std::vector<std::vector<unsigned int> > all_positions;
     std::vector<unsigned int> loc_map;
 	unsigned int numHaps;

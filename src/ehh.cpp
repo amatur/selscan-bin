@@ -12,6 +12,168 @@ EHH::~EHH(){
     delete[] logg;
 }
 
+
+void EHH::loadMPHB(string input_mphb_file, int numHaps, int numSnps, map< int, map <int, priority_queue<pair<int, int>  > > > & mphbs){
+    //vector< map<int, priority_queue<pair<int, int>  > > > mphbs(numHaps);
+    //mphbs[0] initilize with numHaps 
+    //for each hap index by left
+
+    //struct hapblock
+
+    //map< int, vector<priority_queue<pair<int, int>  > > >  mphbs;
+
+    // for (int i = 0 ; i < numHaps; i++){
+    //     //map<int, queue<pair<int, int> > > v;
+    //     vector<priority_queue<pair<int, int> > > v;
+
+    //     mphbs.push_back(v);
+    //     // for (int j = 0 ; j < numSnps; j++){
+    //     //     queue<pair<int, int> > q;
+    //     //     mphbs[i].push_back(q);
+    //     // }
+    // }
+     
+
+    std::ifstream inputFile(input_mphb_file);
+    if (!inputFile.is_open()) {
+        std::cerr << "Error opening file." << std::endl;
+        return;
+    }
+
+    std::string line;
+
+    while (std::getline(inputFile, line)) {
+        std::istringstream iss(line);
+        std::string data;
+
+        //struct hapblock hb; 
+        int left, seqId, right, numSeq;;
+        
+        // Read four columns delimited by space
+        (iss >> left) ;
+        (iss >> right) ;
+        (iss >> seqId) ;
+        (iss >> numSeq) ;
+
+        if(!mphbs.count(left)){
+            priority_queue<pair<int, int> > q;
+            map<int, priority_queue<pair<int, int> > > v;
+            
+            v[seqId] = q;
+            mphbs[left] = v;
+        }
+        if(right-left>2){
+
+            if(!mphbs[left].count(seqId)){
+                priority_queue<pair<int, int> > q2;
+                mphbs[left][seqId] = q2;
+            }
+            mphbs[left][seqId].push(make_pair(numSeq, right));
+        }
+            
+
+        //cout<<seqId<<" "<<left<<" "<<right<<" "<<numSeq<<endl;
+        //verify that it is larger than stack top
+    }
+
+    /*
+    for (int i = 0 ; i < numHaps; i++){
+        for (int j = 0 ; j < numSnps; j++){
+            if(mphbs.count(j)){
+                priority_queue<pair<int, int> > q = mphbs[j][i];
+                if (q.size()!=0 ){
+                    cout<<i << " "<< j << " "<< q.size()<<": ";
+                    while (!q.empty()){
+                        int numSeq = q.top().first;
+                        int right = q.top().second;
+                        q.pop();
+                        cout<<numSeq<<" ("<<right<<")"<<" ";
+                    }
+                    
+                    cout<<endl;
+                }
+            }
+            
+        }
+    }
+    */
+}
+
+
+void EHH::loadMPHB(string input_mphb_file, int numHaps, int numSnps, vector< map< int, priority_queue<pair<int, int>  > > > & mphbs){
+    //vector< map<int, priority_queue<pair<int, int>  > > > mphbs(numHaps);
+    //mphbs[0] initilize with numHaps 
+    //for each hap index by left
+
+    //struct hapblock
+
+    for (int i = 0 ; i < numHaps; i++){
+        //map<int, queue<pair<int, int> > > v;
+        map<int, priority_queue<pair<int, int> > > v;
+
+        mphbs.push_back(v);
+        // for (int j = 0 ; j < numSnps; j++){
+        //     queue<pair<int, int> > q;
+        //     mphbs[i].push_back(q);
+        // }
+    }
+     
+
+    std::ifstream inputFile(input_mphb_file);
+    if (!inputFile.is_open()) {
+        std::cerr << "Error opening file." << std::endl;
+        return;
+    }
+
+    std::string line;
+
+    while (std::getline(inputFile, line)) {
+        std::istringstream iss(line);
+        std::string data;
+
+        //struct hapblock hb; 
+        int left, seqId, right, numSeq;;
+        
+        // Read four columns delimited by space
+        (iss >> left) ;
+        (iss >> right) ;
+        (iss >> seqId) ;
+        (iss >> numSeq) ;
+
+        if(!mphbs[seqId].count(left)){
+            priority_queue<pair<int, int> > q;
+            mphbs[seqId][left] = q;
+        }
+        if(right-left>2)
+            mphbs[seqId][left].push(make_pair(numSeq, right));
+
+        //cout<<seqId<<" "<<left<<" "<<right<<" "<<numSeq<<endl;
+        //verify that it is larger than stack top
+    }
+
+    /*
+    for (int i = 0 ; i < numHaps; i++){
+        for (int j = 0 ; j < numSnps; j++){
+            if(mphbs[i].count(j)){
+                priority_queue<pair<int, int> > q = mphbs[i][j];
+                //if (q.size()!=0 )
+                    cout<<i << " "<< j << " "<< q.size()<<": ";
+                    while (!q.empty()){
+                        int numSeq = q.top().first;
+                        int right = q.top().second;
+                        q.pop();
+                        cout<<numSeq<<" ("<<right<<")"<<" ";
+                    }
+                    
+                    cout<<endl;
+            }
+            
+        }
+    }
+    */
+
+}
+
 void EHH::cli_prepare(CLI::App * app) {
 	this->subapp = app->add_subcommand("ehh", "Calculate EHH.");
 
@@ -69,6 +231,9 @@ void EHH::cli_prepare(CLI::App * app) {
                                         "Formatted: <locusID> <physicalPos> <1 freq> <sl1> <sl0> <unstandardized nSL>")->capture_default_str();;
     //worry about it later!
     
+    opt = subapp->add_option<string>("--mphb", input_filename_mphb, "MPHB_FILE");;
+    //worry about it later!
+
     opt = subapp->add_option<unsigned int>("--max-extend", max_extend, "The maximum distance an nSL haplotype \n" 
                                                                                 "is allowed to extend from the core. \n"
                                                                                 "Set = 0 for no restriction. ")->capture_default_str();;
@@ -91,9 +256,24 @@ void EHH::cli_prepare(CLI::App * app) {
         useVCF = false;
     }
 
+    // if(subapp->count("--mphb")>0){
+    //     haplo_enabled = true;
+    // }else{
+    //     haplo_enabled = false;
+    // }
+    
+    
+
 }
 
 void EHH::init(){
+    if(input_filename_mphb==""){
+        haplo_enabled = false;
+    }else{
+        haplo_enabled = true;
+    }
+    cout<<"MPHB usage enabled is" <<haplo_enabled<<endl;
+
     useVCF=true;
     if(useVCF){
         cout<<"Loading "<<input_filename_vcf<<endl;
@@ -105,6 +285,9 @@ void EHH::init(){
 
     this->numHaps = hm.numHaps();
 	this->numSnps = hm.numSnps();
+
+    if(haplo_enabled)
+        loadMPHB(input_filename_mphb, numHaps, numSnps, mphbs);
 
     iHH0 = new double[numSnps];
     iHH1 = new double[numSnps];
@@ -171,6 +354,8 @@ inline unsigned int num_pair(int n){
 }
 
 void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
+
+    int total_iteration_of_m = 0;
     uint64_t ehh0_before_norm = 0;
     uint64_t ehh1_before_norm = 0;
 
@@ -189,11 +374,16 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
     int group_id[numHaps];
     bool isDerived[numHaps]; 
 
+    //NEW
+    int RE[numHaps];
+
+
     //will be vectorized
     for(int i = 0; i<numHaps; i++){
         group_count[i] = 0;
         group_id[i] = 0;
         isDerived[i] = false;
+        RE[i] = -1;
     }
 
     int totgc=0;
@@ -213,11 +403,10 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
             isDerived[set_bit_pos] = true;
         }
         ehh1_before_norm = twice_num_pair(n_c1);
-
     }else{
         group_count[1] = v.size();
         group_count[0] = numHaps - v.size();
-         n_c1 = v.size();
+        n_c1 = v.size();
         n_c0 = numHaps - v.size();
 
         for (int set_bit_pos : v){
@@ -229,12 +418,12 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         ehh0_before_norm = twice_num_pair(n_c0);
         ehh1_before_norm = twice_num_pair(n_c1);
     }
-
-
     if(downstream){
         if(!calc_all)
+            /*
             cout<<"Iter "<<0<<": EHH1["<<locus<<","<<locus<<"]="<<1<<" "<<1<<endl;
-        
+            */
+
         if(twice_num_pair(n_c1)!=0){
             iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * 0.5 / twice_num_pair(n_c1);
             //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
@@ -308,24 +497,114 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
 
         for (int set_bit_pos : v){
             int old_group_id = group_id[set_bit_pos];
-            m[old_group_id].push_back(set_bit_pos);
+            
+            if(haplo_enabled && not downstream ){
+                if(i!=0){
+                    //right extreme is reached
+                    if(i-1==RE[old_group_id] && RE[old_group_id]!=-1){
+                        RE[old_group_id] = -1;
+                    }
+                }
+                
+                if(RE[old_group_id] == -1){
+                    if(mphbs[set_bit_pos][locus].empty()){ // if that locus is empty for all the set bit pos then this could have been invoked
+                        //RE[old_group_id] == -2; //come back later
+                    }else{
+                        int numSeqInGroup = mphbs[set_bit_pos][locus].top().first; 
+                        
+                        if(group_count[old_group_id] == numSeqInGroup){
+                            int right = mphbs[set_bit_pos][locus].top().second; 
+                            
+                            if(!calc_all){
+                                cout<<old_group_id<<" "<<numSeqInGroup<<" "<<right<<" "<<set_bit_pos<<endl;
+                            }
+
+                            if( right+1  != i){
+                                //numSeqInGroup= mphbs[set_bit_pos][locus].top().second; 
+                                RE[old_group_id] = right;
+
+
+                                m[old_group_id].clear();
+                                //m.erase (m.find (old_group_id));
+                                //m.erase (m.find (old_group_id));
+                                //m[old_group_id].clear(); // because there is only one hap per group giving this information, it is possible we did not find out until this position that this group should not be checked
+                            }
+                            mphbs[set_bit_pos][locus].pop();    
+                            
+                            
+                        }
+                        while(group_count[old_group_id] < numSeqInGroup ){
+                            mphbs[set_bit_pos][locus].pop();
+                            numSeqInGroup = mphbs[set_bit_pos][locus].top().first; 
+                            
+                            if(mphbs[set_bit_pos][locus].empty())
+                                break;
+                        }
+                        
+                    }
+                }else{
+                                //++total_iteration_of_m;
+                    
+                    //skip
+                    // if(i < RE[old_group_id] ){
+                    // //Skip calculation this group
+                    // }else{
+                    //     RE[old_group_id] = -1;
+                    //     //mphbs[set_bit_pos][locus].pop();
+                    //     //Update RightExtreme
+                    // }                 
+                }
+                
+                // still -1 even after doing the abve step
+                if(RE[old_group_id]==-1){ //opt:  group_count[old_group_id] > 1
+                    m[old_group_id].push_back(set_bit_pos);
+                    //++total_iteration_of_m;
+
+                }
+                
+            }
+
+            if(!haplo_enabled){
+                //++total_iteration_of_m;
+
+                m[old_group_id].push_back(set_bit_pos);
+            }
         }
 
         for (const auto &ele : m) {
+            
             int old_group_id = ele.first;
             int newgroup_size = ele.second.size() ;
-            
+                            
+            total_iteration_of_m += newgroup_size;
+                            
             if(group_count[old_group_id] == newgroup_size || newgroup_size == 0){
                 continue;
             }
-            
+
+            //cout<<old_group_id<<" (";
             for(int v: ele.second){
+                //++total_iteration_of_m;
+                //cout<<v<<" ";
+
                 group_id[v] = totgc;
             }
+            //cout<<endl;
             
             int del_update = -twice_num_pair(group_count[old_group_id]) + twice_num_pair(newgroup_size) + twice_num_pair(group_count[old_group_id] - newgroup_size);
             group_count[old_group_id] -= newgroup_size;
             group_count[totgc] += newgroup_size;
+            
+
+            
+            // if(haplo_enabled && not downstream && RE[old_group_id] == -1){
+            //     int numSeqInGroup = mphbs[ele.second[0]][locus].top().first; 
+            //     if(group_count[totgc] == numSeqInGroup){
+            //         int right = mphbs[ele.second[0]][locus].top().second; 
+            //         RE[old_group_id] = right;
+            //     }
+            // }
+
             totgc+=1;
 
             bool isDerivedGroup =  isDerived[ele.second[0]]; // just check first element to know if it is derived. 
@@ -362,8 +641,15 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         }
 
 
-        if(!calc_all)
-            std::cout<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/twice_num_pair(n_c1)<<","<<curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)<<endl;
+        if(!calc_all){
+            std::cout<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/twice_num_pair(n_c1)<<","<<curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)<<" ";
+            
+            for (int x = 0 ; x < totgc;  x++){
+                cout<<group_count[x]<<"("<<x<<")";
+            }
+            
+           std::cout<<endl;
+        }
         
         //logg[tid]+="map size before"+to_string(m.size())+"\n";
         //cout<< logg[tid];
@@ -373,8 +659,319 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         // if(gap_skip==true)
         //     break;
     }
+    if(!downstream) cout<<"Total_iter_m "<<total_iteration_of_m<<endl;
 }
 
+
+void EHH::calc_EHH2_v2(int locus, map<int, vector<int> > & m, bool downstream){
+
+    map<int, priority_queue<pair<int, int> > >& mphbs_l = mphbs[locus];
+    int total_iteration_of_m = 0;
+    uint64_t ehh0_before_norm = 0;
+    uint64_t ehh1_before_norm = 0;
+
+    bool gap_skip = false;
+
+    uint64_t curr_ehh0_before_norm = 0;
+    uint64_t curr_ehh1_before_norm = 0;
+
+    uint64_t n_c0=0;
+    uint64_t n_c1=0;
+
+    uint64_t core_n_c0=0;
+    uint64_t core_n_c1=0;
+
+    int group_count[numHaps];
+    int group_id[numHaps];
+    bool isDerived[numHaps]; 
+
+    //NEW
+    int RE[numHaps];
+
+
+    //will be vectorized
+    for(int i = 0; i<numHaps; i++){
+        group_count[i] = 0;
+        group_id[i] = 0;
+        isDerived[i] = false;
+        RE[i] = -1;
+    }
+
+    int totgc=0;
+    vector<unsigned int> v = hm.all_positions[locus];
+
+    if(v.size()==0){
+        n_c0 = numHaps;
+        group_count[0] = numHaps;
+        totgc+=1;
+        ehh0_before_norm = twice_num_pair(n_c0);
+    }else if (v.size()==numHaps){ // all set
+        group_count[0] = numHaps;
+        totgc+=1;
+        n_c1 = numHaps;
+        
+        for (int set_bit_pos : v){
+            isDerived[set_bit_pos] = true;
+        }
+        ehh1_before_norm = twice_num_pair(n_c1);
+    }else{
+        group_count[1] = v.size();
+        group_count[0] = numHaps - v.size();
+        n_c1 = v.size();
+        n_c0 = numHaps - v.size();
+
+        for (int set_bit_pos : v){
+            isDerived[set_bit_pos] = true;
+            group_id[set_bit_pos] = 1;
+        }
+        
+        totgc+=2;
+        ehh0_before_norm = twice_num_pair(n_c0);
+        ehh1_before_norm = twice_num_pair(n_c1);
+    }
+    if(downstream){
+        if(!calc_all)
+            /*
+            cout<<"Iter "<<0<<": EHH1["<<locus<<","<<locus<<"]="<<1<<" "<<1<<endl;
+            */
+
+        if(twice_num_pair(n_c1)!=0){
+            iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * 0.5 / twice_num_pair(n_c1);
+            //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
+        }
+        if(twice_num_pair(n_c0)!=0){
+            iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * 0.5 / twice_num_pair(n_c0);
+        }
+    }
+    
+    curr_ehh1_before_norm = ehh1_before_norm;
+    curr_ehh0_before_norm = ehh0_before_norm;
+
+    
+    int i = locus;  
+    while(true){ // Upstream: for ( int i = locus+1; i<all_positions.size(); i++ )
+        if(downstream){
+            if (--i < 0) break;
+            //if (hm.mentries[locus].phyPos - hm.mentries[i].phyPos > max_extend) break;
+        }else{
+            if (++i >= numSnps) break;
+            //if (hm.mentries[i].phyPos -hm.mentries[locus].phyPos > max_extend) break;
+        }
+        // if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
+        //     break;
+        // }
+        
+        
+        //if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
+        if(curr_ehh1_before_norm*1.0/twice_num_pair(n_c1) < cutoff or curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)  < cutoff){
+        
+            //std::cout<<"breaking"<<endl;
+            break;
+        }
+        int distance;
+        
+        if(downstream){
+            distance = hm.mentries[i+1].phyPos - hm.mentries[i].phyPos;
+        }else{
+            distance = hm.mentries[i].phyPos - hm.mentries[i-1].phyPos;
+        }
+        assert(distance>=0);
+        // if(distance> max_gap){
+        //     gap_skip = true;
+        //     break;
+        // }
+        // if(distance> gap_scale){
+        //     distance /= gap_scale;
+        // }
+        
+        //distance = 1;
+        
+        //OPT IDEA: INSTEAD OF MAP JUST USE ARR OF VECTOR
+        v = hm.all_positions[i];
+
+        assert(!(hm.all_positions[i].size()==0 or hm.all_positions[i].size()==numHaps));
+        if(hm.all_positions[i].size()==0 or hm.all_positions[i].size()==numHaps){
+            //cout<<"SKIPPING MONOMORPHIC SITE"<<endl;
+            // if(!calc_all)
+            //     cout<<"Mono: Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/n_c1_squared_minus<<","<<curr_ehh0_before_norm*1.0/n_c0_squared_minus<<endl;
+        
+            
+            if(twice_num_pair(n_c1)!=0){
+                iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * distance * 0.5 / twice_num_pair(n_c1) ;
+                //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
+            }
+            if(twice_num_pair(n_c0)!=0){
+                iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * distance * 0.5 / twice_num_pair(n_c0)  ;
+            }
+            continue;
+        }
+
+        for (int set_bit_pos : v){
+            int old_group_id = group_id[set_bit_pos];
+            
+            if(haplo_enabled && not downstream ){
+                if(i!=0){
+                    //right extreme is reached
+                    if(i-1==RE[old_group_id] && RE[old_group_id]!=-1){
+                        RE[old_group_id] = -1;
+                    }
+                }
+                
+                if(RE[old_group_id] == -1){
+                    if(!mphbs_l.count(set_bit_pos)){ // if that locus is empty for all the set bit pos then this could have been invoked
+                        //RE[old_group_id] == -2; //come back later
+                    }else{
+                        int numSeqInGroup = mphbs_l[set_bit_pos].top().first; 
+                        
+                        if(group_count[old_group_id] == numSeqInGroup){
+                            int right = mphbs_l[set_bit_pos].top().second; 
+                            
+                            if(!calc_all){
+                                cout<<old_group_id<<" "<<numSeqInGroup<<" "<<right<<" "<<set_bit_pos<<endl;
+                            }
+
+                            if( right+1  != i){
+                                //numSeqInGroup= mphbs[set_bit_pos][locus].top().second; 
+                                RE[old_group_id] = right;
+
+
+                                m[old_group_id].clear();
+                                m.erase (m.find (old_group_id));
+                                //m.erase (m.find (old_group_id));
+                                //m[old_group_id].clear(); // because there is only one hap per group giving this information, it is possible we did not find out until this position that this group should not be checked
+                            }
+                            mphbs_l[set_bit_pos].pop();    
+                            
+                            
+                        }
+                        while(group_count[old_group_id] < numSeqInGroup ){
+                            mphbs_l[set_bit_pos].pop();
+                            numSeqInGroup = mphbs_l[set_bit_pos].top().first; 
+                            
+                            if(mphbs[set_bit_pos].empty())
+                                break;
+                        }
+                        
+                    }
+                }else{
+                                //++total_iteration_of_m;
+                    
+                    //skip
+                    // if(i < RE[old_group_id] ){
+                    // //Skip calculation this group
+                    // }else{
+                    //     RE[old_group_id] = -1;
+                    //     //mphbs[set_bit_pos][locus].pop();
+                    //     //Update RightExtreme
+                    // }                 
+                }
+                
+                // still -1 even after doing the abve step
+                if(RE[old_group_id]==-1){ //opt:  group_count[old_group_id] > 1
+                    m[old_group_id].push_back(set_bit_pos);
+                    //++total_iteration_of_m;
+
+                }
+                
+            }
+
+            if(!haplo_enabled){
+                //++total_iteration_of_m;
+
+                m[old_group_id].push_back(set_bit_pos);
+            }
+        }
+
+        for (const auto &ele : m) {
+            
+            int old_group_id = ele.first;
+            int newgroup_size = ele.second.size() ;
+                            
+            total_iteration_of_m += newgroup_size;
+                            
+            if(group_count[old_group_id] == newgroup_size || newgroup_size == 0){
+                continue;
+            }
+
+            //cout<<old_group_id<<" (";
+            for(int v: ele.second){
+                //++total_iteration_of_m;
+                //cout<<v<<" ";
+
+                group_id[v] = totgc;
+            }
+            //cout<<endl;
+            
+            int del_update = -twice_num_pair(group_count[old_group_id]) + twice_num_pair(newgroup_size) + twice_num_pair(group_count[old_group_id] - newgroup_size);
+            group_count[old_group_id] -= newgroup_size;
+            group_count[totgc] += newgroup_size;
+            
+
+            
+            // if(haplo_enabled && not downstream && RE[old_group_id] == -1){
+            //     int numSeqInGroup = mphbs[ele.second[0]][locus].top().first; 
+            //     if(group_count[totgc] == numSeqInGroup){
+            //         int right = mphbs[ele.second[0]][locus].top().second; 
+            //         RE[old_group_id] = right;
+            //     }
+            // }
+
+            totgc+=1;
+
+            bool isDerivedGroup =  isDerived[ele.second[0]]; // just check first element to know if it is derived. 
+            if(isDerivedGroup)
+            {
+                ehh1_before_norm += del_update;
+            }else{
+                ehh0_before_norm += del_update;
+            }
+            
+        }
+
+        if(twice_num_pair(n_c1)!=0){
+            iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * distance * 0.5 / twice_num_pair(n_c1);
+            //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
+        }
+
+        if(twice_num_pair(n_c0)!=0){
+            iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * distance * 0.5 / twice_num_pair(n_c0);
+        }
+
+        curr_ehh1_before_norm = ehh1_before_norm;
+        curr_ehh0_before_norm = ehh0_before_norm;
+
+        // ehh1[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
+        // ehh0[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
+
+        //this shouldn't execute
+        if(twice_num_pair(n_c1)==0){
+            curr_ehh1_before_norm = 0;
+        }
+        if(twice_num_pair(n_c0)==0){
+            curr_ehh0_before_norm = 0;
+        }
+
+
+        if(!calc_all){
+            std::cout<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/twice_num_pair(n_c1)<<","<<curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)<<" ";
+            
+            for (int x = 0 ; x < totgc;  x++){
+                cout<<group_count[x]<<"("<<x<<")";
+            }
+            
+           std::cout<<endl;
+        }
+        
+        //logg[tid]+="map size before"+to_string(m.size())+"\n";
+        //cout<< logg[tid];
+        m.clear();
+        //logg[tid]+="map size after"+to_string(m.size())+"\n";
+        //cout<< logg[tid];
+        // if(gap_skip==true)
+        //     break;
+    }
+    if(!downstream) cout<<"Total_iter_m "<<total_iteration_of_m<<endl;
+}
 
 
 void EHH::thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj){
@@ -446,11 +1043,14 @@ void EHH::calc_iHS(){
         // #pragma clang loop vectorize(assume_safety)
         cout<<"open mp enabled. "<<omp_get_max_threads()<<"threads"<<endl;
 
-        #pragma omp parallel shared(hm)
+        // // // #pragma omp parallel shared(hm)
         {
-            #pragma omp for schedule(dynamic,10)
+            // // // #pragma omp for schedule(dynamic,10)
             for(int i = 0 ; i< numSnps; i++){
+                if(i>50)
+                    haplo_enabled = false;
                 calc_EHH(i);
+                
                 //cout<<"open mp enabled. "<<omp_get_num_threads()<<"threads"<<endl;
             }
         }
