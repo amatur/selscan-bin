@@ -26,6 +26,8 @@
 #ifndef HAPMAP_HPP
 #define HAPMAP_HPP
 
+
+#define BITSET_SIZE 1048576
 #include <stdexcept>
 #include <iostream>
 
@@ -36,6 +38,7 @@ struct map_entry {
   int locId;  
   int phyPos;
   int genPos;
+  bool flipped;
 };
 
 class HapMap
@@ -58,6 +61,10 @@ public:
     
     std::vector<struct map_entry> mentries; // hold additional info
     std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
+    std::vector<std::bitset<BITSET_SIZE> > all_bitsets; // hold the xor
+    std::vector<std::vector<unsigned int> > all_xors; // hold the xor
+
+    
 //    ~HapMap();
     double getMAF(int loc);
 

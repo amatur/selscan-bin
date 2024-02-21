@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 // HapMap::HapMap()
 //     : m_numSnps{}
@@ -57,6 +58,9 @@ using namespace std;
 //         abort();
 //     }
 // }
+
+
+
 
 
 
@@ -182,6 +186,8 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
     char allele1, allele2, separator;
     bool skipLine = false;
 
+
+    std::bitset<BITSET_SIZE> prev_bitset;
     for (int locus = 0; locus < nloci; locus++)
     {
         uint64_t physpos;
@@ -209,6 +215,11 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         
 
         std::vector<unsigned int> positions; // holds positions for this locus
+
+        
+        std::bitset<BITSET_SIZE> curr_bitset;
+        bool flip_enabled = true;
+
         
         for (int field = 0; field < nfields; field++)
         {
@@ -236,10 +247,13 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
                 if(allele1=='1'){
                     positions.push_back(2 * field);
+                    curr_bitset.set(2 * field);
                     //cout<<2 * field<<" ";
                 }
                 if(allele2=='1'){
                     positions.push_back(2 * field + 1);
+                    curr_bitset.set(2 * field + 1);
+
                     //cout<<2 * field + 1<<" ";
                 }
             }
@@ -253,17 +267,82 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         if(positions.size()==1 or positions.size()==m_numHaps-1){
             //std::cout<<"WARNING: MAC must be > 1 : site " << locus << std::endl;
         }
-        double maf = positions.size()*1.0/m_numHaps ;
+        double derived_af = positions.size()*1.0/m_numHaps ;
         //cout<<maf<<" maf"<<endl;
         //std::cout<<"Loc: "<<locus<<"1 freq: "<<maf<<std::endl;
-        if(maf < minmaf || 1-maf < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==1 || positions.size()==m_numHaps-1){
+        if(derived_af < minmaf || 1-derived_af < minmaf || positions.size()==1 || positions.size()==m_numHaps-1 || positions.size()==1 || positions.size()==m_numHaps-1){
         //if(positions.size()==0 or positions.size()==m_numHaps){
             //skip
             //std::cout<<"WARNING: skipping site" << locus<< std::endl;
 
         }else{
-            all_positions.push_back(positions); //check if all 0
+            all_bitsets.push_back(curr_bitset);
+            if(all_positions.size() == 0){
+                //all_bitsets.push_back(curr_bitset); // for 0th loc, just push the bitset. for others do xor
+                auto b = curr_bitset;
+                vector<unsigned int> v;
+
+                int first = b._Find_first();
+                while(first!=BITSET_SIZE){
+                    v.push_back(first);
+                    b[first] = 0;
+                    first = b._Find_first();
+                }
+                all_xors.push_back(v);
+            }else{
+                auto b = (prev_bitset ^ curr_bitset);
+                //auto b = (  curr_bitset); // uncomment to test the speedup of xor
+
+                vector<unsigned int> v;
+                int first = b._Find_first();
+                while(first!=BITSET_SIZE){
+                    v.push_back(first);
+                    b[first] = 0;
+                    first = b._Find_first();
+                }
+                all_xors.push_back(v);
+
+                //cout<< m_numSnps <<":" <<all_bitsets.back().count()<<" "<<curr_bitset.count()<<endl; 
+                prev_bitset = curr_bitset;
+            }
+
+
             struct map_entry mentry;
+            flip_enabled=true;
+            if(flip_enabled &&  derived_af > 0.5){
+                vector<unsigned int> v;
+                //cout<<curr_bitset.count()<<" ";
+                curr_bitset.flip();
+                int first = curr_bitset._Find_first();
+                while(first<m_numHaps){
+                    v.push_back(first);
+                    curr_bitset[first] = 0;
+                    first = curr_bitset._Find_first();
+                    //cout<<first<<" ";
+                }
+                //cout<<6404-v.size()<<" ";
+                //cout<<endl;
+                all_positions.push_back(v);
+
+                // vector<unsigned int> copy_pos;
+                // int cnt = 0;
+                // for(int i = 0; i<m_numHaps; i++){
+                //     unsigned int curr = positions[cnt];
+                //     if(i==curr){
+                //         cnt++;
+                //     }else{
+                //         copy_pos.push_back(i);
+                //     }
+                // }
+                // all_positions.push_back(copy_pos); 
+                
+                
+                mentry.flipped = true;
+            }else{
+                all_positions.push_back(positions); //check if all 0
+                mentry.flipped = false;
+            }
+            
             // mentry.genPos = physpos;
             mentry.phyPos = physpos;
             mentry.locId = locus;
@@ -275,6 +354,35 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
     this-> m_numSnps = all_positions.size();
     cout<<"retaining "<<this-> m_numSnps <<endl;
     // this-> m_numHaps = nhaps;
+
+    //vector<vector<int> >all_xors;
+    // for(auto b : all_bitsets){
+    //     vector<unsigned int> v;
+
+    //     int first = b._Find_first();
+    //     while(first!=BITSET_SIZE){
+    //         v.push_back(first);
+    //         b[first] = 0;
+    //         first = b._Find_first();
+    //     }
+    //     all_xors.push_back(v);
+    // }
+
+
+//================================================================================================
+    //comment this block for debugging
+    // for(int i = 0 ; i< this->m_numSnps; i++){
+    //     cout<<"Loc "<<i<<":";
+    //     for (unsigned int v : all_xors[i]){
+    //         cout<<v<<" ";
+    //     }
+    //     cout<<endl;
+    //     cout<<"Loc "<<i<<":";
+    //     for (unsigned int v : this->all_positions[i]){
+    //         cout<<v<<" ";
+    //     }
+    //     cout<<endl;
+    // }
 
     return true;
 }
@@ -365,15 +473,20 @@ bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vecto
     m_numSnps = 0;
     m_numHaps = 0;
     unsigned int act_snp_count = 0;
+    std::bitset<BITSET_SIZE> prev_bitset;
     while (std::getline(f, line)) {
         //if(DEBUG) std::cout<<line<<std::endl;
         std::vector<unsigned int> positions;
+        std::bitset<BITSET_SIZE> current_bitset;
+        
+
  
         std::istringstream rowStream(line);
         char value;
         int pos=0;
         while (rowStream >> value) {        
             if(value=='1'){
+                current_bitset.set(pos);
                 positions.push_back(pos++);
             }else if(value=='0'){
                 pos++;
@@ -400,13 +513,26 @@ bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vecto
             //std::cout<<"WARNING: skipping site" << std::endl;
 
         }else{
+            if(m_numSnps == 0){
+                all_bitsets.push_back(current_bitset);
+            }else{
+                all_bitsets.push_back(prev_bitset ^ current_bitset);
+                cout<< m_numSnps <<":" <<all_bitsets.back().count()<<" "<<current_bitset.count()<<endl; 
+                prev_bitset = current_bitset;
+
+            }
             loc_map.push_back(act_snp_count);
             ++m_numSnps;
             all_positions.push_back(positions); //check if all 0
+
+            
+            
+            
         }
         act_snp_count++;
     }
     f.close();
+    exit(1);
     std::cout<<"Finished loading file."<<std::endl;
 
     return true;

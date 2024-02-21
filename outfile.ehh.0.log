@@ -1,0 +1,11 @@
+selscan --ehh 0 --vcf test1/p4.2000.vcf --pmap 
+v2.0.1
+Calculating Input filename: test1/p4.2000.vcf
+Map filename: __mapfile
+Output file: outfile.ehh.0.out
+Threads: 1
+Scale parameter: 20000
+Max gap parameter: 200000
+EHH cutoff value: 0.05
+Phased: yes
+Alt flag set: no

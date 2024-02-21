@@ -3,176 +3,19 @@
 #include "hapmap.hpp"
 #include "utils.hpp"
 #include <omp.h>
+#include "logger.hpp"
 
 EHH::EHH(){
 }
 EHH::~EHH(){
+    out_ihs.close();
+    out_ehh.close();
+    Logger::close();
     delete[] iHH0;
     delete[] iHH1;
-    delete[] logg;
+    delete[] log_string_per_thread;
 }
 
-
-void EHH::loadMPHB(string input_mphb_file, int numHaps, int numSnps, map< int, map <int, priority_queue<pair<int, int>  > > > & mphbs){
-    //vector< map<int, priority_queue<pair<int, int>  > > > mphbs(numHaps);
-    //mphbs[0] initilize with numHaps 
-    //for each hap index by left
-
-    //struct hapblock
-
-    //map< int, vector<priority_queue<pair<int, int>  > > >  mphbs;
-
-    // for (int i = 0 ; i < numHaps; i++){
-    //     //map<int, queue<pair<int, int> > > v;
-    //     vector<priority_queue<pair<int, int> > > v;
-
-    //     mphbs.push_back(v);
-    //     // for (int j = 0 ; j < numSnps; j++){
-    //     //     queue<pair<int, int> > q;
-    //     //     mphbs[i].push_back(q);
-    //     // }
-    // }
-     
-
-    std::ifstream inputFile(input_mphb_file);
-    if (!inputFile.is_open()) {
-        std::cerr << "Error opening file." << std::endl;
-        return;
-    }
-
-    std::string line;
-
-    while (std::getline(inputFile, line)) {
-        std::istringstream iss(line);
-        std::string data;
-
-        //struct hapblock hb; 
-        int left, seqId, right, numSeq;;
-        
-        // Read four columns delimited by space
-        (iss >> left) ;
-        (iss >> right) ;
-        (iss >> seqId) ;
-        (iss >> numSeq) ;
-
-        if(!mphbs.count(left)){
-            priority_queue<pair<int, int> > q;
-            map<int, priority_queue<pair<int, int> > > v;
-            
-            v[seqId] = q;
-            mphbs[left] = v;
-        }
-        if(right-left>2){
-
-            if(!mphbs[left].count(seqId)){
-                priority_queue<pair<int, int> > q2;
-                mphbs[left][seqId] = q2;
-            }
-            mphbs[left][seqId].push(make_pair(numSeq, right));
-        }
-            
-
-        //cout<<seqId<<" "<<left<<" "<<right<<" "<<numSeq<<endl;
-        //verify that it is larger than stack top
-    }
-
-    /*
-    for (int i = 0 ; i < numHaps; i++){
-        for (int j = 0 ; j < numSnps; j++){
-            if(mphbs.count(j)){
-                priority_queue<pair<int, int> > q = mphbs[j][i];
-                if (q.size()!=0 ){
-                    cout<<i << " "<< j << " "<< q.size()<<": ";
-                    while (!q.empty()){
-                        int numSeq = q.top().first;
-                        int right = q.top().second;
-                        q.pop();
-                        cout<<numSeq<<" ("<<right<<")"<<" ";
-                    }
-                    
-                    cout<<endl;
-                }
-            }
-            
-        }
-    }
-    */
-}
-
-
-void EHH::loadMPHB(string input_mphb_file, int numHaps, int numSnps, vector< map< int, priority_queue<pair<int, int>  > > > & mphbs){
-    //vector< map<int, priority_queue<pair<int, int>  > > > mphbs(numHaps);
-    //mphbs[0] initilize with numHaps 
-    //for each hap index by left
-
-    //struct hapblock
-
-    for (int i = 0 ; i < numHaps; i++){
-        //map<int, queue<pair<int, int> > > v;
-        map<int, priority_queue<pair<int, int> > > v;
-
-        mphbs.push_back(v);
-        // for (int j = 0 ; j < numSnps; j++){
-        //     queue<pair<int, int> > q;
-        //     mphbs[i].push_back(q);
-        // }
-    }
-     
-
-    std::ifstream inputFile(input_mphb_file);
-    if (!inputFile.is_open()) {
-        std::cerr << "Error opening file." << std::endl;
-        return;
-    }
-
-    std::string line;
-
-    while (std::getline(inputFile, line)) {
-        std::istringstream iss(line);
-        std::string data;
-
-        //struct hapblock hb; 
-        int left, seqId, right, numSeq;;
-        
-        // Read four columns delimited by space
-        (iss >> left) ;
-        (iss >> right) ;
-        (iss >> seqId) ;
-        (iss >> numSeq) ;
-
-        if(!mphbs[seqId].count(left)){
-            priority_queue<pair<int, int> > q;
-            mphbs[seqId][left] = q;
-        }
-        if(right-left>2)
-            mphbs[seqId][left].push(make_pair(numSeq, right));
-
-        //cout<<seqId<<" "<<left<<" "<<right<<" "<<numSeq<<endl;
-        //verify that it is larger than stack top
-    }
-
-    /*
-    for (int i = 0 ; i < numHaps; i++){
-        for (int j = 0 ; j < numSnps; j++){
-            if(mphbs[i].count(j)){
-                priority_queue<pair<int, int> > q = mphbs[i][j];
-                //if (q.size()!=0 )
-                    cout<<i << " "<< j << " "<< q.size()<<": ";
-                    while (!q.empty()){
-                        int numSeq = q.top().first;
-                        int right = q.top().second;
-                        q.pop();
-                        cout<<numSeq<<" ("<<right<<")"<<" ";
-                    }
-                    
-                    cout<<endl;
-            }
-            
-        }
-    }
-    */
-
-}
 
 void EHH::cli_prepare(CLI::App * app) {
 	this->subapp = app->add_subcommand("ehh", "Calculate EHH.");
@@ -227,12 +70,8 @@ void EHH::cli_prepare(CLI::App * app) {
 	opt->check(CLI::Range(0.0,1.0));
     opt->option_text("<float> [0.05]");
 
-	opt = subapp->add_option<string>("-o, --out", output_filename, "The basename for all output files reporting stats. \n"
+	opt = subapp->add_option<string>("-o, --out", output_filename_ihs, "The basename for all output files reporting stats. \n"
                                         "Formatted: <locusID> <physicalPos> <1 freq> <sl1> <sl0> <unstandardized nSL>")->capture_default_str();;
-    //worry about it later!
-    
-    opt = subapp->add_option<string>("--mphb", input_filename_mphb, "MPHB_FILE");;
-    //worry about it later!
 
     opt = subapp->add_option<unsigned int>("--max-extend", max_extend, "The maximum distance an nSL haplotype \n" 
                                                                                 "is allowed to extend from the core. \n"
@@ -267,12 +106,7 @@ void EHH::cli_prepare(CLI::App * app) {
 }
 
 void EHH::init(){
-    if(input_filename_mphb==""){
-        haplo_enabled = false;
-    }else{
-        haplo_enabled = true;
-    }
-    cout<<"MPHB usage enabled is" <<haplo_enabled<<endl;
+    Logger::open(this->logger_filename);
 
     useVCF=true;
     if(useVCF){
@@ -286,17 +120,15 @@ void EHH::init(){
     this->numHaps = hm.numHaps();
 	this->numSnps = hm.numSnps();
 
-    if(haplo_enabled)
-        loadMPHB(input_filename_mphb, numHaps, numSnps, mphbs);
-
+    
     iHH0 = new double[numSnps];
     iHH1 = new double[numSnps];
 
-    logg = new string[numThread];
+    log_string_per_thread = new string[numThread];
 }
 
 void EHH::calc_EHH(int locus){
-    map<int, vector<int> > m;
+    unordered_map<int, vector<int> > m;
     iHH0[locus] = 0;
     iHH1[locus] = 0;
 
@@ -339,9 +171,13 @@ void EHH::exec() {
     cout<<"Number of valid loci: "<<numSnps<<endl;
     cout<<"Number of haplotypes: "<<numHaps<<endl;
     if(calc_all){
+        out_ihs.open(output_filename_ihs, ios::out);
         calc_iHS();
+        out_ihs.close();
     }else{
+        out_ehh.open(output_filename_ehh, ios::out);
         calc_EHH(locus);
+        out_ehh.close();
     }
 }
 
@@ -353,8 +189,7 @@ inline unsigned int num_pair(int n){
     return (n*n - n)/2;
 }
 
-void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
-
+void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downstream){
     int total_iteration_of_m = 0;
     uint64_t ehh0_before_norm = 0;
     uint64_t ehh1_before_norm = 0;
@@ -372,18 +207,13 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
 
     int group_count[numHaps];
     int group_id[numHaps];
-    bool isDerived[numHaps]; 
 
-    //NEW
-    int RE[numHaps];
-
-
-    //will be vectorized
+    //will be vectorized with compile time flags
     for(int i = 0; i<numHaps; i++){
         group_count[i] = 0;
         group_id[i] = 0;
-        isDerived[i] = false;
-        RE[i] = -1;
+        //isDerived[i] = false;
+        //isAncestral[i] = false;
     }
 
     int totgc=0;
@@ -399,30 +229,41 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         totgc+=1;
         n_c1 = numHaps;
         
-        for (int set_bit_pos : v){
-            isDerived[set_bit_pos] = true;
-        }
+        // for (int set_bit_pos : v){
+        //     isDerived[set_bit_pos] = true;
+        // }
         ehh1_before_norm = twice_num_pair(n_c1);
     }else{
-        group_count[1] = v.size();
-        group_count[0] = numHaps - v.size();
-        n_c1 = v.size();
-        n_c0 = numHaps - v.size();
+        if(hm.mentries[locus].flipped){
+            group_count[1] = v.size();
+            group_count[0] = numHaps - v.size();
+            n_c0 = v.size();
+            n_c1 = numHaps - v.size();
 
-        for (int set_bit_pos : v){
-            isDerived[set_bit_pos] = true;
-            group_id[set_bit_pos] = 1;
-        }
+            for (int set_bit_pos : v){
+                //isAncestral[set_bit_pos] = true;
+                group_id[set_bit_pos] = 1;
+            }
+        }else{
+            group_count[1] = v.size();
+            group_count[0] = numHaps - v.size();
+            n_c1 = v.size();
+            n_c0 = numHaps - v.size();
+
+            for (int set_bit_pos : v){
+                //isDerived[set_bit_pos] = true;
+                group_id[set_bit_pos] = 1;
+            }
+        }        
         
         totgc+=2;
         ehh0_before_norm = twice_num_pair(n_c0);
         ehh1_before_norm = twice_num_pair(n_c1);
     }
+
     if(downstream){
         if(!calc_all)
-            /*
-            cout<<"Iter "<<0<<": EHH1["<<locus<<","<<locus<<"]="<<1<<" "<<1<<endl;
-            */
+            out_ehh<<"Iter "<<0<<": EHH1["<<locus<<","<<locus<<"]="<<1<<" "<<1<<endl;
 
         if(twice_num_pair(n_c1)!=0){
             iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * 0.5 / twice_num_pair(n_c1);
@@ -436,7 +277,6 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
     curr_ehh1_before_norm = ehh1_before_norm;
     curr_ehh0_before_norm = ehh0_before_norm;
 
-    
     int i = locus;  
     while(true){ // Upstream: for ( int i = locus+1; i<all_positions.size(); i++ )
         if(downstream){
@@ -475,100 +315,37 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         
         //distance = 1;
         
-        //OPT IDEA: INSTEAD OF MAP JUST USE ARR OF VECTOR
-        v = hm.all_positions[i];
-
-        assert(!(hm.all_positions[i].size()==0 or hm.all_positions[i].size()==numHaps));
-        if(hm.all_positions[i].size()==0 or hm.all_positions[i].size()==numHaps){
-            //cout<<"SKIPPING MONOMORPHIC SITE"<<endl;
-            // if(!calc_all)
-            //     cout<<"Mono: Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/n_c1_squared_minus<<","<<curr_ehh0_before_norm*1.0/n_c0_squared_minus<<endl;
-        
-            
-            if(twice_num_pair(n_c1)!=0){
-                iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * distance * 0.5 / twice_num_pair(n_c1) ;
-                //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
-            }
-            if(twice_num_pair(n_c0)!=0){
-                iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * distance * 0.5 / twice_num_pair(n_c0)  ;
-            }
-            continue;
+        if(downstream){
+            v = hm.all_xors[i+1];
+        }else{
+            v = hm.all_xors[i];
         }
+        if(hm.all_positions[i].size() < v.size() && i!=numHaps-1 ){ //  dont do in boundary
+            v = hm.all_positions[i];
 
+            //assert(!(v.size()==0 or v.size()==numHaps));
+            if(v.size()==0 or v.size()==numHaps){
+
+                cerr<<"Monomorphic site should not exist at this point!"<<endl;
+                exit(4);
+                //cout<<"SKIPPING MONOMORPHIC SITE"<<endl;
+                // if(!calc_all)
+                //     cout<<"Mono: Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/n_c1_squared_minus<<","<<curr_ehh0_before_norm*1.0/n_c0_squared_minus<<endl;
+            
+                if(twice_num_pair(n_c1)!=0){
+                    iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * distance * 0.5 / twice_num_pair(n_c1) ;
+                    //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
+                }
+                if(twice_num_pair(n_c0)!=0){
+                    iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * distance * 0.5 / twice_num_pair(n_c0)  ;
+                }
+                continue;
+            }
+        }
+        
         for (int set_bit_pos : v){
             int old_group_id = group_id[set_bit_pos];
-            
-            if(haplo_enabled && not downstream ){
-                if(i!=0){
-                    //right extreme is reached
-                    if(i-1==RE[old_group_id] && RE[old_group_id]!=-1){
-                        RE[old_group_id] = -1;
-                    }
-                }
-                
-                if(RE[old_group_id] == -1){
-                    if(mphbs[set_bit_pos][locus].empty()){ // if that locus is empty for all the set bit pos then this could have been invoked
-                        //RE[old_group_id] == -2; //come back later
-                    }else{
-                        int numSeqInGroup = mphbs[set_bit_pos][locus].top().first; 
-                        
-                        if(group_count[old_group_id] == numSeqInGroup){
-                            int right = mphbs[set_bit_pos][locus].top().second; 
-                            
-                            if(!calc_all){
-                                cout<<old_group_id<<" "<<numSeqInGroup<<" "<<right<<" "<<set_bit_pos<<endl;
-                            }
-
-                            if( right+1  != i){
-                                //numSeqInGroup= mphbs[set_bit_pos][locus].top().second; 
-                                RE[old_group_id] = right;
-
-
-                                m[old_group_id].clear();
-                                //m.erase (m.find (old_group_id));
-                                //m.erase (m.find (old_group_id));
-                                //m[old_group_id].clear(); // because there is only one hap per group giving this information, it is possible we did not find out until this position that this group should not be checked
-                            }
-                            mphbs[set_bit_pos][locus].pop();    
-                            
-                            
-                        }
-                        while(group_count[old_group_id] < numSeqInGroup ){
-                            mphbs[set_bit_pos][locus].pop();
-                            numSeqInGroup = mphbs[set_bit_pos][locus].top().first; 
-                            
-                            if(mphbs[set_bit_pos][locus].empty())
-                                break;
-                        }
-                        
-                    }
-                }else{
-                                //++total_iteration_of_m;
-                    
-                    //skip
-                    // if(i < RE[old_group_id] ){
-                    // //Skip calculation this group
-                    // }else{
-                    //     RE[old_group_id] = -1;
-                    //     //mphbs[set_bit_pos][locus].pop();
-                    //     //Update RightExtreme
-                    // }                 
-                }
-                
-                // still -1 even after doing the abve step
-                if(RE[old_group_id]==-1){ //opt:  group_count[old_group_id] > 1
-                    m[old_group_id].push_back(set_bit_pos);
-                    //++total_iteration_of_m;
-
-                }
-                
-            }
-
-            if(!haplo_enabled){
-                //++total_iteration_of_m;
-
-                m[old_group_id].push_back(set_bit_pos);
-            }
+            m[old_group_id].push_back(set_bit_pos);
         }
 
         for (const auto &ele : m) {
@@ -582,39 +359,26 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
                 continue;
             }
 
-            //cout<<old_group_id<<" (";
+            //log<<old_group_id<<" (";
             for(int v: ele.second){
-                //++total_iteration_of_m;
-                //cout<<v<<" ";
-
+                //log<<v<<" ";
                 group_id[v] = totgc;
             }
-            //cout<<endl;
+            //log<<endl;
             
             int del_update = -twice_num_pair(group_count[old_group_id]) + twice_num_pair(newgroup_size) + twice_num_pair(group_count[old_group_id] - newgroup_size);
             group_count[old_group_id] -= newgroup_size;
             group_count[totgc] += newgroup_size;
             
-
-            
-            // if(haplo_enabled && not downstream && RE[old_group_id] == -1){
-            //     int numSeqInGroup = mphbs[ele.second[0]][locus].top().first; 
-            //     if(group_count[totgc] == numSeqInGroup){
-            //         int right = mphbs[ele.second[0]][locus].top().second; 
-            //         RE[old_group_id] = right;
-            //     }
-            // }
-
             totgc+=1;
-
-            bool isDerivedGroup =  isDerived[ele.second[0]]; // just check first element to know if it is derived. 
-            if(isDerivedGroup)
+            
+            bool isDerivedGroup =  hm.all_bitsets[locus].test(ele.second[0]);
+            if(isDerivedGroup) // if the core locus for this chr has 1, then update ehh1, otherwise ehh0
             {
                 ehh1_before_norm += del_update;
             }else{
                 ehh0_before_norm += del_update;
             }
-            
         }
 
         if(twice_num_pair(n_c1)!=0){
@@ -642,13 +406,13 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
 
 
         if(!calc_all){
-            std::cout<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/twice_num_pair(n_c1)<<","<<curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)<<" ";
+            out_ehh<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/twice_num_pair(n_c1)<<","<<curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)<<" ";
             
             for (int x = 0 ; x < totgc;  x++){
-                cout<<group_count[x]<<"("<<x<<")";
+                out_ehh<<group_count[x]<<"("<<x<<")";
             }
             
-           std::cout<<endl;
+           out_ehh<<endl;
         }
         
         //logg[tid]+="map size before"+to_string(m.size())+"\n";
@@ -659,322 +423,11 @@ void EHH::calc_EHH2(int locus, map<int, vector<int> > & m, bool downstream){
         // if(gap_skip==true)
         //     break;
     }
-    if(!downstream) cout<<"Total_iter_m "<<total_iteration_of_m<<endl;
+    //if(!downstream) cout<<"Total_iter_m "<<total_iteration_of_m<<endl;
 }
 
 
-void EHH::calc_EHH2_v2(int locus, map<int, vector<int> > & m, bool downstream){
-
-    map<int, priority_queue<pair<int, int> > >& mphbs_l = mphbs[locus];
-    int total_iteration_of_m = 0;
-    uint64_t ehh0_before_norm = 0;
-    uint64_t ehh1_before_norm = 0;
-
-    bool gap_skip = false;
-
-    uint64_t curr_ehh0_before_norm = 0;
-    uint64_t curr_ehh1_before_norm = 0;
-
-    uint64_t n_c0=0;
-    uint64_t n_c1=0;
-
-    uint64_t core_n_c0=0;
-    uint64_t core_n_c1=0;
-
-    int group_count[numHaps];
-    int group_id[numHaps];
-    bool isDerived[numHaps]; 
-
-    //NEW
-    int RE[numHaps];
-
-
-    //will be vectorized
-    for(int i = 0; i<numHaps; i++){
-        group_count[i] = 0;
-        group_id[i] = 0;
-        isDerived[i] = false;
-        RE[i] = -1;
-    }
-
-    int totgc=0;
-    vector<unsigned int> v = hm.all_positions[locus];
-
-    if(v.size()==0){
-        n_c0 = numHaps;
-        group_count[0] = numHaps;
-        totgc+=1;
-        ehh0_before_norm = twice_num_pair(n_c0);
-    }else if (v.size()==numHaps){ // all set
-        group_count[0] = numHaps;
-        totgc+=1;
-        n_c1 = numHaps;
-        
-        for (int set_bit_pos : v){
-            isDerived[set_bit_pos] = true;
-        }
-        ehh1_before_norm = twice_num_pair(n_c1);
-    }else{
-        group_count[1] = v.size();
-        group_count[0] = numHaps - v.size();
-        n_c1 = v.size();
-        n_c0 = numHaps - v.size();
-
-        for (int set_bit_pos : v){
-            isDerived[set_bit_pos] = true;
-            group_id[set_bit_pos] = 1;
-        }
-        
-        totgc+=2;
-        ehh0_before_norm = twice_num_pair(n_c0);
-        ehh1_before_norm = twice_num_pair(n_c1);
-    }
-    if(downstream){
-        if(!calc_all)
-            /*
-            cout<<"Iter "<<0<<": EHH1["<<locus<<","<<locus<<"]="<<1<<" "<<1<<endl;
-            */
-
-        if(twice_num_pair(n_c1)!=0){
-            iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * 0.5 / twice_num_pair(n_c1);
-            //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
-        }
-        if(twice_num_pair(n_c0)!=0){
-            iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * 0.5 / twice_num_pair(n_c0);
-        }
-    }
-    
-    curr_ehh1_before_norm = ehh1_before_norm;
-    curr_ehh0_before_norm = ehh0_before_norm;
-
-    
-    int i = locus;  
-    while(true){ // Upstream: for ( int i = locus+1; i<all_positions.size(); i++ )
-        if(downstream){
-            if (--i < 0) break;
-            //if (hm.mentries[locus].phyPos - hm.mentries[i].phyPos > max_extend) break;
-        }else{
-            if (++i >= numSnps) break;
-            //if (hm.mentries[i].phyPos -hm.mentries[locus].phyPos > max_extend) break;
-        }
-        // if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
-        //     break;
-        // }
-        
-        
-        //if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
-        if(curr_ehh1_before_norm*1.0/twice_num_pair(n_c1) < cutoff or curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)  < cutoff){
-        
-            //std::cout<<"breaking"<<endl;
-            break;
-        }
-        int distance;
-        
-        if(downstream){
-            distance = hm.mentries[i+1].phyPos - hm.mentries[i].phyPos;
-        }else{
-            distance = hm.mentries[i].phyPos - hm.mentries[i-1].phyPos;
-        }
-        assert(distance>=0);
-        // if(distance> max_gap){
-        //     gap_skip = true;
-        //     break;
-        // }
-        // if(distance> gap_scale){
-        //     distance /= gap_scale;
-        // }
-        
-        //distance = 1;
-        
-        //OPT IDEA: INSTEAD OF MAP JUST USE ARR OF VECTOR
-        v = hm.all_positions[i];
-
-        assert(!(hm.all_positions[i].size()==0 or hm.all_positions[i].size()==numHaps));
-        if(hm.all_positions[i].size()==0 or hm.all_positions[i].size()==numHaps){
-            //cout<<"SKIPPING MONOMORPHIC SITE"<<endl;
-            // if(!calc_all)
-            //     cout<<"Mono: Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/n_c1_squared_minus<<","<<curr_ehh0_before_norm*1.0/n_c0_squared_minus<<endl;
-        
-            
-            if(twice_num_pair(n_c1)!=0){
-                iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * distance * 0.5 / twice_num_pair(n_c1) ;
-                //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
-            }
-            if(twice_num_pair(n_c0)!=0){
-                iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * distance * 0.5 / twice_num_pair(n_c0)  ;
-            }
-            continue;
-        }
-
-        for (int set_bit_pos : v){
-            int old_group_id = group_id[set_bit_pos];
-            
-            if(haplo_enabled && not downstream ){
-                if(i!=0){
-                    //right extreme is reached
-                    if(i-1==RE[old_group_id] && RE[old_group_id]!=-1){
-                        RE[old_group_id] = -1;
-                    }
-                }
-                
-                if(RE[old_group_id] == -1){
-                    if(!mphbs_l.count(set_bit_pos)){ // if that locus is empty for all the set bit pos then this could have been invoked
-                        //RE[old_group_id] == -2; //come back later
-                    }else{
-                        int numSeqInGroup = mphbs_l[set_bit_pos].top().first; 
-                        
-                        if(group_count[old_group_id] == numSeqInGroup){
-                            int right = mphbs_l[set_bit_pos].top().second; 
-                            
-                            if(!calc_all){
-                                cout<<old_group_id<<" "<<numSeqInGroup<<" "<<right<<" "<<set_bit_pos<<endl;
-                            }
-
-                            if( right+1  != i){
-                                //numSeqInGroup= mphbs[set_bit_pos][locus].top().second; 
-                                RE[old_group_id] = right;
-
-
-                                m[old_group_id].clear();
-                                m.erase (m.find (old_group_id));
-                                //m.erase (m.find (old_group_id));
-                                //m[old_group_id].clear(); // because there is only one hap per group giving this information, it is possible we did not find out until this position that this group should not be checked
-                            }
-                            mphbs_l[set_bit_pos].pop();    
-                            
-                            
-                        }
-                        while(group_count[old_group_id] < numSeqInGroup ){
-                            mphbs_l[set_bit_pos].pop();
-                            numSeqInGroup = mphbs_l[set_bit_pos].top().first; 
-                            
-                            if(mphbs[set_bit_pos].empty())
-                                break;
-                        }
-                        
-                    }
-                }else{
-                                //++total_iteration_of_m;
-                    
-                    //skip
-                    // if(i < RE[old_group_id] ){
-                    // //Skip calculation this group
-                    // }else{
-                    //     RE[old_group_id] = -1;
-                    //     //mphbs[set_bit_pos][locus].pop();
-                    //     //Update RightExtreme
-                    // }                 
-                }
-                
-                // still -1 even after doing the abve step
-                if(RE[old_group_id]==-1){ //opt:  group_count[old_group_id] > 1
-                    m[old_group_id].push_back(set_bit_pos);
-                    //++total_iteration_of_m;
-
-                }
-                
-            }
-
-            if(!haplo_enabled){
-                //++total_iteration_of_m;
-
-                m[old_group_id].push_back(set_bit_pos);
-            }
-        }
-
-        for (const auto &ele : m) {
-            
-            int old_group_id = ele.first;
-            int newgroup_size = ele.second.size() ;
-                            
-            total_iteration_of_m += newgroup_size;
-                            
-            if(group_count[old_group_id] == newgroup_size || newgroup_size == 0){
-                continue;
-            }
-
-            //cout<<old_group_id<<" (";
-            for(int v: ele.second){
-                //++total_iteration_of_m;
-                //cout<<v<<" ";
-
-                group_id[v] = totgc;
-            }
-            //cout<<endl;
-            
-            int del_update = -twice_num_pair(group_count[old_group_id]) + twice_num_pair(newgroup_size) + twice_num_pair(group_count[old_group_id] - newgroup_size);
-            group_count[old_group_id] -= newgroup_size;
-            group_count[totgc] += newgroup_size;
-            
-
-            
-            // if(haplo_enabled && not downstream && RE[old_group_id] == -1){
-            //     int numSeqInGroup = mphbs[ele.second[0]][locus].top().first; 
-            //     if(group_count[totgc] == numSeqInGroup){
-            //         int right = mphbs[ele.second[0]][locus].top().second; 
-            //         RE[old_group_id] = right;
-            //     }
-            // }
-
-            totgc+=1;
-
-            bool isDerivedGroup =  isDerived[ele.second[0]]; // just check first element to know if it is derived. 
-            if(isDerivedGroup)
-            {
-                ehh1_before_norm += del_update;
-            }else{
-                ehh0_before_norm += del_update;
-            }
-            
-        }
-
-        if(twice_num_pair(n_c1)!=0){
-            iHH1[locus] += (curr_ehh1_before_norm + ehh1_before_norm) * distance * 0.5 / twice_num_pair(n_c1);
-            //cout<<"Summing "<<1.0*curr_ehh1_before_norm/n_c1_squared_minus<<" "<<1.0*ehh1_before_norm/n_c1_squared_minus<<endl;
-        }
-
-        if(twice_num_pair(n_c0)!=0){
-            iHH0[locus] += (curr_ehh0_before_norm + ehh0_before_norm) * distance * 0.5 / twice_num_pair(n_c0);
-        }
-
-        curr_ehh1_before_norm = ehh1_before_norm;
-        curr_ehh0_before_norm = ehh0_before_norm;
-
-        // ehh1[locus] = 1.0*ehh1_before_norm/n_c1_squared_minus;
-        // ehh0[locus] = 1.0*ehh0_before_norm/n_c0_squared_minus;
-
-        //this shouldn't execute
-        if(twice_num_pair(n_c1)==0){
-            curr_ehh1_before_norm = 0;
-        }
-        if(twice_num_pair(n_c0)==0){
-            curr_ehh0_before_norm = 0;
-        }
-
-
-        if(!calc_all){
-            std::cout<<"Iter "<<i-locus<<": EHH1["<<locus<<","<<i<<"]="<<curr_ehh1_before_norm*1.0/twice_num_pair(n_c1)<<","<<curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)<<" ";
-            
-            for (int x = 0 ; x < totgc;  x++){
-                cout<<group_count[x]<<"("<<x<<")";
-            }
-            
-           std::cout<<endl;
-        }
-        
-        //logg[tid]+="map size before"+to_string(m.size())+"\n";
-        //cout<< logg[tid];
-        m.clear();
-        //logg[tid]+="map size after"+to_string(m.size())+"\n";
-        //cout<< logg[tid];
-        // if(gap_skip==true)
-        //     break;
-    }
-    if(!downstream) cout<<"Total_iter_m "<<total_iteration_of_m<<endl;
-}
-
-
-void EHH::thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >& md, EHH* ehh_obj){
+void EHH::thread_ihs(int tid, unordered_map<int, vector<int> >& m, unordered_map<int, vector<int> >& md, EHH* ehh_obj){
     int elem_per_block = floor(ehh_obj->numSnps/ehh_obj->numThread);
     int start = tid*elem_per_block ;
     int end = start + elem_per_block  ;
@@ -1014,13 +467,13 @@ void EHH::thread_ihs(int tid, map<int, vector<int> >& m, map<int, vector<int> >&
         // }
     }
     
-    ehh_obj->logg[tid]+="finishing thread #"+to_string(tid)+"\n"; 
-    cout<<"finishing thread # "+to_string(tid)+" at "+to_string(readTimer())+"\n";
+    ehh_obj->log_string_per_thread[tid]+="finishing thread #"+to_string(tid)+"\n"; 
+    Logger::write("finishing thread # "+to_string(tid)+" at "+to_string(readTimer())+"\n");
 }
 
 void EHH::calc_iHS(){
-    std::map<int, std::vector<int> > map_per_thread[numThread];
-    std::map<int, std::vector<int> > mapd_per_thread[numThread];
+    std::unordered_map<int, std::vector<int> > map_per_thread[numThread];
+    std::unordered_map<int, std::vector<int> > mapd_per_thread[numThread];
 
     if (!openmp_enabled)
     {
@@ -1037,33 +490,32 @@ void EHH::calc_iHS(){
             myThreads[i].join();
         }
         delete[] myThreads;
-        cout << "all threads finished. now calculating ihh..." << endl;
+        Logger::write("all threads finished. now calculating ihh...\n");
     }else{
         // #pragma clang loop unroll_count(8) // 
         // #pragma clang loop vectorize(assume_safety)
-        cout<<"open mp enabled. "<<omp_get_max_threads()<<"threads"<<endl;
+        Logger::write("open mp enabled. "+to_string(omp_get_max_threads())+" threads\n");
 
-        // // // #pragma omp parallel shared(hm)
+        #pragma omp parallel shared(hm)
         {
-            // // // #pragma omp for schedule(dynamic,10)
+            #pragma omp for schedule(dynamic,10)
             for(int i = 0 ; i< numSnps; i++){
-                if(i>50)
-                    haplo_enabled = false;
                 calc_EHH(i);
-                
                 //cout<<"open mp enabled. "<<omp_get_num_threads()<<"threads"<<endl;
             }
         }
-         cout<<"finishing all threads # at "+to_string(readTimer())+"\n";
+        Logger::write("finishing all threads # at "+to_string(readTimer())+"\n");
     }
    
-    out_fp = fopen(output_filename.c_str(),"w");
+    char str[80];
     for (int i = 0; i < numSnps; i++){
          if(hm.getMAF(i) >= min_maf && 1-hm.getMAF(i) >= min_maf){
-            fprintf(out_fp, "%d %d %f %f %f %f\n", hm.mentries[i].phyPos, hm.mentries[i].locId, hm.all_positions[i].size()*1.0/numHaps, iHH1[i], iHH0[i], log10(iHH1[i]/ iHH0[i]));
+            sprintf(str, "%d %d %f %f %f %f\n", hm.mentries[i].phyPos, hm.mentries[i].locId, hm.all_positions[i].size()*1.0/numHaps, iHH1[i], iHH0[i], log10(iHH1[i]/ iHH0[i]));
+            out_ihs<<str;
          }
     }
-    fclose(out_fp);
+    
+    
    
     return;
 }
