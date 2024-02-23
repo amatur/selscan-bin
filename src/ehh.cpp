@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include <omp.h>
 #include "logger.hpp"
+#include <unordered_set>
 
 EHH::EHH(){
 }
@@ -128,7 +129,7 @@ void EHH::init(){
 }
 
 void EHH::calc_EHH(int locus){
-    unordered_map<int, vector<int> > m;
+    unordered_map<unsigned int, vector<unsigned int> > m;
     iHH0[locus] = 0;
     iHH1[locus] = 0;
 
@@ -189,7 +190,7 @@ inline unsigned int num_pair(int n){
     return (n*n - n)/2;
 }
 
-void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downstream){
+void EHH::calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> > & m, bool downstream){
     int total_iteration_of_m = 0;
     uint64_t ehh0_before_norm = 0;
     uint64_t ehh1_before_norm = 0;
@@ -207,17 +208,22 @@ void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downst
 
     int group_count[numHaps];
     int group_id[numHaps];
+    bool isDerived[numHaps];
+    bool isAncestral[numHaps];
+
 
     //will be vectorized with compile time flags
     for(int i = 0; i<numHaps; i++){
         group_count[i] = 0;
         group_id[i] = 0;
-        //isDerived[i] = false;
-        //isAncestral[i] = false;
+        isDerived[i] = false;
+        isAncestral[i] = false;
     }
 
     int totgc=0;
     vector<unsigned int> v = hm.all_positions[locus];
+    //unordered_set<unsigned int> v = hm.all_positions[locus];
+
 
     if(v.size()==0){
         n_c0 = numHaps;
@@ -229,9 +235,9 @@ void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downst
         totgc+=1;
         n_c1 = numHaps;
         
-        // for (int set_bit_pos : v){
-        //     isDerived[set_bit_pos] = true;
-        // }
+        for (int set_bit_pos : v){
+            isDerived[set_bit_pos] = true;
+        }
         ehh1_before_norm = twice_num_pair(n_c1);
     }else{
         if(hm.mentries[locus].flipped){
@@ -241,7 +247,7 @@ void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downst
             n_c1 = numHaps - v.size();
 
             for (int set_bit_pos : v){
-                //isAncestral[set_bit_pos] = true;
+                isAncestral[set_bit_pos] = true;
                 group_id[set_bit_pos] = 1;
             }
         }else{
@@ -251,7 +257,7 @@ void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downst
             n_c0 = numHaps - v.size();
 
             for (int set_bit_pos : v){
-                //isDerived[set_bit_pos] = true;
+                isDerived[set_bit_pos] = true;
                 group_id[set_bit_pos] = 1;
             }
         }        
@@ -343,7 +349,7 @@ void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downst
             }
         }
         
-        for (int set_bit_pos : v){
+        for (const unsigned int& set_bit_pos : v){
             int old_group_id = group_id[set_bit_pos];
             m[old_group_id].push_back(set_bit_pos);
         }
@@ -372,7 +378,13 @@ void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downst
             
             totgc+=1;
             
-            bool isDerivedGroup =  hm.all_bitsets[locus].test(ele.second[0]);
+            bool isDerivedGroup =  (!hm.mentries[locus].flipped && isDerived[ele.second[0]]) || (hm.mentries[locus].flipped && !isAncestral[ele.second[0]]); // just check first element to know if it is derived. 
+                
+            //bool isDerivedGroup =  hm.all_bitsets[locus].test(ele.second[0]);
+            //bool isDerivedGroup =  (!hm.mentries[locus].flipped && hm.all_positions[locus].find(ele.second[0]) != hm.all_positions[locus].end() ) || (hm.mentries[locus].flipped && hm.all_positions[locus].find(ele.second[0]) == hm.all_positions[locus].end() ); // just check first element to know if it is derived. 
+                
+            //bool isDerivedGroup =  isDerived[ele.second[0]];   
+
             if(isDerivedGroup) // if the core locus for this chr has 1, then update ehh1, otherwise ehh0
             {
                 ehh1_before_norm += del_update;
@@ -427,7 +439,7 @@ void EHH::calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downst
 }
 
 
-void EHH::thread_ihs(int tid, unordered_map<int, vector<int> >& m, unordered_map<int, vector<int> >& md, EHH* ehh_obj){
+void EHH::thread_ihs(int tid, unordered_map<unsigned int, vector<unsigned int> >& m, unordered_map<unsigned int, vector<unsigned int> >& md, EHH* ehh_obj){
     int elem_per_block = floor(ehh_obj->numSnps/ehh_obj->numThread);
     int start = tid*elem_per_block ;
     int end = start + elem_per_block  ;
@@ -472,8 +484,8 @@ void EHH::thread_ihs(int tid, unordered_map<int, vector<int> >& m, unordered_map
 }
 
 void EHH::calc_iHS(){
-    std::unordered_map<int, std::vector<int> > map_per_thread[numThread];
-    std::unordered_map<int, std::vector<int> > mapd_per_thread[numThread];
+    std::unordered_map<unsigned int, std::vector<unsigned int> > map_per_thread[numThread];
+    std::unordered_map<unsigned int, std::vector<unsigned int> > mapd_per_thread[numThread];
 
     if (!openmp_enabled)
     {

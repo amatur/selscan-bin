@@ -68,20 +68,20 @@ public:
 
 protected:
 	//void calc_EHH2(int locus, map<int, vector<int> > & m, map<int, priority_queue<pair<int, int>  > >* mphbs, bool downstream=false);
-	void calc_EHH2(int locus, unordered_map<int, vector<int> > & m, bool downstream=false);
-	void calc_EHH2_v2(int locus, unordered_map<int, vector<int> > & m, bool downstream=false);
+	void calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> > & m, bool downstream=false);
+	void calc_EHH2_v2(int locus, unordered_map<unsigned int, vector<unsigned int> > & m, bool downstream=false);
 
 	void calc_EHH(int locus, unordered_map<int, queue<pair<int, int> > >& outmap);
 	void calc_EHH(int locus);
 
     void calc_iHS();
-    void static thread_ihs(int tid, unordered_map<int, vector<int> >& m, unordered_map<int, vector<int> >& md, EHH* ehh_obj);
-	void loadMPHB(string input_mphb_file, int numHaps, int numSnps, vector< map<int, priority_queue<pair<int, int>  > > > & mphbs); //vector< map<int, priority_queue<pair<int, int>  > > > & mphbs
-	void loadMPHB(string input_mphb_file, int numHaps, int numSnps, map< int, map <int, priority_queue<pair<int, int>  > > > & mphbs); //vector< map<int, priority_queue<pair<int, int>  > > > & mphbs
+    void static thread_ihs(int tid, unordered_map<unsigned int, vector<unsigned int> >& m, unordered_map<unsigned int, vector<unsigned int> >& md, EHH* ehh_obj);
+	// void loadMPHB(string input_mphb_file, int numHaps, int numSnps, vector< map<int, priority_queue<pair<int, int>  > > > & mphbs); //vector< map<int, priority_queue<pair<int, int>  > > > & mphbs
+	// void loadMPHB(string input_mphb_file, int numHaps, int numSnps, map< int, map <int, priority_queue<pair<int, int>  > > > & mphbs); //vector< map<int, priority_queue<pair<int, int>  > > > & mphbs
 	
 private:
 	HapMap hm;
-	vector< map<int, priority_queue<pair<int, int>  > > > mphbs;
+	// vector< map<int, priority_queue<pair<int, int>  > > > mphbs;
     //std::vector<std::vector<unsigned int> > all_positions;
     std::vector<unsigned int> loc_map;
 	unsigned int numHaps;

@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include <bits/stdc++.h>
+//#include "dynamic_bitset.hpp"
 using namespace std;
 // HapMap::HapMap()
 //     : m_numSnps{}
@@ -187,7 +188,9 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
     bool skipLine = false;
 
 
-    std::bitset<BITSET_SIZE> prev_bitset;
+    //std::bitset<BITSET_SIZE> prev_bitset;
+
+    
     for (int locus = 0; locus < nloci; locus++)
     {
         uint64_t physpos;
@@ -217,7 +220,13 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         std::vector<unsigned int> positions; // holds positions for this locus
 
         
-        std::bitset<BITSET_SIZE> curr_bitset;
+        // std::bitset<BITSET_SIZE> curr_bitset;
+        // sul::dynamic_bitset<> prev_bitset_d(m_numHaps+1);
+        // sul::dynamic_bitset<> curr_bitset_d(m_numHaps+1);
+        // sul::dynamic_bitset<> zero_bitset(m_numHaps+1);
+
+
+
         bool flip_enabled = true;
 
         
@@ -247,14 +256,13 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
                 if(allele1=='1'){
                     positions.push_back(2 * field);
-                    curr_bitset.set(2 * field);
-                    //cout<<2 * field<<" ";
+                    //curr_bitset.set(2 * field);
+                    //curr_bitset_d[2 * field] = 1;
                 }
                 if(allele2=='1'){
                     positions.push_back(2 * field + 1);
-                    curr_bitset.set(2 * field + 1);
-
-                    //cout<<2 * field + 1<<" ";
+                    //curr_bitset.set(2 * field + 1);
+                    //curr_bitset_d[2 * field+1] = 1;
                 }
             }
         }
@@ -276,72 +284,111 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
             //std::cout<<"WARNING: skipping site" << locus<< std::endl;
 
         }else{
+
+            /*
             all_bitsets.push_back(curr_bitset);
             if(all_positions.size() == 0){
                 //all_bitsets.push_back(curr_bitset); // for 0th loc, just push the bitset. for others do xor
-                auto b = curr_bitset;
+                prev_bitset_d=curr_bitset_d;
+
+                sul::dynamic_bitset b(curr_bitset_d);
                 vector<unsigned int> v;
 
-                int first = b._Find_first();
-                while(first!=BITSET_SIZE){
+                int first = b.find_first();
+                while(first<m_numHaps){
                     v.push_back(first);
                     b[first] = 0;
-                    first = b._Find_first();
+                    first = b.find_first();
                 }
                 all_xors.push_back(v);
             }else{
-                auto b = (prev_bitset ^ curr_bitset);
+                
+                
+                cout<<"before xor:"<<prev_bitset_d.count()<<" "<<curr_bitset_d.count()<<endl;
+                sul::dynamic_bitset b(prev_bitset_d ^ curr_bitset_d);
+                cout<<"after xor:"<<b.count()<<" "<<curr_bitset_d.count()<<endl;
+
                 //auto b = (  curr_bitset); // uncomment to test the speedup of xor
 
                 vector<unsigned int> v;
-                int first = b._Find_first();
-                while(first!=BITSET_SIZE){
+                int first = prev_bitset_d.find_first();
+                while(first<m_numHaps){
                     v.push_back(first);
-                    b[first] = 0;
-                    first = b._Find_first();
+                    prev_bitset_d[first] = 0;
+                    first = prev_bitset_d.find_first();
                 }
                 all_xors.push_back(v);
 
                 //cout<< m_numSnps <<":" <<all_bitsets.back().count()<<" "<<curr_bitset.count()<<endl; 
-                prev_bitset = curr_bitset;
+                prev_bitset_d = curr_bitset_d;
+                cout<<"after xor xor:"<<prev_bitset_d.count()<<" "<<curr_bitset_d.count()<<endl;
+
+                curr_bitset_d.clear();
+                cout<<"after xor xor xor:"<<prev_bitset_d.count()<<" "<<curr_bitset_d.count()<<endl;
+
             }
+            */
 
 
             struct map_entry mentry;
-            flip_enabled=true;
             if(flip_enabled &&  derived_af > 0.5){
-                vector<unsigned int> v;
-                //cout<<curr_bitset.count()<<" ";
-                curr_bitset.flip();
-                int first = curr_bitset._Find_first();
-                while(first<m_numHaps){
-                    v.push_back(first);
-                    curr_bitset[first] = 0;
-                    first = curr_bitset._Find_first();
-                    //cout<<first<<" ";
-                }
-                //cout<<6404-v.size()<<" ";
-                //cout<<endl;
-                all_positions.push_back(v);
-
-                // vector<unsigned int> copy_pos;
-                // int cnt = 0;
-                // for(int i = 0; i<m_numHaps; i++){
-                //     unsigned int curr = positions[cnt];
-                //     if(i==curr){
-                //         cnt++;
-                //     }else{
-                //         copy_pos.push_back(i);
-                //     }
+                // vector<unsigned int> v;
+                // //cout<<curr_bitset.count()<<" ";
+                // curr_bitset.flip();
+                // int first = curr_bitset._Find_first();
+                // while(first<m_numHaps){
+                //     v.push_back(first);
+                //     curr_bitset[first] = 0;
+                //     first = curr_bitset._Find_first();
+                //     //cout<<first<<" ";
                 // }
-                // all_positions.push_back(copy_pos); 
+                // //cout<<6404-v.size()<<" ";
+                // //cout<<endl;
+                // all_positions.push_back(v);
+
+                if(all_positions.size()==0){
+                    all_xors.push_back(positions);
+                }else{
+                    vector<unsigned int> curr_xor;
+                    std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
+                                  std::back_inserter(curr_xor));
+                    // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
+                    //               std::inserter(curr_xor, curr_xor.end()));
+                                  
+                    all_xors.push_back(curr_xor);
+                }
+                
+
+                vector<unsigned int> copy_pos;
+                int cnt = 0;
+                for(int i = 0; i<m_numHaps; i++){
+                    unsigned int curr = positions[cnt];
+                    if(i==curr){
+                        cnt++;
+                    }else{
+                        copy_pos.push_back(i);
+                    }
+                }
+                all_positions.push_back(copy_pos); 
                 
                 
                 mentry.flipped = true;
             }else{
+                if(all_positions.size()==0){
+                    all_xors.push_back(positions);
+                }else{
+                    vector<unsigned int> curr_xor;
+                    std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(), std::back_inserter(curr_xor));
+                    // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
+                    //               std::inserter(curr_xor, curr_xor.end()));
+                    all_xors.push_back(curr_xor);
+                }
+                
                 all_positions.push_back(positions); //check if all 0
                 mentry.flipped = false;
             }
+
+            
             
             // mentry.genPos = physpos;
             mentry.phyPos = physpos;
@@ -371,169 +418,174 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
 //================================================================================================
     //comment this block for debugging
-    // for(int i = 0 ; i< this->m_numSnps; i++){
-    //     cout<<"Loc "<<i<<":";
-    //     for (unsigned int v : all_xors[i]){
-    //         cout<<v<<" ";
-    //     }
-    //     cout<<endl;
-    //     cout<<"Loc "<<i<<":";
-    //     for (unsigned int v : this->all_positions[i]){
-    //         cout<<v<<" ";
-    //     }
-    //     cout<<endl;
-    // }
+    for(int i = 0 ; i< this->m_numSnps; i++){
+        //std::unordered_set<unsigned int> position_set(this->all_positions[i].begin(), this->all_positions[i].end());
+        //this->all_positions.push_back(position_set);
 
-    return true;
-}
-
-bool HapMap::loadHapMap(const char* hapfile, const char* mapfile, double minmaf)
-{
-    //std::ifstream fmap(mapfile, std::ios::in );
-    std::ifstream f(hapfile, std::ios::in );
-    if (!f.good())
-    {
-        std::cerr << "ERROR: Cannot open file or file not found: " << hapfile << std::endl;
-        return false;
-    }
- 
-    std::string line;
-    m_numSnps = 0;
-    m_numHaps = 0;
-    unsigned int actual_snp_id = 0;
-    while (std::getline(f, line)) {
-        //if(DEBUG) std::cout<<line<<std::endl;
-        std::vector<unsigned int> positions;
- 
-        std::istringstream rowStream(line);
-        char value;
-        int pos=0;
-        while (rowStream >> value) {        
-            if(value=='1'){
-                positions.push_back(pos++);
-            }else if(value=='0'){
-                pos++;
-            }   
-        }
-
-
-        if(m_numHaps==0){
-            m_numHaps = pos;
-        }else{
-            if(pos!=m_numHaps){ //integrity check: all lines must be of same length
-                std::cerr<<"ERROR: site"<<m_numSnps<<" has incorrect number of haplotypes."<<std::endl;
-                exit(2);
-            }
-        }
-
-        if(positions.size()==0 or positions.size()==m_numHaps){
-            //This implies site is monomorphic
-            std::cout<<"WARNING: monomorphic site"<< m_numSnps << std::endl;
-            //this->monomorphic.push_back(m_numSnps);
-        }
-        double maf = positions.size()*1.0/m_numHaps ;
-        std::cout<<"Loc: "<<actual_snp_id<<"1 freq: "<<maf<<std::endl;
-        if(maf < minmaf || 1-maf < minmaf){
-            //skip
-            std::cout<<"WARNING: skipping site" << actual_snp_id<< std::endl;
-
-        }else{
-            ++m_numSnps;
-            all_positions.push_back(positions); //check if all 0
-            struct map_entry mentry;
-            mentry.genPos = actual_snp_id;
-            mentry.phyPos = actual_snp_id;
-            mentry.locId = actual_snp_id;
-            mentries.push_back(mentry);
-
-        }
-        ++actual_snp_id;
+        // cout<<"Loc (xor)"<<i<<":";
+        // for (unsigned int v : all_xors[i]){
+        //     cout<<v<<" ";
+        // }
+        // cout<<endl;
+        // cout<<"Loc "<<i<<":";
+        // for (unsigned int v : this->all_positions[i]){
+        //     cout<<v<<" ";
+        // }
+        // cout<<endl;
     }
     
-    // mentries_arr = new struct map_entry[m_numSnps];
-    // for(int k = 0; k<m_numSnps; k++){
-    //     mentries_arr[k] = mentries[k];
-    // }
-    //std::memcpy(mentries_arr, mentries.data(), sizeof(struct map_entry)*m_numSnps);
-    f.close();
-    std::cout<<"Finished loading file."<<std::endl;
+
     return true;
 }
 
-bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<unsigned int>& loc_map)
-{
-    std::ifstream f(filename, std::ios::in );
-    if (!f.good())
-    {
-        std::cerr << "ERROR: Cannot open file or file not found: " << filename << std::endl;
-        return false;
-    }
+// bool HapMap::loadHapMap(const char* hapfile, const char* mapfile, double minmaf)
+// {
+//     //std::ifstream fmap(mapfile, std::ios::in );
+//     std::ifstream f(hapfile, std::ios::in );
+//     if (!f.good())
+//     {
+//         std::cerr << "ERROR: Cannot open file or file not found: " << hapfile << std::endl;
+//         return false;
+//     }
  
-    std::string line;
-    m_numSnps = 0;
-    m_numHaps = 0;
-    unsigned int act_snp_count = 0;
-    std::bitset<BITSET_SIZE> prev_bitset;
-    while (std::getline(f, line)) {
-        //if(DEBUG) std::cout<<line<<std::endl;
-        std::vector<unsigned int> positions;
-        std::bitset<BITSET_SIZE> current_bitset;
+//     std::string line;
+//     m_numSnps = 0;
+//     m_numHaps = 0;
+//     unsigned int actual_snp_id = 0;
+//     while (std::getline(f, line)) {
+//         //if(DEBUG) std::cout<<line<<std::endl;
+//         std::vector<unsigned int> positions;
+ 
+//         std::istringstream rowStream(line);
+//         char value;
+//         int pos=0;
+//         while (rowStream >> value) {        
+//             if(value=='1'){
+//                 positions.push_back(pos++);
+//             }else if(value=='0'){
+//                 pos++;
+//             }   
+//         }
+
+
+//         if(m_numHaps==0){
+//             m_numHaps = pos;
+//         }else{
+//             if(pos!=m_numHaps){ //integrity check: all lines must be of same length
+//                 std::cerr<<"ERROR: site"<<m_numSnps<<" has incorrect number of haplotypes."<<std::endl;
+//                 exit(2);
+//             }
+//         }
+
+//         if(positions.size()==0 or positions.size()==m_numHaps){
+//             //This implies site is monomorphic
+//             std::cout<<"WARNING: monomorphic site"<< m_numSnps << std::endl;
+//             //this->monomorphic.push_back(m_numSnps);
+//         }
+//         double maf = positions.size()*1.0/m_numHaps ;
+//         std::cout<<"Loc: "<<actual_snp_id<<"1 freq: "<<maf<<std::endl;
+//         if(maf < minmaf || 1-maf < minmaf){
+//             //skip
+//             std::cout<<"WARNING: skipping site" << actual_snp_id<< std::endl;
+
+//         }else{
+//             ++m_numSnps;
+//             all_positions.push_back(positions); //check if all 0
+//             struct map_entry mentry;
+//             mentry.genPos = actual_snp_id;
+//             mentry.phyPos = actual_snp_id;
+//             mentry.locId = actual_snp_id;
+//             mentries.push_back(mentry);
+
+//         }
+//         ++actual_snp_id;
+//     }
+    
+//     // mentries_arr = new struct map_entry[m_numSnps];
+//     // for(int k = 0; k<m_numSnps; k++){
+//     //     mentries_arr[k] = mentries[k];
+//     // }
+//     //std::memcpy(mentries_arr, mentries.data(), sizeof(struct map_entry)*m_numSnps);
+//     f.close();
+//     std::cout<<"Finished loading file."<<std::endl;
+//     return true;
+// }
+
+
+
+// bool HapMap::loadHap(const char* filename, double minmaf, std::vector<std::vector<unsigned int> >& all_positions, std::vector<unsigned int>& loc_map)
+// {
+//     std::ifstream f(filename, std::ios::in );
+//     if (!f.good())
+//     {
+//         std::cerr << "ERROR: Cannot open file or file not found: " << filename << std::endl;
+//         return false;
+//     }
+ 
+//     std::string line;
+//     m_numSnps = 0;
+//     m_numHaps = 0;
+//     unsigned int act_snp_count = 0;
+//     std::bitset<BITSET_SIZE> prev_bitset;
+//     while (std::getline(f, line)) {
+//         //if(DEBUG) std::cout<<line<<std::endl;
+//         std::vector<unsigned int> positions;
+//         std::bitset<BITSET_SIZE> current_bitset;
         
 
  
-        std::istringstream rowStream(line);
-        char value;
-        int pos=0;
-        while (rowStream >> value) {        
-            if(value=='1'){
-                current_bitset.set(pos);
-                positions.push_back(pos++);
-            }else if(value=='0'){
-                pos++;
-            }   
-        }
+//         std::istringstream rowStream(line);
+//         char value;
+//         int pos=0;
+//         while (rowStream >> value) {        
+//             if(value=='1'){
+//                 current_bitset.set(pos);
+//                 positions.push_back(pos++);
+//             }else if(value=='0'){
+//                 pos++;
+//             }   
+//         }
 
-        if(m_numHaps==0){
-            m_numHaps = pos;
-        }else{
-            if(pos!=m_numHaps){ //integrity check: all lines must be of same length
-                std::cerr<<"ERROR: site"<<m_numSnps<<" has incorrect number of haplotypes."<<std::endl;
-                exit(2);
-            }
-        }
+//         if(m_numHaps==0){
+//             m_numHaps = pos;
+//         }else{
+//             if(pos!=m_numHaps){ //integrity check: all lines must be of same length
+//                 std::cerr<<"ERROR: site"<<m_numSnps<<" has incorrect number of haplotypes."<<std::endl;
+//                 exit(2);
+//             }
+//         }
 
-        if(positions.size()==0 or positions.size()==m_numHaps){
-            //This implies site is monomorphic
-            //std::cout<<"WARNING: monomorphic site"<< m_numSnps << std::endl;
-            //this->monomorphic.push_back(m_numSnps);
-        }
-        double maf = positions.size()*1.0/m_numHaps ;
-        if(maf < minmaf || 1-maf < minmaf){
-            //skip
-            //std::cout<<"WARNING: skipping site" << std::endl;
+//         if(positions.size()==0 or positions.size()==m_numHaps){
+//             //This implies site is monomorphic
+//             //std::cout<<"WARNING: monomorphic site"<< m_numSnps << std::endl;
+//             //this->monomorphic.push_back(m_numSnps);
+//         }
+//         double maf = positions.size()*1.0/m_numHaps ;
+//         if(maf < minmaf || 1-maf < minmaf){
+//             //skip
+//             //std::cout<<"WARNING: skipping site" << std::endl;
 
-        }else{
-            if(m_numSnps == 0){
-                all_bitsets.push_back(current_bitset);
-            }else{
-                all_bitsets.push_back(prev_bitset ^ current_bitset);
-                cout<< m_numSnps <<":" <<all_bitsets.back().count()<<" "<<current_bitset.count()<<endl; 
-                prev_bitset = current_bitset;
+//         }else{
+//             if(m_numSnps == 0){
+//                 all_bitsets.push_back(current_bitset);
+//             }else{
+//                 all_bitsets.push_back(prev_bitset ^ current_bitset);
+//                 cout<< m_numSnps <<":" <<all_bitsets.back().count()<<" "<<current_bitset.count()<<endl; 
+//                 prev_bitset = current_bitset;
 
-            }
-            loc_map.push_back(act_snp_count);
-            ++m_numSnps;
-            all_positions.push_back(positions); //check if all 0
+//             }
+//             loc_map.push_back(act_snp_count);
+//             ++m_numSnps;
+//             all_positions.push_back(positions); //check if all 0
 
             
             
             
-        }
-        act_snp_count++;
-    }
-    f.close();
-    exit(1);
-    std::cout<<"Finished loading file."<<std::endl;
+//         }
+//         act_snp_count++;
+//     }
+//     f.close();
+//     std::cout<<"Finished loading file."<<std::endl;
 
-    return true;
-}
+//     return true;
+// }

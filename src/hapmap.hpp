@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+#include <unordered_set>
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -60,9 +60,10 @@ public:
     std::size_t numHaps() const { return m_numHaps; }    
     
     std::vector<struct map_entry> mentries; // hold additional info
-    std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
+    //std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
     std::vector<std::bitset<BITSET_SIZE> > all_bitsets; // hold the xor
     std::vector<std::vector<unsigned int> > all_xors; // hold the xor
+    std::vector<std::vector <unsigned int> > all_positions;
 
     
 //    ~HapMap();
