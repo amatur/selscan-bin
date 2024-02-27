@@ -52,7 +52,7 @@ public:
 
 	FILE* out_fp;
 	uint64_t max_gap = 200000;
-	uint64_t gap_scale = 20000;
+	int gap_scale = 20000;
 	bool openmp_enabled = false;
 
 	

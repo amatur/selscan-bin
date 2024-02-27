@@ -27,7 +27,7 @@
 #define HAPMAP_HPP
 
 
-#define BITSET_SIZE 1048576
+//#define BITSET_SIZE 1048576
 #include <stdexcept>
 #include <iostream>
 
@@ -36,7 +36,7 @@ using namespace std;
 
 struct map_entry {
   int locId;  
-  int phyPos;
+  uint64_t phyPos;
   int genPos;
   bool flipped;
 };
@@ -61,7 +61,7 @@ public:
     
     std::vector<struct map_entry> mentries; // hold additional info
     //std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
-    std::vector<std::bitset<BITSET_SIZE> > all_bitsets; // hold the xor
+    //std::vector<std::bitset<BITSET_SIZE> > all_bitsets; // hold the xor
     std::vector<std::vector<unsigned int> > all_xors; // hold the xor
     std::vector<std::vector <unsigned int> > all_positions;
 
@@ -76,7 +76,7 @@ protected:
     // unsigned long long* m_physPos;
     // double* m_genPos;
     // std::map<std::size_t, std::string> m_idMap;
-    std::vector<unsigned int> monomorphic;
+    //std::vector<unsigned int> monomorphic;
     std::size_t m_numSnps;
     std::size_t m_numHaps;
 

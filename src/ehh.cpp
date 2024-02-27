@@ -117,6 +117,7 @@ void EHH::init(){
         cout<<"Loading "<<input_filename_hap<<endl;
     	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf); //populate the matrix
     }
+    cout<<"VCF loadded"<<endl;
 
     this->numHaps = hm.numHaps();
 	this->numSnps = hm.numSnps();
@@ -303,7 +304,7 @@ void EHH::calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> 
             //std::cout<<"breaking"<<endl;
             break;
         }
-        int distance;
+        double distance;
         
         if(downstream){
             distance = hm.mentries[i+1].phyPos - hm.mentries[i].phyPos;
@@ -315,9 +316,9 @@ void EHH::calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> 
         //     gap_skip = true;
         //     break;
         // }
-        // if(distance> gap_scale){
-        //     distance /= gap_scale;
-        // }
+        if(distance> gap_scale){
+            distance /= gap_scale;
+        }
         
         //distance = 1;
         
