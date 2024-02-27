@@ -222,7 +222,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         
 
         static std::vector<unsigned int> positions; // holds positions for this locus
-        positions.reserve(m_numHaps);
+        //positions.reserve(m_numHaps);
         
         // std::bitset<BITSET_SIZE> curr_bitset;
         // sul::dynamic_bitset<> prev_bitset_d(m_numHaps+1);
@@ -367,7 +367,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 
 
                 static vector<unsigned int> copy_pos;
-                copy_pos.reserve(m_numHaps);
+                //copy_pos.reserve(m_numHaps);
                 int cnt = 0;
                 for(int i = 0; i<m_numHaps; i++){
                     unsigned int curr = positions[cnt];
@@ -377,13 +377,13 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                         copy_pos.push_back(i);
                     }
                 }
-                copy_pos.shrink_to_fit();
+                //copy_pos.shrink_to_fit();
                 positions.clear();
-                positions.shrink_to_fit();
+                //positions.shrink_to_fit();
 
                 all_positions.push_back(copy_pos); 
                 copy_pos.clear();
-                copy_pos.shrink_to_fit();
+                //copy_pos.shrink_to_fit();
                 
                 mentry.flipped = true;
             }else{
@@ -396,12 +396,12 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                     //               std::inserter(curr_xor, curr_xor.end()));
                     all_xors.push_back(curr_xor);
                     curr_xor.clear();
-                    curr_xor.shrink_to_fit();
+                    //curr_xor.shrink_to_fit();
                 }
                 
                 all_positions.push_back(positions); //check if all 0
                 positions.clear();
-                positions.shrink_to_fit();
+                //positions.shrink_to_fit();
                 mentry.flipped = false;
             }
 
