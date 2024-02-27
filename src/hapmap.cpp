@@ -259,12 +259,12 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 //TODO
 
                 if(allele1=='1'){
-                    //KAPPA positions.push_back(2 * field);
+                    positions.push_back(2 * field);
                     //curr_bitset.set(2 * field);
                     //curr_bitset_d[2 * field] = 1;
                 }
                 if(allele2=='1'){
-                    //KAPPA positions.push_back(2 * field + 1);
+                    positions.push_back(2 * field + 1);
                     //curr_bitset.set(2 * field + 1);
                     //curr_bitset_d[2 * field+1] = 1;
                 }
@@ -352,19 +352,21 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 // all_positions.push_back(v);
 
                 if(all_positions.size()==0){
-                    //KAPPA all_xors.push_back(positions);
+                    all_xors.push_back(positions);
                 }else{
-                    vector<unsigned int> curr_xor;
+                    static vector<unsigned int> curr_xor;
                     std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
                                   std::back_inserter(curr_xor));
                     // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
                     //               std::inserter(curr_xor, curr_xor.end()));
                                   
-                    //KAPPA all_xors.push_back(curr_xor);
+                    all_xors.push_back(curr_xor);
+                    curr_xor.clear();
+                    curr_xor.shrink_to_fit();
                 }
                 
 
-                vector<unsigned int> copy_pos;
+                static vector<unsigned int> copy_pos;
                 copy_pos.reserve(m_numHaps);
                 int cnt = 0;
                 for(int i = 0; i<m_numHaps; i++){
@@ -372,26 +374,34 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                     if(i==curr){
                         cnt++;
                     }else{
-                        //KAPPA copy_pos.push_back(i);
+                        copy_pos.push_back(i);
                     }
                 }
                 copy_pos.shrink_to_fit();
+                positions.clear();
+                positions.shrink_to_fit();
 
-                //KAPPA all_positions.push_back(copy_pos); 
+                all_positions.push_back(copy_pos); 
+                copy_pos.clear();
+                copy_pos.shrink_to_fit();
                 
                 mentry.flipped = true;
             }else{
                 if(all_positions.size()==0){
                     all_xors.push_back(positions);
                 }else{
-                    vector<unsigned int> curr_xor;
+                    static vector<unsigned int> curr_xor;
                     std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(), std::back_inserter(curr_xor));
                     // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
                     //               std::inserter(curr_xor, curr_xor.end()));
-                    //KAPPA all_xors.push_back(curr_xor);
+                    all_xors.push_back(curr_xor);
+                    curr_xor.clear();
+                    curr_xor.shrink_to_fit();
                 }
                 
-                //KAPPA all_positions.push_back(positions); //check if all 0
+                all_positions.push_back(positions); //check if all 0
+                positions.clear();
+                positions.shrink_to_fit();
                 mentry.flipped = false;
             }
 
@@ -400,11 +410,13 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
             // mentry.genPos = physpos;
             mentry.phyPos = physpos;
             mentry.locId = locus;
-            //KAPPA mentries.push_back(mentry);
+            mentries.push_back(mentry);
         }
     }
 
     fin.close();
+    all_positions.shrink_to_fit();
+    all_xors.shrink_to_fit();
     this-> m_numSnps = all_positions.size();
     cout<<"retaining "<<this-> m_numSnps <<endl;
     // this-> m_numHaps = nhaps;
