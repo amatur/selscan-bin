@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include "benchmark.hpp"
 #include <bits/stdc++.h>
 //#include "dynamic_bitset.hpp"
 using namespace std;
@@ -63,16 +64,6 @@ using namespace std;
 
 
 
-#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-#define PBWIDTH 60
-
-void printProgress(double percentage) {
-    int val = (int) (percentage * 100);
-    int lpad = (int) (percentage * PBWIDTH);
-    int rpad = PBWIDTH - lpad;
-    printf("\r%3d%% [%.*s%*s]", val, lpad, PBSTR, rpad, "");
-    fflush(stdout);
-}
 
 void HapMap::print(){
     for(int i = 0 ; i< this->m_numSnps; i++){
@@ -200,7 +191,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
     //std::bitset<BITSET_SIZE> prev_bitset;
 
     
-    for (int locus = 0; locus < nloci; locus++)
+    for (int locus = 2200000; locus < nloci; locus++)
     {
         printProgress((locus+1)*1.0/nloci);
         uint64_t physpos;

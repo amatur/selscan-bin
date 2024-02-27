@@ -110,6 +110,8 @@ void EHH::init(){
     Logger::open(this->logger_filename);
 
     useVCF=true;
+
+    double atime = readTimer();
     if(useVCF){
         cout<<"Loading "<<input_filename_vcf<<endl;
     	hm.loadVCF(input_filename_vcf.c_str(), min_maf); //populate the matrix
@@ -117,7 +119,7 @@ void EHH::init(){
         cout<<"Loading "<<input_filename_hap<<endl;
     	hm.loadHapMap(input_filename_hap.c_str(), input_filename_map.c_str(), min_maf); //populate the matrix
     }
-    cout<<"VCF loadded"<<endl;
+    cout<<"VCF loadded in "<<readTimer()-atime<<" seconds."<<endl;
 
     this->numHaps = hm.numHaps();
 	this->numSnps = hm.numSnps();
@@ -174,7 +176,9 @@ void EHH::exec() {
     cout<<"Number of haplotypes: "<<numHaps<<endl;
     if(calc_all){
         out_ihs.open(output_filename_ihs, ios::out);
+        double atime = readTimer();
         calc_iHS();
+        cout<<"iHS calculated in "<<readTimer()-atime<<" seconds."<<endl;
         out_ihs.close();
     }else{
         out_ehh.open(output_filename_ehh, ios::out);
