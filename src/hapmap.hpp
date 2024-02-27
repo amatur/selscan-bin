@@ -63,11 +63,11 @@ public:
     std::vector<struct map_entry> mentries; // hold additional info
     //std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
     //std::vector<std::bitset<BITSET_SIZE> > all_bitsets; // hold the xor
-    std::vector<std::vector<unsigned int> > all_xors; // hold the xor
-    std::vector<std::vector <unsigned int> > all_positions;
+    std::vector< vector  <unsigned int> > all_xors; // hold the xor
+    std::vector< vector <unsigned int> > all_positions;
 
     
-//    ~HapMap();
+//    ~HapMap(); 
     double getMAF(int loc);
 
 private:

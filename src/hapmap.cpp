@@ -221,7 +221,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
         
 
-        std::vector<unsigned int> positions; // holds positions for this locus
+        static std::vector<unsigned int> positions; // holds positions for this locus
         positions.reserve(m_numHaps);
         
         // std::bitset<BITSET_SIZE> curr_bitset;
@@ -259,17 +259,18 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 //TODO
 
                 if(allele1=='1'){
-                    positions.push_back(2 * field);
+                    //KAPPA positions.push_back(2 * field);
                     //curr_bitset.set(2 * field);
                     //curr_bitset_d[2 * field] = 1;
                 }
                 if(allele2=='1'){
-                    positions.push_back(2 * field + 1);
+                    //KAPPA positions.push_back(2 * field + 1);
                     //curr_bitset.set(2 * field + 1);
                     //curr_bitset_d[2 * field+1] = 1;
                 }
             }
         }
+        positions.shrink_to_fit();
         //cout<<endl;
         if(positions.size()==0 or positions.size()==m_numHaps){
             //This implies site is monomorphic
@@ -351,7 +352,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 // all_positions.push_back(v);
 
                 if(all_positions.size()==0){
-                    all_xors.push_back(positions);
+                    //KAPPA all_xors.push_back(positions);
                 }else{
                     vector<unsigned int> curr_xor;
                     std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
@@ -359,22 +360,24 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                     // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
                     //               std::inserter(curr_xor, curr_xor.end()));
                                   
-                    all_xors.push_back(curr_xor);
+                    //KAPPA all_xors.push_back(curr_xor);
                 }
                 
 
                 vector<unsigned int> copy_pos;
+                copy_pos.reserve(m_numHaps);
                 int cnt = 0;
                 for(int i = 0; i<m_numHaps; i++){
                     unsigned int curr = positions[cnt];
                     if(i==curr){
                         cnt++;
                     }else{
-                        copy_pos.push_back(i);
+                        //KAPPA copy_pos.push_back(i);
                     }
                 }
-                all_positions.push_back(copy_pos); 
-                
+                copy_pos.shrink_to_fit();
+
+                //KAPPA all_positions.push_back(copy_pos); 
                 
                 mentry.flipped = true;
             }else{
@@ -385,10 +388,10 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                     std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(), std::back_inserter(curr_xor));
                     // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
                     //               std::inserter(curr_xor, curr_xor.end()));
-                    all_xors.push_back(curr_xor);
+                    //KAPPA all_xors.push_back(curr_xor);
                 }
                 
-                all_positions.push_back(positions); //check if all 0
+                //KAPPA all_positions.push_back(positions); //check if all 0
                 mentry.flipped = false;
             }
 
@@ -397,7 +400,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
             // mentry.genPos = physpos;
             mentry.phyPos = physpos;
             mentry.locId = locus;
-            mentries.push_back(mentry);
+            //KAPPA mentries.push_back(mentry);
         }
     }
 
