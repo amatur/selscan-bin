@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <map>
 #include "selscan.hpp"
+#include "utils.hpp"
 
 #ifndef HAPMAP_HPP
 #define HAPMAP_HPP
