@@ -191,7 +191,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
     //std::bitset<BITSET_SIZE> prev_bitset;
 
     all_positions.reserve(nloci+1);
-    for (int locus = 2011111; locus < nloci; locus++)
+    for (int locus = 0; locus < nloci; locus++)
     {
         printProgress((locus+1)*1.0/nloci);
         uint64_t physpos;
