@@ -190,7 +190,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
     //std::bitset<BITSET_SIZE> prev_bitset;
 
-    
+    all_positions.reserve(nloci+1);
     for (int locus = 2011111; locus < nloci; locus++)
     {
         printProgress((locus+1)*1.0/nloci);
@@ -219,7 +219,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
         
 
         std::vector<unsigned int> positions; // holds positions for this locus
-
+        positions.reserve(m_numHaps);
         
         // std::bitset<BITSET_SIZE> curr_bitset;
         // sul::dynamic_bitset<> prev_bitset_d(m_numHaps+1);
