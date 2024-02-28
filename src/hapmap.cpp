@@ -221,7 +221,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
 
         
 
-        static std::vector<unsigned int> positions; // holds positions for this locus
+        std::vector<unsigned int> positions; // holds positions for this locus
         //positions.reserve(m_numHaps);
         
         // std::bitset<BITSET_SIZE> curr_bitset;
@@ -354,7 +354,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 if(all_positions.size()==0){
                     all_xors.push_back(positions);
                 }else{
-                    static vector<unsigned int> curr_xor;
+                    vector<unsigned int> curr_xor;
                     std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
                                   std::back_inserter(curr_xor));
                     // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
@@ -366,7 +366,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 }
                 
 
-                static vector<unsigned int> copy_pos;
+                vector<unsigned int> copy_pos;
                 //copy_pos.reserve(m_numHaps);
                 int cnt = 0;
                 for(int i = 0; i<m_numHaps; i++){
@@ -390,7 +390,7 @@ bool HapMap::loadVCF(const char* filename, double minmaf)
                 if(all_positions.size()==0){
                     all_xors.push_back(positions);
                 }else{
-                    static vector<unsigned int> curr_xor;
+                    vector<unsigned int> curr_xor;
                     std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(), std::back_inserter(curr_xor));
                     // std::set_symmetric_difference(positions.begin(), positions.end(), all_positions.back().begin(), all_positions.back().end(),
                     //               std::inserter(curr_xor, curr_xor.end()));
