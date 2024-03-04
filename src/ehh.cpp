@@ -17,7 +17,6 @@ EHH::~EHH(){
     delete[] log_string_per_thread;
 }
 
-
 void EHH::cli_prepare(CLI::App * app) {
 	this->subapp = app->add_subcommand("ehh", "Calculate EHH.");
 
@@ -51,7 +50,7 @@ void EHH::cli_prepare(CLI::App * app) {
 	// in_option2->check(CLI::ExistingFile);
         
     CLI::Option_group * group=subapp->add_option_group("Set Locus/All");
-    group->add_flag("--all", calc_all, "Calculate EHH for all loci.");
+    group->add_flag("--all", calc_all, "Calculate EHH for all loci. (calculate iHS)");
     CLI::Option* optt = group->add_option<unsigned int>("-l, --loc", locus, "Locus")->capture_default_str();
     optt->check( [](const std::string &str) {
                 if(stoi(str) < 0)
@@ -96,20 +95,12 @@ void EHH::cli_prepare(CLI::App * app) {
         useVCF = false;
     }
 
-    // if(subapp->count("--mphb")>0){
-    //     haplo_enabled = true;
-    // }else{
-    //     haplo_enabled = false;
-    // }
-    
-    
-
 }
 
 void EHH::init(){
     Logger::open(this->logger_filename);
 
-    useVCF=true;
+    useVCF=true; // fix this later, now by default vcf
 
     double atime = readTimer();
     if(useVCF){
@@ -136,16 +127,8 @@ void EHH::calc_EHH(int locus){
     iHH0[locus] = 0;
     iHH1[locus] = 0;
 
-
-    // if(hm.getMAF(locus) < min_maf || 1-hm.getMAF(locus) < min_maf){
-    //     return;
-    // }
-    // ehh1[locus] = 0;
-    // ehh0[locus] = 0;
     calc_EHH2(locus, m, false); //upstream
-    //calc_EHH_downstream(locus, m);
-    calc_EHH2(locus, m, true);
-    //std::cout<<" ehh1["<<locus<<"]="<<ehh1[locus]<<",ehh0["<<locus<<"]="<<ehh0[locus]<<endl;
+    calc_EHH2(locus, m, true); // downstream
     
     //handle all corner cases
     if(hm.all_positions[locus].size()==0){
@@ -297,14 +280,10 @@ void EHH::calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> 
             if (++i >= numSnps) break;
             //if (hm.mentries[i].phyPos -hm.mentries[locus].phyPos > max_extend) break;
         }
-        // if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
-        //     break;
-        // }
         
         
         //if(curr_ehh1_before_norm*1.0/n_c1_squared_minus < cutoff and curr_ehh0_before_norm*1.0/n_c0_squared_minus < cutoff){
-        if(curr_ehh1_before_norm*1.0/twice_num_pair(n_c1) < cutoff or curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)  < cutoff){
-        
+        if(curr_ehh1_before_norm*1.0/twice_num_pair(n_c1) < cutoff or curr_ehh0_before_norm*1.0/twice_num_pair(n_c0)  < cutoff){   // or cutoff, change for benchmarking against hapbin
             //std::cout<<"breaking"<<endl;
             break;
         }
@@ -323,8 +302,7 @@ void EHH::calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> 
         if(distance> gap_scale){
             distance /= gap_scale;
         }
-        
-        //distance = 1;
+        //distance = 1; // for testing
         
         if(downstream){
             v = hm.all_xors[i+1];
@@ -335,7 +313,7 @@ void EHH::calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> 
             v = hm.all_positions[i];
 
             //assert(!(v.size()==0 or v.size()==numHaps));
-            if(v.size()==0 or v.size()==numHaps){
+            if(v.size()==0 or v.size()==numHaps){ // integrity check
 
                 cerr<<"Monomorphic site should not exist at this point!"<<endl;
                 exit(4);
@@ -385,12 +363,7 @@ void EHH::calc_EHH2(int locus, unordered_map<unsigned int, vector<unsigned int> 
             
             bool isDerivedGroup =  (!hm.mentries[locus].flipped && isDerived[ele.second[0]]) || (hm.mentries[locus].flipped && !isAncestral[ele.second[0]]); // just check first element to know if it is derived. 
                 
-            //bool isDerivedGroup =  hm.all_bitsets[locus].test(ele.second[0]);
-            //bool isDerivedGroup =  (!hm.mentries[locus].flipped && hm.all_positions[locus].find(ele.second[0]) != hm.all_positions[locus].end() ) || (hm.mentries[locus].flipped && hm.all_positions[locus].find(ele.second[0]) == hm.all_positions[locus].end() ); // just check first element to know if it is derived. 
-                
-            //bool isDerivedGroup =  isDerived[ele.second[0]];   
-
-            if(isDerivedGroup) // if the core locus for this chr has 1, then update ehh1, otherwise ehh0
+            if(isDerivedGroup) // if the core locus for this chr has 1 (derived), then update ehh1, otherwise ehh0
             {
                 ehh1_before_norm += del_update;
             }else{
@@ -492,6 +465,7 @@ void EHH::calc_iHS(){
     std::unordered_map<unsigned int, std::vector<unsigned int> > map_per_thread[numThread];
     std::unordered_map<unsigned int, std::vector<unsigned int> > mapd_per_thread[numThread];
 
+    // two different ways to parallelize: first block does pthread, second block does openmp
     if (!openmp_enabled)
     {
         int total_calc_to_be_done = numSnps;
@@ -501,10 +475,8 @@ void EHH::calc_iHS(){
             myThreads[i] = std::thread(thread_ihs, i, std::ref(map_per_thread[i]),  std::ref(mapd_per_thread[i]), this);
         }
         for (int i = 0; i < numThread; i++)
-        // Join will block our main thread, and so the program won't exit until
-        // everyone comes home.
         {
-            myThreads[i].join();
+            myThreads[i].join(); // Join will block our main thread, and so the program won't exit until all finish
         }
         delete[] myThreads;
         Logger::write("all threads finished. now calculating ihh...\n");
@@ -532,8 +504,6 @@ void EHH::calc_iHS(){
          }
     }
     
-    
-   
     return;
 }
 
