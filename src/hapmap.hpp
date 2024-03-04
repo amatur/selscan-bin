@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+#include <unordered_set>
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -22,10 +22,13 @@
 #include <unordered_map>
 #include <map>
 #include "selscan.hpp"
+#include "utils.hpp"
 
 #ifndef HAPMAP_HPP
 #define HAPMAP_HPP
 
+
+//#define BITSET_SIZE 1048576
 #include <stdexcept>
 #include <iostream>
 
@@ -34,8 +37,9 @@ using namespace std;
 
 struct map_entry {
   int locId;  
-  int phyPos;
+  uint64_t phyPos;
   int genPos;
+  bool flipped;
 };
 
 class HapMap
@@ -57,8 +61,13 @@ public:
     std::size_t numHaps() const { return m_numHaps; }    
     
     std::vector<struct map_entry> mentries; // hold additional info
-    std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
-//    ~HapMap();
+    //std::vector<std::vector<unsigned int> > all_positions; // hold the 0, 1 matrix in position form
+    //std::vector<std::bitset<BITSET_SIZE> > all_bitsets; // hold the xor
+    std::vector< vector  <unsigned int> > all_xors; // hold the xor
+    std::vector< vector <unsigned int> > all_positions;
+
+    
+//    ~HapMap(); 
     double getMAF(int loc);
 
 private:
@@ -68,7 +77,7 @@ protected:
     // unsigned long long* m_physPos;
     // double* m_genPos;
     // std::map<std::size_t, std::string> m_idMap;
-    std::vector<unsigned int> monomorphic;
+    //std::vector<unsigned int> monomorphic;
     std::size_t m_numSnps;
     std::size_t m_numHaps;
 

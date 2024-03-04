@@ -1,10 +1,4 @@
-//need to add check if n^2 causes overflow
-// main.cpp
-// version 1:
-// sep 26
-// upstream only
-// dont store it at all
-// just store EHH values 
+
 #include <thread>                            
 #include <iostream>
 #include <algorithm>
@@ -24,7 +18,7 @@
 // #include "benchmark.hpp"
 
 #include "selscan.hpp"
-#include "nsl.hpp"
+// #include "nsl.hpp"
 #include "ehh.hpp"
 
 
@@ -128,7 +122,7 @@ int main(int argc, char** argv) {
 	
 	// --- Prepare tools ---
 	vector<Selscan *> tools;
-	tools.push_back(new NSL());
+	// tools.push_back(new NSL());
 	// tools.push_back(new IHS());
 	tools.push_back(new EHH());
 

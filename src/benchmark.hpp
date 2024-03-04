@@ -5,8 +5,11 @@
 #include <ctime>
 #include <cmath>
 
-double readTimer() {
+double static readTimer() {
     return clock() / (double) CLOCKS_PER_SEC;
 }
+
+
+
 
 #endif

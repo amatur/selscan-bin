@@ -2,9 +2,12 @@
 #include "assert.h"
 #define DEBUG true
 #include<vector>
+#include <fstream>
 
+using namespace std; 
 
-
+// REMINDERS
+// 1. unsigned int vs. signed int
 
 
 /*! \file selscan.h
@@ -20,7 +23,6 @@
 #define SEL__H__INCLUDED__
 
 
-
 class Selscan {
 public:
 	CLI::App * subapp = nullptr;
@@ -28,9 +30,10 @@ public:
 	virtual void exec() = 0;
 	virtual ~Selscan() {};
 
-	std::string input_filename_vcf = "/home/art/workspace/filezilla-sync/out.1000_100000_1.vcf";
+	bool useVCF = true;
+	std::string input_filename_vcf = "";
+	//std::string input_filename_vcf = "/home/art/workspace/filezilla-sync/out.1000_100000_1.vcf";
 	
-	bool useVCF = false;
 };
 
 
