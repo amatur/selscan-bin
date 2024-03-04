@@ -1,43 +1,14 @@
-CC=g++-13
-# CFLAGS=-w -std=c++11 -O3  -ftree-vectorize -pthread
-# CFLAGS= -Ofast -pthread -m64 -mmmx -msse -msse2 -ftree-vectorize -fopenmp
-CFLAGS= -Ofast -pthread -m64  -ftree-vectorize -fopenmp -g
-#-g
+CC=g++
+CFLAGS= -Ofast -pthread -m64  -ftree-vectorize -fopenmp -mmmx -msse -msse2
 SRC_DIR := ./src
 OBJ_DIR := ./
 SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 LDFLAGS := -pthread
 
-
-#for osx systems
-CC = g++-13
-G++FLAG = -Ofast -m64 -mmmx -msse -msse2 -fopenmp -g
-#-g
 LINK_OPTS2 = -lpthread -lz -fopenmp
 I_PATH = -I../include
-L_PATH = ../lib/osx
-
-#for linux systems
-#CC = g++
-#G++FLAG = -O3 -m64 -mmmx -msse -msse2
-#LINK_OPTS2 = -pthread -lz
-#I_PATH = -I../include
-#L_PATH = ../lib/linux
-
-#for windows, using MinGW build environment
-#CC = g++.exe
-#G++FLAG = -DPTW32_STATIC_LIB -O3 -static-libgcc -static-libstdc++
-#LINK_OPTS2 = ../lib/win32/libpthreadGC2.a ../lib/win32/libz.a 
-#I_PATH = -I../include -I../include/win32 
-#L_PATH = ../lib/win32
-
-#For static linking of norm program to gsl libs
-LINK_OPTS = $(L_PATH)/libgsl.a $(L_PATH)/libgslcblas.a
-#g++ src/main.cpp -O3 -std=c++0x -funroll-loops -ftree-vectorize -ftree-vectorizer-verbose=1 -o main
-
-#-w suppresses warning
-#enable -DDEBUGMODE for debugging
+L_PATH = ../lib/linux
 
 all: make_directories selbin
 
